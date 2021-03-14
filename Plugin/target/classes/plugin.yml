@@ -1,0 +1,7 @@
+name: PeakCraft
+version: 1.0
+main: io.github.mrriptide.peakcraft.PeakCraft
+commands:
+  give:
+    description: Gives a user a selected item
+    permission: peakcraft.give
