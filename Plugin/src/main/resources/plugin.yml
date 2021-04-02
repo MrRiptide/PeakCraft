@@ -1,7 +1,14 @@
 name: PeakCraft
 version: 1.0
 main: io.github.mrriptide.peakcraft.PeakCraft
+api-version: 1.13
 commands:
   give:
     description: Gives a user a selected item
     permission: peakcraft.give
+  reloaditems:
+    description: Reloads the items from the file
+    permission: peakcraft.reloaditems
+  recipe:
+    description: Manages recipes
+    permission: peakcraft.recipe

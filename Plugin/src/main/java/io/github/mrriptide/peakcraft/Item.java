@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft;
 
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -76,10 +77,14 @@ public class Item {
     public ItemStack getItemStack(){
         ItemStack item = new ItemStack(material);
 
+        //PeakCraft.getPlugin().getLogger().info("Item: " + item);
+
         ItemMeta meta = item.getItemMeta();
+        if (meta == null){
+            return item;
+        }
 
         // Add the lore to the item
-        assert meta != null;
         meta.setLore(getLore());
 
         // Set the custom name
@@ -100,6 +105,8 @@ public class Item {
 
         // Set the custom name
         meta.setDisplayName(getFormattedDisplayName());
+
+        item.setItemMeta(meta);
 
         return item;
     }
@@ -136,14 +143,22 @@ public class Item {
         return lore;
     }
 
-    private String getRarityColor(){
-        String[] colors = {"§4", "§7", "§a", "§9", "§5", "§6", "§d", "§b"};
+    private ChatColor getRarityColor(){
+        ChatColor[] colors = {
+                ChatColor.DARK_RED, // Broken
+                ChatColor.GRAY, // Common
+                ChatColor.GREEN, // Uncommon
+                ChatColor.BLUE, // Rare
+                ChatColor.DARK_PURPLE, // Epic
+                ChatColor.GOLD, // Legendary
+                ChatColor.LIGHT_PURPLE, // Mythic
+                ChatColor.AQUA}; // Relic
         return colors[rarity];
     }
 
     private String getRarityName() {
         String[] names = {"Broken", "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic", "Relic"};
 
-        return "§l" + names[rarity];
+        return ChatColor.BOLD + names[rarity];
     }
 }

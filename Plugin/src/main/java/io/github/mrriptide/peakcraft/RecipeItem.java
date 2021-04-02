@@ -1,0 +1,91 @@
+package io.github.mrriptide.peakcraft;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+
+import java.util.Objects;
+
+public class RecipeItem {
+    private String id;
+    private int count;
+
+    public RecipeItem(){
+        this.id = "air";
+        this.count = 0;
+    }
+
+    public RecipeItem(String id, int count){
+        this.id = id;
+        this.count = count;
+    }
+
+    public RecipeItem(String id){
+        this.id = id;
+        this.count = 0;
+    }
+
+    public RecipeItem(ItemStack itemStack){
+        // Default option
+        this.id = itemStack.getType().name();
+
+        // If a PeakCraft-specific id is defined, use that instead
+        NamespacedKey itemIDKey = new NamespacedKey(PeakCraft.getPlugin(), "ITEM_ID");
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta != null){
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            if (container.has(itemIDKey, PersistentDataType.STRING)){
+                this.id = container.get(itemIDKey, PersistentDataType.STRING);
+            }
+        }
+
+        this.count = itemStack.getAmount();
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setId(String id){
+        this.id = id;
+    }
+
+    public void setCount(int count){
+        this.count = count;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if (o == this){
+            return true;
+        }
+
+        if (!(o instanceof RecipeItem)){
+            return false;
+        }
+
+        RecipeItem item = (RecipeItem)o;
+        return this.getId().equals(item.getId()) && this.getCount() == item.getCount();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, count);
+    }
+
+    @JsonIgnore
+    public ItemStack getItemStack(){
+        Item item = new Item(id);
+        ItemStack itemStack = item.getItemStack();
+        itemStack.setAmount(count);
+
+        return itemStack;
+    }
+}

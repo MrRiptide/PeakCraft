@@ -22,8 +22,6 @@ import java.util.logging.Level;
 
 public class ItemManager {
 
-    private static final String itemsPath = "plugins/config/PeakCraft/items.tsv";
-
     private static HashMap<String, Item> items;
 
     public static ItemStack ConvertItem(ItemStack item){
@@ -37,12 +35,13 @@ public class ItemManager {
             }
         }
 
+        assert item_id != null;
         Item item_data = getItem(item_id);
 
         return item_data.convertItem(item);
     }
 
-    public static void LoadItems() {
+    public static void loadItems() {
         items = new HashMap<String, Item>();
 
         TsvParserSettings settings = new TsvParserSettings();
@@ -54,12 +53,12 @@ public class ItemManager {
 
         FileInputStream file = null;
         try {
-            file = new FileInputStream(itemsPath);
+            file = new FileInputStream(new File(PeakCraft.getPlugin().getDataFolder() + File.separator + "items.tsv"));
         } catch (FileNotFoundException e) {
             PeakCraft.getPlugin().getLogger().log(Level.SEVERE, "File \"items.tsv\" not found, generating one now");
             createItemList();
             try {
-                file = new FileInputStream(itemsPath);
+                file = new FileInputStream(new File(PeakCraft.getPlugin().getDataFolder() + File.separator + "items.tsv"));
             } catch (FileNotFoundException fileNotFoundException) {
                 fileNotFoundException.printStackTrace();
             }
@@ -92,7 +91,7 @@ public class ItemManager {
 
         FileOutputStream output = null;
         try {
-            output = new FileOutputStream(itemsPath);
+            output = new FileOutputStream(new File(PeakCraft.getPlugin().getDataFolder() + File.separator + "items.tsv"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -106,6 +105,8 @@ public class ItemManager {
             if (mat.isItem()){
                 String[] line = new String[]{mat.name(), WordUtils.capitalizeFully(mat.toString().toLowerCase().replace("_", " ")), "0", "", mat.name()};
                 writer.writeRow(line);
+            } else {
+                PeakCraft.getPlugin().getLogger().info(mat.name() + " is not an item");
             }
         }
         writer.close();

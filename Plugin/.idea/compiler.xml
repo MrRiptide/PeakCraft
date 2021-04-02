@@ -7,8 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="PeakCraft" />
-        <module name="Plugin" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="PeakCraft" target="8" />
+      <module name="PeakCraft (1)" target="8" />
+      <module name="PeakCraft (2)" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
