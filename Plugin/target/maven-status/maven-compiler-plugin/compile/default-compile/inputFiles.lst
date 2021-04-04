@@ -1,3 +1,4 @@
+D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\guis\CraftingGUI.java
 D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\guis\InventoryGui.java
 D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\PeakCraft.java
 D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\RecipeManager.java
@@ -6,6 +7,7 @@ D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\ItemMan
 D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\commands\CommandReloadItems.java
 D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\Item.java
 D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\commands\SubCommand.java
+D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\listeners\CraftingListener.java
 D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\listeners\GUIEventListener.java
 D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\Recipe.java
 D:\Projects\PeakCraft\Plugin\src\main\java\io\github\mrriptide\peakcraft\RecipeItem.java

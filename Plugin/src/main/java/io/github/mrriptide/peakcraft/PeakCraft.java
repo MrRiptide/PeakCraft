@@ -7,13 +7,15 @@ import io.github.mrriptide.peakcraft.commands.CommandReloadItems;
 import io.github.mrriptide.peakcraft.listeners.CraftingListener;
 import io.github.mrriptide.peakcraft.listeners.EntityEventListener;
 import io.github.mrriptide.peakcraft.listeners.GUIEventListener;
+import io.github.mrriptide.peakcraft.recipes.RecipeItem;
+import io.github.mrriptide.peakcraft.recipes.RecipeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class PeakCraft extends JavaPlugin {
@@ -124,17 +126,28 @@ public class PeakCraft extends JavaPlugin {
 
                 new_recipe.shape(shape);
 
+                // Register it in the spigot recipe system
                 Bukkit.addRecipe(new_recipe);
+                // Register it in the internal recipe system
+                RecipeManager.registerRecipe(((Keyed)vanilla_recipe).getKey().getKey(), new io.github.mrriptide.peakcraft.recipes.ShapedRecipe(new_recipe));
             } else if (vanilla_recipe instanceof ShapelessRecipe) {
                 ShapelessRecipe new_recipe = new ShapelessRecipe(key,
                         (new RecipeItem(vanilla_recipe.getResult())).getItemStack());
                 new_recipe.setGroup(((ShapelessRecipe) vanilla_recipe).getGroup());
 
+                ArrayList<RecipeItem> ingredients = new ArrayList<>();
                 for (ItemStack ingredient : ((ShapelessRecipe) vanilla_recipe).getIngredientList()){
-                    new_recipe.addIngredient(new RecipeChoice.ExactChoice((new RecipeItem(ingredient)).getItemStack()));
+                    ingredients.add(new RecipeItem(ingredient));
                 }
 
+                for (RecipeItem ingredient : ingredients){
+                    new_recipe.addIngredient(new RecipeChoice.ExactChoice(ingredient.getItemStack()));
+                }
+
+                // Register it in the spigot recipe system
                 Bukkit.addRecipe(new_recipe);
+                // Register it in the internal recipe system
+                RecipeManager.registerRecipe(((Keyed)vanilla_recipe).getKey().getKey(), new io.github.mrriptide.peakcraft.recipes.ShapelessRecipe(ingredients, new RecipeItem(vanilla_recipe.getResult())));
             } else if (vanilla_recipe instanceof SmithingRecipe) {
                 SmithingRecipe new_recipe = new SmithingRecipe(key,
                         (new RecipeItem(vanilla_recipe.getResult())).getItemStack(),

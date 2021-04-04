@@ -14,6 +14,7 @@ import java.util.Objects;
 
 public class Item {
     private String id;
+    private String oreDict;
     private String displayName;
     private int rarity;
     private String description;
@@ -29,9 +30,10 @@ public class Item {
         this.material = item.material;
     }
 
-    public Item(String id, String display_name, int rarity, String description, Material material){
+    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material){
         this.id = id;
-        this.displayName = display_name;
+        this.oreDict = oreDict;
+        this.displayName = displayName;
         this.rarity = rarity;
         this.description = description;
         this.material = material;
@@ -55,6 +57,7 @@ public class Item {
 
         Item default_item = ItemManager.getItem(this.id);
 
+        this.oreDict = default_item.oreDict;
         this.rarity = default_item.rarity;
         this.displayName = default_item.displayName;
         this.description = default_item.description;
@@ -113,6 +116,10 @@ public class Item {
 
     public String getID(){
         return id;
+    }
+
+    public String getOreDict(){
+        return oreDict;
     }
 
     public String getDisplayName(){

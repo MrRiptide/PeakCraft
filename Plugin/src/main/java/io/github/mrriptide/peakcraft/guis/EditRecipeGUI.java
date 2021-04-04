@@ -1,13 +1,14 @@
 package io.github.mrriptide.peakcraft.guis;
 
-import io.github.mrriptide.peakcraft.*;
+import io.github.mrriptide.peakcraft.recipes.ShapedRecipe;
+import io.github.mrriptide.peakcraft.recipes.RecipeItem;
+import io.github.mrriptide.peakcraft.recipes.RecipeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -44,11 +45,18 @@ public class EditRecipeGUI implements InventoryGui{
 
         // If the recipe already exists, load current one
         if (RecipeManager.recipeExists(this.recipeName)){
-            Recipe recipe = RecipeManager.getRecipe(this.recipeName);
+            ShapedRecipe recipe = (ShapedRecipe) RecipeManager.getRecipe(this.recipeName);
             assert recipe != null;
+            HashMap<Character, RecipeItem> ingredientMap = recipe.getIngredients();
+            String[] shape = recipe.getShape();
             for (int i = 0; i < 3; i++){
                 for (int j = 0; j < 3; j++){
-                    gui.setItem(9*(i+1) + j + 1, recipe.getIngredients()[i][j].getItemStack());
+                    if (ingredientMap.get(shape[i].charAt(j)) != null){
+                        gui.setItem(9*(i+1) + j + 1, ingredientMap.get(shape[i].charAt(j)).getItemStack());
+                    }
+                    else {
+                        gui.setItem(9*(i+1) + j + 1, new ItemStack(Material.AIR));
+                    }
                 }
             }
 
@@ -97,9 +105,6 @@ public class EditRecipeGUI implements InventoryGui{
         if (slot == saveSlot){
             Inventory inventory = e.getClickedInventory();
 
-            Recipe recipe = new Recipe();
-
-
             RecipeItem[][] ingredients = new RecipeItem[3][3];
             assert inventory != null;
             for (int i = 0; i < 3; i++){
@@ -113,12 +118,12 @@ public class EditRecipeGUI implements InventoryGui{
                 }
             }
 
-            recipe.setIngredients(ingredients);
+            RecipeItem result = new RecipeItem(Objects.requireNonNull(inventory.getItem(23)));
+            ShapedRecipe recipe = new ShapedRecipe(ingredients, result);
             if (inventory.getItem(23) == null){
                 player.sendMessage("Must have a item defined as the result");
                 return true;
             }
-            recipe.setResult(new RecipeItem(Objects.requireNonNull(inventory.getItem(23))));
 
             RecipeManager.saveRecipe(recipe, recipeName);
             RecipeManager.registerRecipe(recipeName);

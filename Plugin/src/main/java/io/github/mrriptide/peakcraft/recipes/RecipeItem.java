@@ -1,6 +1,8 @@
-package io.github.mrriptide.peakcraft;
+package io.github.mrriptide.peakcraft.recipes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.mrriptide.peakcraft.Item;
+import io.github.mrriptide.peakcraft.PeakCraft;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -11,20 +13,34 @@ import java.util.Objects;
 
 public class RecipeItem {
     private String id;
+    private String oreDict;
     private int count;
 
     public RecipeItem(){
         this.id = "air";
+        this.oreDict = "";
         this.count = 0;
     }
 
     public RecipeItem(String id, int count){
         this.id = id;
+        this.oreDict = (new Item(id)).getOreDict();
+        this.count = count;
+    }
+
+    public RecipeItem(String id, int count, boolean useOreDict){
+        this.id = id;
+        if (useOreDict){
+            this.oreDict = (new Item(id)).getOreDict();
+        } else {
+            this.oreDict = "";
+        }
         this.count = count;
     }
 
     public RecipeItem(String id){
         this.id = id;
+        this.oreDict = (new Item(id)).getOreDict();
         this.count = 0;
     }
 
@@ -42,11 +58,17 @@ public class RecipeItem {
             }
         }
 
+        this.oreDict = (new Item(id)).getOreDict();
+
         this.count = itemStack.getAmount();
     }
 
     public String getId(){
         return id;
+    }
+
+    public String getOreDict() {
+        return (oreDict == null) ? "" : oreDict;
     }
 
     public int getCount() {

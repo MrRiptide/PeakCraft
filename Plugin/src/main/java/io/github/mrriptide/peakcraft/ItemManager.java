@@ -69,6 +69,7 @@ public class ItemManager {
         for (Record record : allRecords){
             Item item = new Item(
                     record.getString("ID"), // the id
+                    record.getString("Ore Dictionary"), // The display name
                     record.getString("Display Name"), // The display name
                     record.getValue("Rarity", 0), // the rarity (as an int)
                     record.getString("Description"), // the description
