@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.recipes;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
@@ -22,12 +23,14 @@ public class ShapedRecipe extends Recipe {
         this.shape = recipeSource.getShape();
 
         this.ingredientMap = new HashMap<>();
-        for (Character key : recipeSource.getIngredientMap().keySet()){
-            if (recipeSource.getIngredientMap().get(key) != null){
-                ingredientMap.put(key, new RecipeItem(recipeSource.getIngredientMap().get(key)));
-            } else {
-                for (int i = 0; i < shape.length; i++){
-                    shape[i] = shape[i].replace(key, ' ');
+        if (shape != null){
+            for (Character key : recipeSource.getIngredientMap().keySet()){
+                if (recipeSource.getIngredientMap().get(key) != null){
+                    ingredientMap.put(key, new RecipeItem(recipeSource.getIngredientMap().get(key)));
+                } else {
+                    for (int i = 0; i < shape.length; i++){
+                        shape[i] = shape[i].replace(key, ' ');
+                    }
                 }
             }
         }
@@ -111,50 +114,69 @@ public class ShapedRecipe extends Recipe {
      *
      * @TODO: OreDict feature for things like logs or stone
      *
-     * @param   ingredients  the ingredient array to compare to
+     * @param   recipe  the crafted recipe to compare to
      * @return          if the generic recipe matches the specific recipe
      * */
     @Override
-    public boolean test(RecipeItem[][] ingredients){
-
-        ShapedRecipe recipe = new ShapedRecipe(ingredients, new RecipeItem("air"));
+    public boolean test(Recipe recipe){
+        ShapedRecipe shapedRecipe = (ShapedRecipe)recipe;
 
         if (this == recipe || this.equals(recipe)){
             return true;
         }
 
-        if (Arrays.equals(this.shape, recipe.shape) && this.ingredientMap.equals(recipe.ingredientMap)){
-            return true;
+        if (Arrays.equals(this.shape, shapedRecipe.shape)){
+            if (this.ingredientMap.equals(shapedRecipe.ingredientMap)){
+                return true;
+            } else {
+                for (Character key : this.ingredientMap.keySet()){
+                    RecipeItem recipeItem = this.ingredientMap.get(key);
+                    RecipeItem craftItem = shapedRecipe.ingredientMap.get(key);
+                    if (!(craftItem.getCount() >= recipeItem.getCount() && (craftItem.getId().equals(recipeItem.getId())
+                            || (!recipeItem.getOreDict().equals("") && recipeItem.getOreDict().equals(craftItem.getOreDict()))))){
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } else {
+            return false;
         }
 
-        // if they dont have the same number of rows
-        if (this.shape.length != recipe.shape.length){
+        /*// if they dont have the same number of rows
+        if (this.shape.length != shapedRecipe.shape.length){
             return false;
         }
 
         // if they dont have the same number of columns
-        if (this.shape[0].length() != recipe.shape[0].length()){
+        if (this.shape[0].length() != shapedRecipe.shape[0].length()){
             return false;
         }
 
+
+        PeakCraft.getPlugin().getLogger().info("THIS SHOULD NOT BE SEEN");
         for (int row = 0; row < this.shape.length; row++){
             for (int col = 0; col < this.shape[row].length(); col++){
+                char recipeChar = this.shape[row].charAt(col);
+                char craftChar = shapedRecipe.shape[row].charAt(col);
                 // if the character in both shapes are spaces then skip
-                if (' ' == this.shape[row].charAt(col) && ' ' == recipe.shape[row].charAt(col)){
+                if (' ' == recipeChar && ' ' == craftChar){
                     continue;
                 }
 
                 // if the character in only one shape is a space then return false
-                if (' ' == this.shape[row].charAt(col) || ' ' == recipe.shape[row].charAt(col)){
+                if (' ' == recipeChar || ' ' == craftChar){
                     return false;
                 }
 
+                RecipeItem recipeItem = this.ingredientMap.get(this.shape[row].charAt(col));
+                RecipeItem craftItem = shapedRecipe.ingredientMap.get(shapedRecipe.shape[row].charAt(col));
                 // if ids are different
-                if (!this.ingredientMap.get(this.shape[row].charAt(col)).getId().equals(recipe.ingredientMap.get(recipe.shape[row].charAt(col)).getId())){
+                if (!recipeItem.getId().equals(craftItem.getId())){
                     // if there is no oredict
-                    if (this.ingredientMap.get(this.shape[row].charAt(col)).getOreDict().equals("")){
+                    if (recipeItem.getOreDict().equals("")){
                         return false;
-                    } else if (!this.ingredientMap.get(this.shape[row].charAt(col)).getOreDict().equals(recipe.ingredientMap.get(recipe.shape[row].charAt(col)).getOreDict())){
+                    } else if (!recipeItem.getOreDict().equals(craftItem.getOreDict())){
                         // if there is an oredict but it doesnt match
                         return false;
                     }
@@ -163,7 +185,7 @@ public class ShapedRecipe extends Recipe {
         }
 
         // if it doesnt find any reason anywhere else to
-        return true;
+        return true;*/
     }
 
 }

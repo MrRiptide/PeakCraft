@@ -20,5 +20,5 @@ public abstract class Recipe {
         return group;
     }
 
-    public abstract boolean test(RecipeItem[][] ingredients);
+    public abstract boolean test(Recipe recipe);
 }

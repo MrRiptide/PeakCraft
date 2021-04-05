@@ -23,6 +23,15 @@ public class ShapelessRecipe extends Recipe{
         }
     }
 
+    public ShapelessRecipe(RecipeItem[][] ingredients_grid, RecipeItem result) {
+        this.setResult(result);
+        this.ingredients = new ArrayList<>();
+
+        for (RecipeItem[] row : ingredients_grid){
+            ingredients.addAll(Arrays.asList(row));
+        }
+    }
+
     public ArrayList<RecipeItem> getIngredients() {
         return ingredients;
     }
@@ -36,16 +45,12 @@ public class ShapelessRecipe extends Recipe{
      *
      * @TODO: OreDict feature for things like logs or stone
      *
-     * @param   ingredients_arr  the ingredients to compare to
+     * @param   recipe  the crafted recipe to compare to
      * @return          if the generic recipe matches the specific recipe
      * */
     @Override
-    public boolean test(RecipeItem[][] ingredients_arr) {
-        ArrayList<RecipeItem> itemList = new ArrayList<>();
-
-        for (RecipeItem[] row : ingredients_arr){
-            itemList.addAll(Arrays.asList(row));
-        }
+    public boolean test(Recipe recipe) {
+        ArrayList<RecipeItem> itemList = ((ShapelessRecipe)recipe).getIngredients();
 
         // loop through all ingredients in the recipe
         for (RecipeItem ingredient : ingredients){

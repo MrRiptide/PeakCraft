@@ -100,7 +100,7 @@ public class RecipeManager {
     }
 
     public static Recipe getMatch(ItemStack[] raw_ingredients){
-        long startTime = System.nanoTime();
+        //long startTime = System.nanoTime();
         RecipeItem[][] ingredients = new RecipeItem[3][3];
         assert raw_ingredients != null;
         for (int i = 0; i < 3; i++){
@@ -113,49 +113,59 @@ public class RecipeManager {
                 }
             }
         }
-        long endTime = System.nanoTime();
+        /*long endTime = System.nanoTime();
         long duration = (endTime-startTime) / 1000000;
-        PeakCraft.getPlugin().getLogger().info("It took " + Math.round(duration * 100) / 100.0 + "ms to generate the ingredient array");
+        PeakCraft.getPlugin().getLogger().info("It took " + Math.round(duration * 100) / 100.0 + "ms to generate the ingredient array");*/
 
-        //ShapedRecipe source_recipe = new ShapedRecipe(ingredients, new RecipeItem("air"));
+        ShapedRecipe craftedShapedRecipe = new ShapedRecipe(ingredients, new RecipeItem("air"));
+        ShapelessRecipe craftedShapelessRecipe = new ShapelessRecipe(ingredients, new RecipeItem("air"));
 
-        long shapedTime = 0;
+        /*long shapedTime = 0;
         int shapedTested = 0;
         long shapelessTime = 0;
         int shapelessTested = 0;
         startTime = System.nanoTime();
-        int recipesTested = 0;
+        int recipesTested = 0;*/
         for (Recipe recipe : recipes.values()){
-            recipesTested++;
+            //recipesTested++;
             // only check for shaped or shapeless recipes
             if (!(recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe)){
                 continue;
             }
-            long start = System.nanoTime();
-            boolean recipeMatch = recipe.test(ingredients);
-            long end = System.nanoTime();
+            boolean recipeMatch;
+            //long start = System.nanoTime();
             if (recipe instanceof ShapedRecipe){
-                shapedTime += (end-start);
-                shapedTested++;
+                recipeMatch = recipe.test(craftedShapedRecipe);
+                //long end = System.nanoTime();
+               // shapedTime += (end-start);
+              //  shapedTested++;
             } else {
-                shapelessTime += (end-start);
-                shapelessTested++;
+                recipeMatch = recipe.test(craftedShapelessRecipe);
+                //long end = System.nanoTime();
+              //  shapelessTime += (end-start);
+             //   shapelessTested++;
             }
-            if (recipe.test(ingredients)){
-                endTime = System.nanoTime();
-                duration = (endTime-startTime) / 1000000;
-                PeakCraft.getPlugin().getLogger().info("It took " + Math.round(duration * 100) / 100.0 + "ms to test " + recipesTested + " recipes, an average of " + Math.round(duration * 100.0 / recipesTested) / 100.0 + "ms per recipe");
+            if (recipeMatch){
                 return recipe;
+                /*endTime = System.nanoTime();
+                duration = (endTime-startTime) / 1000000;
+
+                PeakCraft.getPlugin().getLogger().info("It took " + Math.round(duration * 100) / 100.0 + "ms to test " + recipesTested + " recipes," +
+                        " an average of " + Math.round(duration * 100.0 / recipesTested) / 100.0 + "ms per recipe");
+                PeakCraft.getPlugin().getLogger().info("The shaped recipes took " + Math.round(shapedTime / 1000000.0 * 100) / 100.0 + "ms to test " + shapedTested +
+                        " recipes, an average of " + Math.round(shapedTime / 1000000.0 * 100.0 / shapedTested) / 100.0 + "ms per recipe");
+                PeakCraft.getPlugin().getLogger().info("The shapeless recipes took " + Math.round(shapelessTime / 1000000.0 * 100) / 100.0 + "ms to test " + shapelessTested +
+                        " recipes, an average of " + Math.round(shapelessTime / 1000000.0 * 100.0 / shapelessTested) / 100.0 + "ms per recipe");*/
             }
         }
-        endTime = System.nanoTime();
+        /*endTime = System.nanoTime();
         duration = (endTime-startTime) / 1000000;
         PeakCraft.getPlugin().getLogger().info("It took " + Math.round(duration * 100) / 100.0 + "ms to test " + recipesTested + " recipes," +
                 " an average of " + Math.round(duration * 100.0 / recipesTested) / 100.0 + "ms per recipe");
         PeakCraft.getPlugin().getLogger().info("The shaped recipes took " + Math.round(shapedTime / 1000000.0 * 100) / 100.0 + "ms to test " + shapedTested +
                 " recipes, an average of " + Math.round(shapedTime / 1000000.0 * 100.0 / shapedTested) / 100.0 + "ms per recipe");
         PeakCraft.getPlugin().getLogger().info("The shapeless recipes took " + Math.round(shapelessTime / 1000000.0 * 100) / 100.0 + "ms to test " + shapelessTested +
-                " recipes, an average of " + Math.round(shapelessTime / 1000000.0 * 100.0 / shapelessTested) / 100.0 + "ms per recipe");
+                " recipes, an average of " + Math.round(shapelessTime / 1000000.0 * 100.0 / shapelessTested) / 100.0 + "ms per recipe");*/
 
         return null;
     }
@@ -165,7 +175,7 @@ public class RecipeManager {
         if (match == null){
             return null;
         } else {
-            return getMatch(raw_ingredients).getResult();
+            return match.getResult();
         }
     }
 }
