@@ -1,16 +1,39 @@
 package io.github.mrriptide.peakcraft.recipes;
 
+import com.google.common.collect.Maps;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import net.minecraft.server.v1_16_R3.*;
 import org.apache.commons.lang.NotImplementedException;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftNamespacedKey;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class ShapedNMSRecipe extends NMSRecipe {
     private HashMap<Character, RecipeItem> ingredientMap;
     private String[] shape;
+    private int width;
+    private int height;
+
+    public ShapedNMSRecipe(MinecraftKey minecraftkey, String group, int width, int height, NonNullList<RecipeItemStack> nonnulllist, ItemStack resultItemStack) {
+        this.setKey(minecraftkey);
+        this.setGroup(group);
+        // idk what to do with any of this data but i feel like i should do something???
+        //this.width = width;
+        //this.height = height;
+        //this.items = nonnulllist;
+        this.setResult(new RecipeItem(CraftItemStack.asBukkitCopy(resultItemStack)));
+    }
 
     public ShapedNMSRecipe(ShapedRecipe sourceRecipe){
         this.setResult(sourceRecipe.getResult());
@@ -74,7 +97,9 @@ public class ShapedNMSRecipe extends NMSRecipe {
 
     @Override
     public RecipeSerializer<?> getRecipeSerializer() {
-        throw new NotImplementedException("getRecipeSerializer");
+        PeakCraft.getPlugin().getLogger().info("Called getRecipeSerializer");
+        RecipeSerializer<ShapedNMSRecipe> serializer = RecipeSerializer.a((String)"crafting_shaped", (RecipeSerializer)(new ShapedNMSRecipe.a()));
+        return RecipeSerializer.a;
     }
 
     @Override
@@ -86,5 +111,73 @@ public class ShapedNMSRecipe extends NMSRecipe {
     public org.bukkit.inventory.Recipe toBukkitRecipe() {
         throw new NotImplementedException("toBukkitRecipe");
 
+    }
+
+    // I think it validates the map?
+    private static Map<String, RecipeItemChoice> c(JsonObject jsonobject) {
+        Map<String, RecipeItemChoice> map = Maps.newHashMap();
+        Iterator iterator = jsonobject.entrySet().iterator();
+
+        while(iterator.hasNext()) {
+            Map.Entry<String, JsonElement> entry = (Map.Entry)iterator.next();
+            if (((String)entry.getKey()).length() != 1) {
+                throw new JsonSyntaxException("Invalid key entry: '" + (String)entry.getKey() + "' is an invalid symbol (must be 1 character only).");
+            }
+
+            if (" ".equals(entry.getKey())) {
+                throw new JsonSyntaxException("Invalid key entry: ' ' is a reserved symbol.");
+            }
+
+            map.put((String)entry.getKey(), RecipeItemChoice.a((JsonElement)entry.getValue()));
+        }
+
+        map.put(" ", new RecipeItemChoice("air"));
+        return map;
+    }
+
+    // recipe serializer class for custom shaped recipes
+    public static class a implements RecipeSerializer<ShapedNMSRecipe> {
+        public a() {
+        }
+
+        public ShapedNMSRecipe a(MinecraftKey minecraftkey, JsonObject jsonobject) {
+            String s = ChatDeserializer.a(jsonobject, "group", "");
+            Map<String, RecipeItemChoice> map = ShapedNMSRecipe.c(ChatDeserializer.t(jsonobject, "key"));
+            String[] astring = ShapedNMSRecipe.a(ShapedNMSRecipe.b(ChatDeserializer.u(jsonobject, "pattern")));
+            int i = astring[0].length();
+            int j = astring.length;
+            NonNullList<RecipeItemStack> nonnulllist = ShapedNMSRecipe.b(astring, map, i, j);
+            ItemStack itemstack = ShapedNMSRecipe.a(ChatDeserializer.t(jsonobject, "result"));
+            return new ShapedNMSRecipe(minecraftkey, s, i, j, nonnulllist, itemstack);
+        }
+
+        public ShapedNMSRecipe a(MinecraftKey minecraftkey, PacketDataSerializer packetdataserializer) {
+            int i = packetdataserializer.i();
+            int j = packetdataserializer.i();
+            String s = packetdataserializer.e(32767);
+            NonNullList<RecipeItemStack> nonnulllist = NonNullList.a(i * j, RecipeItemStack.a);
+
+            for(int k = 0; k < nonnulllist.size(); ++k) {
+                nonnulllist.set(k, RecipeItemStack.b(packetdataserializer));
+            }
+
+            ItemStack itemstack = packetdataserializer.n();
+            return new ShapedNMSRecipe(minecraftkey, s, i, j, nonnulllist, itemstack);
+        }
+
+        @Override
+        public void a(PacketDataSerializer packetDataSerializer, ShapedNMSRecipe shapedNMSRecipe) {
+            packetDataSerializer.d(shapedNMSRecipe.shape[0].length());
+            packetDataSerializer.d(shapedNMSRecipe.shape.length);
+            packetDataSerializer.a(shapedNMSRecipe.getGroup());
+            Iterator iterator = shapedNMSRecipe.ingredientMap.values().iterator();
+
+            while(iterator.hasNext()) {
+                RecipeItemChoice recipeItemChoice = (RecipeItemChoice) iterator.next();
+                recipeItemChoice.a(packetDataSerializer);
+            }
+
+            packetDataSerializer.a(shapedNMSRecipe.getResult());
+        }
     }
 }
