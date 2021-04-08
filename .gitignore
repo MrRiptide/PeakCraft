@@ -71,7 +71,7 @@ Plugin/.idea/httpRequests
 Plugin/.idea/caches/build_file_checksums.ser
 
 # Server Data
-#Server
+Server
 Plugin/*/.idea/workspace.xml
 Plugin/.idea/uiDesigner.xml
 Plugin/.idea/modules.xml
