@@ -4,7 +4,6 @@ import io.github.mrriptide.peakcraft.commands.CommandRecipe;
 import io.github.mrriptide.peakcraft.commands.CommandGive;
 import io.github.mrriptide.peakcraft.commands.CommandRecipe_Add;
 import io.github.mrriptide.peakcraft.commands.CommandReloadItems;
-import io.github.mrriptide.peakcraft.listeners.CraftingListener;
 import io.github.mrriptide.peakcraft.listeners.EntityEventListener;
 import io.github.mrriptide.peakcraft.listeners.GUIEventListener;
 import io.github.mrriptide.peakcraft.recipes.RecipeItem;
@@ -37,7 +36,7 @@ public class PeakCraft extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
         getServer().getPluginManager().registerEvents(new GUIEventListener(), this);
-        getServer().getPluginManager().registerEvents(new CraftingListener(), this);
+        //getServer().getPluginManager().registerEvents(new CraftingListener(), this);
 
         // Register all commands
         this.getCommand("give").setExecutor(new CommandGive());
@@ -68,31 +67,31 @@ public class PeakCraft extends JavaPlugin {
             // Create the namespaced key
             NamespacedKey key = new NamespacedKey(this, recipe_name);
 
-            if (vanilla_recipe instanceof BlastingRecipe){
+            /*if (vanilla_recipe instanceof BlastingRecipe){
                 BlastingRecipe new_recipe = new BlastingRecipe(key,
                         (new RecipeItem(vanilla_recipe.getResult())).getItemStack(),
-                        new RecipeChoice.ExactChoice((new RecipeItem(((BlastingRecipe) vanilla_recipe).getInput())).getItemStack()),
+                        new RecipeItemChoice((new RecipeItem(((BlastingRecipe) vanilla_recipe).getInput()))),
                         ((BlastingRecipe) vanilla_recipe).getExperience(),
                         ((BlastingRecipe) vanilla_recipe).getCookingTime());
                 Bukkit.addRecipe(new_recipe);
             } else if (vanilla_recipe instanceof CampfireRecipe){
                 CampfireRecipe new_recipe = new CampfireRecipe(key,
                         (new RecipeItem(vanilla_recipe.getResult())).getItemStack(),
-                        new RecipeChoice.ExactChoice((new RecipeItem(((CampfireRecipe) vanilla_recipe).getInput())).getItemStack()),
+                        new RecipeItemChoice((new RecipeItem(((CampfireRecipe) vanilla_recipe).getInput()))),
                         ((CampfireRecipe) vanilla_recipe).getExperience(),
                         ((CampfireRecipe) vanilla_recipe).getCookingTime());
                 Bukkit.addRecipe(new_recipe);
             } else if (vanilla_recipe instanceof SmokingRecipe) {
                 SmokingRecipe new_recipe = new SmokingRecipe(key,
                         (new RecipeItem(vanilla_recipe.getResult())).getItemStack(),
-                        new RecipeChoice.ExactChoice((new RecipeItem(((SmokingRecipe) vanilla_recipe).getInput())).getItemStack()),
+                        new RecipeItemChoice((new RecipeItem(((SmokingRecipe) vanilla_recipe).getInput()))),
                         ((SmokingRecipe) vanilla_recipe).getExperience(),
                         ((SmokingRecipe) vanilla_recipe).getCookingTime());
                 Bukkit.addRecipe(new_recipe);
             } else if (vanilla_recipe instanceof FurnaceRecipe) {
                 FurnaceRecipe new_recipe = new FurnaceRecipe(key,
                         (new RecipeItem(vanilla_recipe.getResult())).getItemStack(),
-                        new RecipeChoice.ExactChoice((new RecipeItem(((FurnaceRecipe) vanilla_recipe).getInput())).getItemStack()),
+                        new RecipeItemChoice((new RecipeItem(((FurnaceRecipe) vanilla_recipe).getInput()))),
                         ((FurnaceRecipe) vanilla_recipe).getExperience(),
                         ((FurnaceRecipe) vanilla_recipe).getCookingTime());
                 Bukkit.addRecipe(new_recipe);
@@ -106,31 +105,12 @@ public class PeakCraft extends JavaPlugin {
                     new_recipe.addIngredient((new RecipeItem(ingredient)).getItemStack());
                 }
                 Bukkit.addRecipe(new_recipe);
-            } else if (vanilla_recipe instanceof ShapedRecipe) {
-                ShapedRecipe new_recipe = new ShapedRecipe(key,
-                        (new RecipeItem(vanilla_recipe.getResult())).getItemStack());
-                new_recipe.setGroup(((ShapedRecipe) vanilla_recipe).getGroup());
-                String[] shape = ((ShapedRecipe) vanilla_recipe).getShape();
-                new_recipe.shape(shape);
+            } else */if (vanilla_recipe instanceof ShapedRecipe) {
+                io.github.mrriptide.peakcraft.recipes.ShapedRecipe new_recipe = new io.github.mrriptide.peakcraft.recipes.ShapedRecipe((ShapedRecipe) vanilla_recipe);
 
-                for (Character ingredient_key : ((ShapedRecipe) vanilla_recipe).getIngredientMap().keySet()){
-                    if (((ShapedRecipe) vanilla_recipe).getIngredientMap().get(ingredient_key) == null){
-                        for (int i = 0; i < shape.length; i++){
-                            shape[i] = shape[i].replace(ingredient_key, ' ');
-                        }
-                    } else {
-                        new_recipe.setIngredient(ingredient_key,
-                                new RecipeChoice.ExactChoice((new RecipeItem(((ShapedRecipe) vanilla_recipe).getIngredientMap().get(ingredient_key))).getItemStack()));
-                    }
-                }
-
-                new_recipe.shape(shape);
-
-                // Register it in the spigot recipe system
-                Bukkit.addRecipe(new_recipe);
-                // Register it in the internal recipe system
-                RecipeManager.registerRecipe(((Keyed)vanilla_recipe).getKey().getKey(), new io.github.mrriptide.peakcraft.recipes.ShapedRecipe(new_recipe));
-            } else if (vanilla_recipe instanceof ShapelessRecipe) {
+                // Register it directly through nms using RecipeManager
+                RecipeManager.registerRecipe(((Keyed)vanilla_recipe).getKey().getKey(), new_recipe);
+            }/* else if (vanilla_recipe instanceof ShapelessRecipe) {
                 ShapelessRecipe new_recipe = new ShapelessRecipe(key,
                         (new RecipeItem(vanilla_recipe.getResult())).getItemStack());
                 new_recipe.setGroup(((ShapelessRecipe) vanilla_recipe).getGroup());
@@ -141,25 +121,25 @@ public class PeakCraft extends JavaPlugin {
                 }
 
                 for (RecipeItem ingredient : ingredients){
-                    new_recipe.addIngredient(new RecipeChoice.ExactChoice(ingredient.getItemStack()));
+                    new_recipe.addIngredient(new RecipeItemChoice(ingredient));
                 }
 
                 // Register it in the spigot recipe system
                 Bukkit.addRecipe(new_recipe);
                 // Register it in the internal recipe system
                 RecipeManager.registerRecipe(((Keyed)vanilla_recipe).getKey().getKey(), new io.github.mrriptide.peakcraft.recipes.ShapelessRecipe(ingredients, new RecipeItem(vanilla_recipe.getResult())));
-            } else if (vanilla_recipe instanceof SmithingRecipe) {
+            }/* else if (vanilla_recipe instanceof SmithingRecipe) {
                 SmithingRecipe new_recipe = new SmithingRecipe(key,
                         (new RecipeItem(vanilla_recipe.getResult())).getItemStack(),
-                        new RecipeChoice.ExactChoice((new RecipeItem(((SmithingRecipe) vanilla_recipe).getBase().getItemStack())).getItemStack()),
-                        new RecipeChoice.ExactChoice((new RecipeItem(((SmithingRecipe) vanilla_recipe).getAddition().getItemStack())).getItemStack()));
+                        new RecipeItemChoice((new RecipeItem(((SmithingRecipe) vanilla_recipe).getBase().getItemStack()))),
+                        new RecipeItemChoice((new RecipeItem(((SmithingRecipe) vanilla_recipe).getAddition().getItemStack()))));
                 Bukkit.addRecipe(new_recipe);
             } else if (vanilla_recipe instanceof StonecuttingRecipe){
                 StonecuttingRecipe new_recipe = new StonecuttingRecipe(key,
                         (new RecipeItem(vanilla_recipe.getResult())).getItemStack(),
-                        new RecipeChoice.ExactChoice((new RecipeItem(((StonecuttingRecipe) vanilla_recipe).getInput())).getItemStack()));
+                        new RecipeItemChoice((new RecipeItem(((StonecuttingRecipe) vanilla_recipe).getInput()))));
                 Bukkit.addRecipe(new_recipe);
-            }
+            }*/
         }
 
         // Register all recipes

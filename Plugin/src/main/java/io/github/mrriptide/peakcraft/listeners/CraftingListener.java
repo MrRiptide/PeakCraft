@@ -42,7 +42,7 @@ public class CraftingListener implements Listener {
 
         // TODO: add something to transfer upgrades/attributes from item, for now, just setting the output as a boat to test
 
-        craftingInventory.setResult(recipe.getResult().getItemStack());
+        //craftingInventory.setResult(recipe.getResult().getItemStack());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

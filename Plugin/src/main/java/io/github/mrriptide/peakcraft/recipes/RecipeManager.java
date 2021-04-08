@@ -2,6 +2,8 @@ package io.github.mrriptide.peakcraft.recipes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.mrriptide.peakcraft.PeakCraft;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.*;
@@ -67,17 +69,20 @@ public class RecipeManager {
         }
     }
 
-    public static void registerRecipe(String recipe_name){
-        recipe_name = recipe_name.toLowerCase();
-        if (recipeExists(recipe_name)){
-            Recipe recipe = loadRecipe(recipe_name.replace(".json", ""));
+    public static void registerRecipe(String recipeName){
+        recipeName = recipeName.toLowerCase();
+        if (recipeExists(recipeName)){
+            Recipe recipe = loadRecipe(recipeName.replace(".json", ""));
 
-            registerRecipe(recipe_name, recipe);
+            registerRecipe(recipeName, recipe);
         }
     }
 
-    public static void registerRecipe(String recipe_name, Recipe shapedRecipe) {
-        recipes.put(recipe_name, shapedRecipe);
+    public static void registerRecipe(String recipeName, Recipe recipe) {
+        recipes.put(recipeName, recipe);
+
+        // register it directly to the server
+        ((CraftServer) Bukkit.getServer()).getServer().getCraftingManager().addRecipe(recipe.toNMS(recipeName));
     }
 
     public static void registerRecipes(){

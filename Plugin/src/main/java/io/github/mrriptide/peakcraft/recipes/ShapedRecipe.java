@@ -1,8 +1,13 @@
 package io.github.mrriptide.peakcraft.recipes;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
+import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftNamespacedKey;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +26,7 @@ public class ShapedRecipe extends Recipe {
         this.setResult(new RecipeItem(recipeSource.getResult()));
         this.setGroup(recipeSource.getGroup());
         this.shape = recipeSource.getShape();
+        this.setKey(recipeSource.getKey());
 
         this.ingredientMap = new HashMap<>();
         if (shape != null){
@@ -109,6 +115,10 @@ public class ShapedRecipe extends Recipe {
         return ingredientMap;
     }
 
+    public void setShape(String[] shape){
+        this.shape = shape;
+    }
+
     /**
      *  Returns a boolean based on if the generic recipe matches the specific recipe passed in
      *
@@ -142,50 +152,18 @@ public class ShapedRecipe extends Recipe {
         } else {
             return false;
         }
-
-        /*// if they dont have the same number of rows
-        if (this.shape.length != shapedRecipe.shape.length){
-            return false;
-        }
-
-        // if they dont have the same number of columns
-        if (this.shape[0].length() != shapedRecipe.shape[0].length()){
-            return false;
-        }
-
-
-        PeakCraft.getPlugin().getLogger().info("THIS SHOULD NOT BE SEEN");
-        for (int row = 0; row < this.shape.length; row++){
-            for (int col = 0; col < this.shape[row].length(); col++){
-                char recipeChar = this.shape[row].charAt(col);
-                char craftChar = shapedRecipe.shape[row].charAt(col);
-                // if the character in both shapes are spaces then skip
-                if (' ' == recipeChar && ' ' == craftChar){
-                    continue;
-                }
-
-                // if the character in only one shape is a space then return false
-                if (' ' == recipeChar || ' ' == craftChar){
-                    return false;
-                }
-
-                RecipeItem recipeItem = this.ingredientMap.get(this.shape[row].charAt(col));
-                RecipeItem craftItem = shapedRecipe.ingredientMap.get(shapedRecipe.shape[row].charAt(col));
-                // if ids are different
-                if (!recipeItem.getId().equals(craftItem.getId())){
-                    // if there is no oredict
-                    if (recipeItem.getOreDict().equals("")){
-                        return false;
-                    } else if (!recipeItem.getOreDict().equals(craftItem.getOreDict())){
-                        // if there is an oredict but it doesnt match
-                        return false;
-                    }
-                }
-            }
-        }
-
-        // if it doesnt find any reason anywhere else to
-        return true;*/
     }
 
+    public IRecipe<?> toNMS(String recipeName){
+        if (getKey() == null){
+            setKey(recipeName);
+        }
+
+        //https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/inventory/CraftShapedRecipe.java#55
+        //https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryCrafting.java#7,11
+        //https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/main/java/org/bukkit/inventory/RecipeChoice.java#16,66,169
+        NonNullList<RecipeItemChoice> ingredients = NonNullList.a(shape.length * shape[0].length(), new RecipeItemChoice("air"));
+
+        return new ShapedNMSRecipe(this);
+    }
 }

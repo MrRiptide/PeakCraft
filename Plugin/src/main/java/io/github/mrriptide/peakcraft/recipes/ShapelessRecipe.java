@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.recipes;
 
+import net.minecraft.server.v1_16_R3.IRecipe;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -77,5 +78,10 @@ public class ShapelessRecipe extends Recipe{
             // there are invalid items in the matrix
             return false;
         }
+    }
+
+    @Override
+    public IRecipe<?> toNMS(String recipe_name) {
+        return null;
     }
 }
