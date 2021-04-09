@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import io.github.mrriptide.peakcraft.PeakCraft;
 import net.minecraft.server.v1_16_R3.*;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
@@ -43,11 +44,24 @@ public class RecipeItemChoice {
     }*/
 
     public boolean test(ItemStack itemStack) {
-        RecipeItem craftItem = new RecipeItem(itemStack);
+        RecipeItem compareItem = new RecipeItem(itemStack);
+        return test(compareItem);
+    }
+
+    public boolean test(RecipeItem compareItem){
         for (RecipeItem recipeItem : choices){
-            if (craftItem.getCount() >= recipeItem.getCount() && (craftItem.getId().equals(recipeItem.getId())
-                    || (!recipeItem.getOreDict().equals("") && recipeItem.getOreDict().equals(craftItem.getOreDict()))))
+            if (compareItem.getCount() >= recipeItem.getCount() && (compareItem.getId().equals(recipeItem.getId())
+                    || (!recipeItem.getOreDict().equals("") && recipeItem.getOreDict().equals(compareItem.getOreDict()))))
                 return true;
+        }
+        return false;
+    }
+
+    public boolean test(RecipeItemChoice compareChoice){
+        for (RecipeItem choice : choices){
+            if (compareChoice.test(choice)){
+                return true;
+            }
         }
         return false;
     }
@@ -68,6 +82,7 @@ public class RecipeItemChoice {
     // I might decide to rewrite this, I think this is to convert a json element to object?? idk ill try to figure it out
     public static RecipeItemChoice a(@Nullable JsonElement jsonelement) {
         if (jsonelement != null && !jsonelement.isJsonNull()) {
+            PeakCraft.getPlugin().getLogger().info(jsonelement.toString());
             if (jsonelement.isJsonObject()) {
                 //jsonelement.getAsJsonObject().get();
                 RecipeItemChoice recipeItemChoice = new RecipeItemChoice("air");

@@ -20,12 +20,12 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class ShapedNMSRecipe extends NMSRecipe {
-    private HashMap<Character, RecipeItem> ingredientMap;
+    private HashMap<Character, RecipeItemChoice> ingredientMap;
     private String[] shape;
     private int width;
     private int height;
 
-    public ShapedNMSRecipe(MinecraftKey minecraftkey, String group, int width, int height, NonNullList<RecipeItemStack> nonnulllist, ItemStack resultItemStack) {
+    public ShapedNMSRecipe(MinecraftKey minecraftkey, String group, int width, int height, NonNullList<RecipeItemChoice> nonnulllist, ItemStack resultItemStack) {
         this.setKey(minecraftkey);
         this.setGroup(group);
         // idk what to do with any of this data but i feel like i should do something???
@@ -41,7 +41,10 @@ public class ShapedNMSRecipe extends NMSRecipe {
         this.shape = sourceRecipe.getShape();
         this.setKey(CraftNamespacedKey.toMinecraft(sourceRecipe.getKey()));
 
-        this.ingredientMap = sourceRecipe.getIngredientMap();
+        this.ingredientMap = new HashMap<>();
+        for (Map.Entry<Character, RecipeItem> ingredient : sourceRecipe.getIngredientMap().entrySet()){
+            this.ingredientMap.put(ingredient.getKey(), new RecipeItemChoice(ingredient.getValue()));
+        }
     }
 
     /**
@@ -65,10 +68,9 @@ public class ShapedNMSRecipe extends NMSRecipe {
                 return true;
             } else {
                 for (Character key : this.ingredientMap.keySet()){
-                    RecipeItem recipeItem = this.ingredientMap.get(key);
-                    RecipeItem craftItem = shapedRecipe.ingredientMap.get(key);
-                    if (!(craftItem.getCount() >= recipeItem.getCount() && (craftItem.getId().equals(recipeItem.getId())
-                            || (!recipeItem.getOreDict().equals("") && recipeItem.getOreDict().equals(craftItem.getOreDict()))))){
+                    RecipeItemChoice recipeItem = this.ingredientMap.get(key);
+                    RecipeItemChoice craftItem = shapedRecipe.ingredientMap.get(key);
+                    if (recipeItem.test(craftItem)){
                         return false;
                     }
                 }
@@ -95,11 +97,19 @@ public class ShapedNMSRecipe extends NMSRecipe {
         return this.getResult().cloneItemStack();
     }
 
+    public static int iters = 0;
     @Override
     public RecipeSerializer<?> getRecipeSerializer() {
-        PeakCraft.getPlugin().getLogger().info("Called getRecipeSerializer");
+        PeakCraft.getPlugin().getLogger().info("Called getRecipeSerializer(" + ++iters + ")");
+        //fails on call number 988?
+        PeakCraft.getPlugin().getLogger().info(getKey().getKey());
+        if (iters > 987){
+            Thread.dumpStack();
+        }
+        //PacketPlayOutRecipeUpdate
+        //ShapedRecipes
         RecipeSerializer<ShapedNMSRecipe> serializer = RecipeSerializer.a((String)"crafting_shaped", (RecipeSerializer)(new ShapedNMSRecipe.a()));
-        return RecipeSerializer.a;
+        return serializer;
     }
 
     @Override
@@ -141,24 +151,26 @@ public class ShapedNMSRecipe extends NMSRecipe {
         }
 
         public ShapedNMSRecipe a(MinecraftKey minecraftkey, JsonObject jsonobject) {
-            String s = ChatDeserializer.a(jsonobject, "group", "");
+            throw new NotImplementedException();
+            /*String s = ChatDeserializer.a(jsonobject, "group", "");
             Map<String, RecipeItemChoice> map = ShapedNMSRecipe.c(ChatDeserializer.t(jsonobject, "key"));
             String[] astring = ShapedNMSRecipe.a(ShapedNMSRecipe.b(ChatDeserializer.u(jsonobject, "pattern")));
             int i = astring[0].length();
             int j = astring.length;
             NonNullList<RecipeItemStack> nonnulllist = ShapedNMSRecipe.b(astring, map, i, j);
             ItemStack itemstack = ShapedNMSRecipe.a(ChatDeserializer.t(jsonobject, "result"));
-            return new ShapedNMSRecipe(minecraftkey, s, i, j, nonnulllist, itemstack);
+            return new ShapedNMSRecipe(minecraftkey, s, i, j, nonnulllist, itemstack);*/
         }
 
         public ShapedNMSRecipe a(MinecraftKey minecraftkey, PacketDataSerializer packetdataserializer) {
+            PeakCraft.getPlugin().getLogger().info("        public ShapedNMSRecipe a(MinecraftKey minecraftkey, PacketDataSerializer packetdataserializer)");
             int i = packetdataserializer.i();
             int j = packetdataserializer.i();
             String s = packetdataserializer.e(32767);
-            NonNullList<RecipeItemStack> nonnulllist = NonNullList.a(i * j, RecipeItemStack.a);
+            NonNullList<RecipeItemChoice> nonnulllist = NonNullList.a(i * j, new RecipeItemChoice("air"));
 
             for(int k = 0; k < nonnulllist.size(); ++k) {
-                nonnulllist.set(k, RecipeItemStack.b(packetdataserializer));
+                //nonnulllist.set(k, RecipeItemChoice.b(packetdataserializer));
             }
 
             ItemStack itemstack = packetdataserializer.n();
@@ -167,6 +179,7 @@ public class ShapedNMSRecipe extends NMSRecipe {
 
         @Override
         public void a(PacketDataSerializer packetDataSerializer, ShapedNMSRecipe shapedNMSRecipe) {
+            PeakCraft.getPlugin().getLogger().info("public void a(PacketDataSerializer packetDataSerializer, ShapedNMSRecipe shapedNMSRecipe)");
             packetDataSerializer.d(shapedNMSRecipe.shape[0].length());
             packetDataSerializer.d(shapedNMSRecipe.shape.length);
             packetDataSerializer.a(shapedNMSRecipe.getGroup());

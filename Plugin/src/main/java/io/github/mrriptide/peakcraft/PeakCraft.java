@@ -52,6 +52,7 @@ public class PeakCraft extends JavaPlugin {
         // Clear all vanilla recipes
         Bukkit.clearRecipes();
 
+        int recipesRegistered = 0;
         // Re-Register Vanilla Recipes
         while (recipeIterator.hasNext()) {
             org.bukkit.inventory.Recipe vanilla_recipe = (org.bukkit.inventory.Recipe) recipeIterator.next();
@@ -105,7 +106,7 @@ public class PeakCraft extends JavaPlugin {
                     new_recipe.addIngredient((new RecipeItem(ingredient)).getItemStack());
                 }
                 Bukkit.addRecipe(new_recipe);
-            } else */if (vanilla_recipe instanceof ShapedRecipe) {
+            } else */if (vanilla_recipe instanceof ShapedRecipe && ++recipesRegistered < 100) {
                 io.github.mrriptide.peakcraft.recipes.ShapedRecipe new_recipe = new io.github.mrriptide.peakcraft.recipes.ShapedRecipe((ShapedRecipe) vanilla_recipe);
 
                 // Register it directly through nms using RecipeManager
