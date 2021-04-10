@@ -40,5 +40,5 @@ public abstract class NMSRecipe implements IRecipe<InventoryCrafting>{
         this.key = key;
     }
 
-    public abstract boolean test(NMSRecipe recipe);
+    //public abstract boolean test(NMSRecipe recipe);
 }
