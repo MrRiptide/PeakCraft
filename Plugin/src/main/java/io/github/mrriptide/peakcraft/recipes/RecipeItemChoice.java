@@ -11,6 +11,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+
+import java.io.InvalidObjectException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,31 +23,48 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntComparators;
 import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntList;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 
 public final class RecipeItemChoice implements Predicate<ItemStack> {
     public static final RecipeItemChoice a = new RecipeItemChoice(Stream.empty());
     private final RecipeItemChoice.Provider[] b;
+    private final RecipeItem recipeItem;
     public ItemStack[] choices;
     private IntList d;
     public boolean exact;
 
     public RecipeItemChoice(Stream<? extends RecipeItemChoice.Provider> stream) {
+        PeakCraft.getPlugin().getLogger().info("AAAA");
         this.b = (RecipeItemChoice.Provider[])stream.toArray((i) -> {
             return new RecipeItemChoice.Provider[i];
         });
+        this.recipeItem = null;
+    }
+
+    public RecipeItemChoice(RecipeItem recipeItem){
+        this.b = null;
+        this.recipeItem = recipeItem;
     }
 
     public void buildChoices() {
         if (this.choices == null) {
-            this.choices = (ItemStack[])Arrays.stream(this.b).flatMap((RecipeItemChoice_provider) -> {
-                return RecipeItemChoice_provider.a().stream();
-            }).distinct().toArray((i) -> {
-                return new ItemStack[i];
-            });
+            if (this.b != null){
+                this.choices = (ItemStack[])Arrays.stream(this.b).flatMap((RecipeItemChoice_provider) -> {
+                    return RecipeItemChoice_provider.a().stream();
+                }).distinct().toArray((i) -> {
+                    return new ItemStack[i];
+                });
+            } else if (this.recipeItem != null){
+                this.choices = new ItemStack[]{CraftItemStack.asNMSCopy(this.recipeItem.getItemStack())};
+            } else {
+                PeakCraft.getPlugin().getLogger().info("SOMETHING HORRIBLE");
+                this.choices = new ItemStack[]{CraftItemStack.asNMSCopy((new RecipeItem("air").getItemStack()))};
+            }
         }
 
     }
@@ -75,6 +94,14 @@ public final class RecipeItemChoice implements Predicate<ItemStack> {
                 return false;
             }
         }
+    }
+
+    public RecipeItemStack toRecipeItemStack(){
+        RecipeItemStack stack = RecipeItemStack.a;
+
+        stack.choices = choices;
+
+        return stack;
     }
 
     public IntList b() {

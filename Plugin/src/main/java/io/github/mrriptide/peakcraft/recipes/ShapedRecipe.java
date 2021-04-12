@@ -162,8 +162,14 @@ public class ShapedRecipe extends Recipe {
         //https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/inventory/CraftShapedRecipe.java#55
         //https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryCrafting.java#7,11
         //https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/main/java/org/bukkit/inventory/RecipeChoice.java#16,66,169
-        NonNullList<RecipeItemChoice> ingredients = NonNullList.a(shape.length * shape[0].length(), RecipeItemChoice.a);
+        int width = shape[0].length();
+        int height = shape.length;
+        NonNullList<RecipeItemChoice> ingredients = NonNullList.a(height * width, RecipeItemChoice.a);
 
-        return new ShapedNMSRecipe(CraftNamespacedKey.toMinecraft(getKey()), getGroup(), getShape()[0].length(), getShape().length, ingredients, CraftItemStack.asNMSCopy(getResult().getItemStack()));
+        for (int i = 0; i < shape.length * shape[0].length(); i++){
+            ingredients.set(i, new RecipeItemChoice(ingredientMap.get(shape[i / width].charAt(i % width))));
+        }
+
+        return new ShapedNMSRecipe(CraftNamespacedKey.toMinecraft(getKey()), getGroup(), getShape()[0].length(), getShape().length, ingredients, CraftItemStack.asNMSCopy(getResult()));
     }
 }

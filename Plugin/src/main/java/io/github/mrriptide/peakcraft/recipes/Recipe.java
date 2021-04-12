@@ -7,15 +7,18 @@ import net.minecraft.server.v1_16_R3.MinecraftKey;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftNamespacedKey;
+import org.bukkit.inventory.ItemStack;
 
-public abstract class Recipe{
+public abstract class Recipe implements org.bukkit.inventory.Recipe{
     private RecipeItem result;
     private String group;
     private NamespacedKey key;
 
     public void setResult(RecipeItem result) {this.result = result;}
 
-    public RecipeItem getResult(){return result;}
+    public ItemStack getResult(){return result.getItemStack();}
+
+    public RecipeItem getResultRecipeItem(){return result;}
 
     public void setGroup(String group){
         this.group = group;

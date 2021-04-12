@@ -60,7 +60,7 @@ public class EditRecipeGUI implements InventoryGui{
                 }
             }
 
-            gui.setItem(23, recipe.getResult().getItemStack());
+            gui.setItem(23, recipe.getResult());
         } else {
             ItemStack air = new ItemStack(Material.AIR);
 

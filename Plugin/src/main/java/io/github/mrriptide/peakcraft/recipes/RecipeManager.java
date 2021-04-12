@@ -180,7 +180,7 @@ public class RecipeManager {
         if (match == null){
             return null;
         } else {
-            return match.getResult();
+            return match.getResultRecipeItem();
         }
     }
 }

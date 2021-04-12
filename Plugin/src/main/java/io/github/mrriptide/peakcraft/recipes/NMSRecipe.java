@@ -1,15 +1,12 @@
 package io.github.mrriptide.peakcraft.recipes;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
-import net.minecraft.server.v1_16_R3.IRecipe;
-import net.minecraft.server.v1_16_R3.InventoryCrafting;
-import net.minecraft.server.v1_16_R3.ItemStack;
-import net.minecraft.server.v1_16_R3.MinecraftKey;
+import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftNamespacedKey;
 
-public abstract class NMSRecipe implements IRecipe<InventoryCrafting>{
+public abstract class NMSRecipe implements RecipeCrafting {
     private RecipeItem result;
     private String group;
     private MinecraftKey key;
