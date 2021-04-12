@@ -111,10 +111,6 @@ public class ShapedRecipe extends Recipe {
 
     public String[] getShape(){return shape;}
 
-    public HashMap<Character, RecipeItem> getIngredientMap(){
-        return ingredientMap;
-    }
-
     public void setShape(String[] shape){
         this.shape = shape;
     }

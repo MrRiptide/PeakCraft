@@ -1,5 +1,8 @@
 package io.github.mrriptide.peakcraft.recipes;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import net.minecraft.server.v1_16_R3.IRecipe;
 import net.minecraft.server.v1_16_R3.InventoryCrafting;
@@ -16,8 +19,10 @@ public abstract class Recipe implements org.bukkit.inventory.Recipe{
 
     public void setResult(RecipeItem result) {this.result = result;}
 
+    @JsonIgnore
     public ItemStack getResult(){return result.getItemStack();}
 
+    @JsonGetter("result")
     public RecipeItem getResultRecipeItem(){return result;}
 
     public void setGroup(String group){
