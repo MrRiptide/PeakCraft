@@ -1,11 +1,13 @@
 package io.github.mrriptide.peakcraft.guis;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.recipes.ShapedRecipe;
 import io.github.mrriptide.peakcraft.recipes.RecipeItem;
 import io.github.mrriptide.peakcraft.recipes.RecipeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;

@@ -20,7 +20,9 @@ public abstract class Recipe implements org.bukkit.inventory.Recipe{
     public void setResult(RecipeItem result) {this.result = result;}
 
     @JsonIgnore
-    public ItemStack getResult(){return result.getItemStack();}
+    public ItemStack getResult(){
+        return (result != null) ? result.getItemStack() : (new RecipeItem("air")).getItemStack();
+    }
 
     @JsonGetter("result")
     public RecipeItem getResultRecipeItem(){return result;}
@@ -33,6 +35,7 @@ public abstract class Recipe implements org.bukkit.inventory.Recipe{
         return group;
     }
 
+    @JsonIgnore
     public NamespacedKey getKey(){
         return this.key;
     }

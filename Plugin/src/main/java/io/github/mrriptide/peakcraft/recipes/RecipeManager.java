@@ -2,10 +2,14 @@ package io.github.mrriptide.peakcraft.recipes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.mrriptide.peakcraft.PeakCraft;
+import net.minecraft.server.v1_16_R3.MinecraftKey;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftNamespacedKey;
 import org.bukkit.inventory.ItemStack;
 
+import javax.xml.stream.events.Namespace;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,6 +85,8 @@ public class RecipeManager {
     public static void registerRecipe(String recipeName, Recipe recipe) {
         recipes.put(recipeName, recipe);
 
+        // remove the recipe if it already exists
+        Bukkit.removeRecipe(new NamespacedKey(PeakCraft.instance, recipeName));
         // register it directly to the server
         ((CraftServer) Bukkit.getServer()).getServer().getCraftingManager().addRecipe(recipe.toNMS(recipeName));
     }
