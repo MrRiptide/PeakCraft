@@ -9,6 +9,7 @@ io\github\mrriptide\peakcraft\recipes\RecipeManager.class
 io\github\mrriptide\peakcraft\listeners\GUIEventListener.class
 io\github\mrriptide\peakcraft\recipes\ShapelessRecipe.class
 io\github\mrriptide\peakcraft\PeakCraft.class
+io\github\mrriptide\peakcraft\Enchantment.class
 io\github\mrriptide\peakcraft\ItemManager.class
 io\github\mrriptide\peakcraft\recipes\ShapedRecipe.class
 io\github\mrriptide\peakcraft\recipes\NMSRecipe.class

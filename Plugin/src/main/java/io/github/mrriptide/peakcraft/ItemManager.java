@@ -67,13 +67,22 @@ public class ItemManager {
         ArrayList<Record> allRecords = (ArrayList<Record>) parser.parseAllRecords(file);
 
         for (Record record : allRecords){
+            int i = 8;
+            HashMap<String, Integer> attributes = new HashMap<>();
+            while (!record.getString(i).isEmpty()){
+                attributes.put(record.getString(i), record.getInt(i+1));
+                i+=2;
+            }
             Item item = new Item(
                     record.getString("ID"), // the id
                     record.getString("Ore Dictionary"), // The display name
                     record.getString("Display Name"), // The display name
                     record.getValue("Rarity", 0), // the rarity (as an int)
                     record.getString("Description"), // the description
-                    Material.getMaterial(record.getString("Material")));// the material
+                    Material.getMaterial(record.getString("Material")),// the material
+                    record.getString("Item Type"),// the type to be displayed
+                    attributes
+            );
             items.put(item.getID(), item);
         }
 

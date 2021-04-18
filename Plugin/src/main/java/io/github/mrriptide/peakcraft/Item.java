@@ -10,6 +10,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class Item {
@@ -19,6 +20,9 @@ public class Item {
     private int rarity;
     private String description;
     private Material material;
+    private String type;
+    private HashMap<String, Integer> attributes;
+    private ArrayList<Enchantment> enchantments;
 
     public Item(String id){
         Item item = ItemManager.getItem(id);
@@ -28,15 +32,32 @@ public class Item {
         this.rarity = item.rarity;
         this.description = item.description;
         this.material = item.material;
+        this.attributes = item.attributes;
+        this.enchantments = new ArrayList<>();
     }
 
-    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material){
+    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Integer> attributes){
         this.id = id;
         this.oreDict = oreDict;
         this.displayName = displayName;
         this.rarity = rarity;
         this.description = description;
         this.material = material;
+        this.type = type;
+        this.attributes = attributes;
+        this.enchantments = enchantments;
+    }
+
+    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Integer> attributes, ArrayList<Enchantment> enchantments){
+        this.id = id;
+        this.oreDict = oreDict;
+        this.displayName = displayName;
+        this.rarity = rarity;
+        this.description = description;
+        this.material = material;
+        this.type = type;
+        this.attributes = attributes;
+        this.enchantments = enchantments;
     }
 
     public Item(ItemStack itemSource){
@@ -137,6 +158,7 @@ public class Item {
     public ArrayList<String> getLore(){
         ArrayList<String> lore = new ArrayList<>();
 
+        // Description of item
         if (description != null && description.length() > 0){
             String[] wrapped_description = WordUtils.wrap(description, 30, "\n", true).split("\n");
             for (String line : wrapped_description){
@@ -145,9 +167,38 @@ public class Item {
             lore.add("");
         }
 
+        // Attributes of item
+
+        if (attributes.size() > 0){
+            for (String attribute : attributes.keySet()){
+                lore.add(attribute + ": " + getAttribute(attribute));
+            }
+
+            lore.add("");
+        }
+
+        // Enchantments of item
+
+        if (enchantments.size() > 0){
+            for (Enchantment enchantment : enchantments){
+                lore.add(enchantment.getDisplayName());
+            }
+
+            lore.add("");
+        }
+
+        // Rarity of item
         lore.add(getRarityColor() + getRarityName().toUpperCase() + " ITEM"); // @TODO: Should be changed from Item to a value to support different types of items
 
         return lore;
+    }
+
+    public int getAttribute(String attributeName){
+        return attributes.getOrDefault(attributeName, 0);
+    }
+
+    public void setAttribute(String attributeName, int value){
+        attributes.put(attributeName, value);
     }
 
     private ChatColor getRarityColor(){
