@@ -1,18 +1,13 @@
 package io.github.mrriptide.peakcraft.commands;
 
-import io.github.mrriptide.peakcraft.Item;
-import io.github.mrriptide.peakcraft.ItemManager;
-import io.github.mrriptide.peakcraft.PeakCraft;
-import org.apache.commons.lang.ObjectUtils;
+import io.github.mrriptide.peakcraft.items.Item;
+import io.github.mrriptide.peakcraft.items.ItemManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.logging.Level;
 
 public class CommandGive implements CommandExecutor {
     @Override

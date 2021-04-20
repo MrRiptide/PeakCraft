@@ -1,8 +1,7 @@
 package io.github.mrriptide.peakcraft.listeners;
 
-import io.github.mrriptide.peakcraft.ItemManager;
+import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.PeakCraft;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

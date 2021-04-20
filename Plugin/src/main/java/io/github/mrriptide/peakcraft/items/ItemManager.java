@@ -1,11 +1,11 @@
-package io.github.mrriptide.peakcraft;
+package io.github.mrriptide.peakcraft.items;
 
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
 import com.univocity.parsers.tsv.TsvWriter;
 import com.univocity.parsers.tsv.TsvWriterSettings;
-import org.apache.commons.lang.StringUtils;
+import io.github.mrriptide.peakcraft.PeakCraft;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -14,9 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import javax.naming.Name;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.logging.Level;
 

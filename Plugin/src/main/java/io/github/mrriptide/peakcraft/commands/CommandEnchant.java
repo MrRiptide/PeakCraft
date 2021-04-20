@@ -1,7 +1,7 @@
 package io.github.mrriptide.peakcraft.commands;
 
-import io.github.mrriptide.peakcraft.Enchantment;
-import io.github.mrriptide.peakcraft.Item;
+import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
+import io.github.mrriptide.peakcraft.items.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,12 +26,12 @@ public class CommandEnchant implements CommandExecutor {
             sender.sendMessage("Removed enchantment");
 
             Item newItem = new Item(enchantPlayer.getInventory().getItemInMainHand());
-            newItem.removeEnchantment(new Enchantment(enchantName, enchantLevel));
+            newItem.removeEnchantment(enchantName);
             enchantPlayer.getInventory().setItemInMainHand(newItem.getItemStack());
             return true;
         } else {
             Item newItem = new Item(enchantPlayer.getInventory().getItemInMainHand());
-            newItem.addEnchantment(new Enchantment(enchantName, enchantLevel));
+            newItem.addEnchantment(enchantName, enchantLevel);
             enchantPlayer.getInventory().setItemInMainHand(newItem.getItemStack());
             return true;
         }

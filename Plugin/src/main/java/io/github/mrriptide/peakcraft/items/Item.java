@@ -1,5 +1,9 @@
-package io.github.mrriptide.peakcraft;
+package io.github.mrriptide.peakcraft.items;
 
+import com.google.common.collect.Sets;
+import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
+import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -10,32 +14,32 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 public class Item {
-    private String id;
-    private String oreDict;
-    private String displayName;
-    private int rarity;
-    private String description;
-    private Material material;
-    private String type;
-    private HashMap<String, Integer> attributes;
-    private ArrayList<Enchantment> enchantments;
+    private final String id;
+    private final String oreDict;
+    private final String displayName;
+    private final int rarity;
+    private final String description;
+    private final Material material;
+    private final String type;
+    private final HashMap<String, Integer> attributes;
+    private HashMap<String, Integer> bakedAttributes;
+    private HashMap<String, Integer> enchantments;
 
     public Item(String id){
         Item item = ItemManager.getItem(id);
 
         this.id = item.id;
+        this.oreDict = item.oreDict;
         this.displayName = item.displayName;
         this.rarity = item.rarity;
         this.description = item.description;
         this.material = item.material;
         this.type = item.type;
         this.attributes = item.attributes;
-        this.enchantments = new ArrayList<>();
+        this.enchantments = new HashMap<>();
     }
 
     public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Integer> attributes){
@@ -47,10 +51,10 @@ public class Item {
         this.material = material;
         this.type = (type != null && !type.isEmpty()) ? type : "item";
         this.attributes = attributes;
-        this.enchantments = new ArrayList<>();
+        this.enchantments = new HashMap<>();
     }
 
-    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Integer> attributes, ArrayList<Enchantment> enchantments){
+    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Integer> attributes, HashMap<String, Integer> enchantments){
         this.id = id;
         this.oreDict = oreDict;
         this.displayName = displayName;
@@ -64,6 +68,7 @@ public class Item {
 
     public Item(ItemStack itemSource){
         // Get ID of the item from the ItemStack
+        PeakCraft.getPlugin().getLogger().info("Getting item from ItemStack");
 
         // Default option
         this.id = getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
@@ -78,21 +83,39 @@ public class Item {
         this.type = default_item.type;
         this.material = default_item.material;
         this.attributes = default_item.attributes;
-        this.enchantments = default_item.enchantments;
+        this.enchantments = new HashMap<>();
+        // register enchants
+        for (NamespacedKey key : Objects.requireNonNull(itemSource.getItemMeta()).getPersistentDataContainer().getKeys()){
+            if (key.getKey().startsWith("enchant_")){
+                addEnchantment(key.getKey().substring(8, key.getKey().length() - 6), getValueOrDefault(itemSource, PersistentDataType.INTEGER, key.getKey(), 0));
+            }
+        }
     }
 
     private <T> T getValueOrDefault(ItemStack itemStack, PersistentDataType type, String key, T defaultValue){
-        NamespacedKey itemIDKey = new NamespacedKey(PeakCraft.getPlugin(), key);
+        NamespacedKey namespacedKey = new NamespacedKey(PeakCraft.getPlugin(), key);
         ItemMeta meta = itemStack.getItemMeta();
         T returnObject = null;
         if (meta != null){
             PersistentDataContainer container = meta.getPersistentDataContainer();
-            if (container.has(itemIDKey, type)){
-                returnObject = (T) container.get(itemIDKey, type);
+            if (container.has(namespacedKey, type)){
+                returnObject = (T) container.get(namespacedKey, type);
             }
         }
 
         return (returnObject != null) ? returnObject : defaultValue;
+    }
+
+    private <T> void setValue(ItemMeta meta, PersistentDataType<T, T> type, String key, T value){
+        NamespacedKey namespacedKey = new NamespacedKey(PeakCraft.getPlugin(), key);
+        if (meta != null){
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            container.set(namespacedKey, type, value);
+        }
+    }
+
+    private <T> void setValue(ItemStack itemStack, PersistentDataType<T, T> type, String key, T value){
+        setValue(itemStack.getItemMeta(), type, key, value);
     }
 
     @Override
@@ -131,6 +154,15 @@ public class Item {
 
         // Hide things
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
+
+        // the item id
+        setValue(meta, PersistentDataType.STRING, "ITEM_ID", id);
+        // the enchantments
+        for (Map.Entry<String, Integer> enchantment : enchantments.entrySet()){
+            setValue(meta, PersistentDataType.INTEGER, "ENCHANT_" + enchantment.getKey().toUpperCase() + "_LEVEL", enchantment.getValue());
+        }
+
+        // put metadata on item
 
         item.setItemMeta(meta);
 
@@ -185,12 +217,14 @@ public class Item {
             lore.add("");
         }
 
+        bakeAttributes();
+
         // Attributes of item
 
-        if (attributes.size() > 0){
-            for (String attribute : attributes.keySet()){
+        if (bakedAttributes.size() > 0){
+            for (String attribute : bakedAttributes.keySet()){
                 PeakCraft.getPlugin().getLogger().info(attribute);
-                lore.add(attribute + ": " + getAttribute(attribute));
+                lore.add(ChatColor.DARK_PURPLE + attribute + ": " + getBakedAttribute(attribute));
             }
 
             lore.add("");
@@ -199,8 +233,8 @@ public class Item {
         // Enchantments of item
 
         if (enchantments.size() > 0){
-            for (Enchantment enchantment : enchantments){
-                lore.add(enchantment.getDisplayName());
+            for (Map.Entry<String, Integer> enchantment : enchantments.entrySet()){
+                lore.add(WordUtils.capitalizeFully(enchantment.getKey()) + enchantment.getValue());
             }
 
             lore.add("");
@@ -220,16 +254,29 @@ public class Item {
         attributes.put(attributeName, value);
     }
 
-    public ArrayList<Enchantment> getEnchants(){
+    public void bakeAttributes(){
+        bakedAttributes = attributes;
+        EnchantmentManager.bakeItem(this);
+    }
+
+    public int getBakedAttribute(String attributeName){
+        return bakedAttributes.getOrDefault(attributeName, 0);
+    }
+
+    public void setBakedAttribute(String attributeName, int value){
+        bakedAttributes.put(attributeName,value);
+    }
+
+    public HashMap<String, Integer> getEnchants(){
         return enchantments;
     }
 
-    public void addEnchantment(Enchantment enchantment){
-        this.enchantments.add(enchantment);
+    public void addEnchantment(String enchantment, int level){
+        this.enchantments.put(enchantment.toLowerCase(), level);
     }
 
-    public boolean removeEnchantment(Enchantment enchantment){
-        return this.enchantments.remove(enchantment);
+    public boolean removeEnchantment(String enchantment){
+        return (this.enchantments.remove(enchantment.toLowerCase()) != null);
     }
 
     private ChatColor getRarityColor(){

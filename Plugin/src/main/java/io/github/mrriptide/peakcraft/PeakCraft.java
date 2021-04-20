@@ -1,9 +1,11 @@
 package io.github.mrriptide.peakcraft;
 
 import io.github.mrriptide.peakcraft.commands.*;
+import io.github.mrriptide.peakcraft.items.ItemManager;
+import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
+import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentSharpness;
 import io.github.mrriptide.peakcraft.listeners.EntityEventListener;
 import io.github.mrriptide.peakcraft.listeners.GUIEventListener;
-import io.github.mrriptide.peakcraft.recipes.RecipeItem;
 import io.github.mrriptide.peakcraft.recipes.RecipeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
@@ -11,7 +13,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 public class PeakCraft extends JavaPlugin {
@@ -144,6 +145,11 @@ public class PeakCraft extends JavaPlugin {
 
         getLogger().info("Registering recipes:");
         RecipeManager.registerRecipes();
+
+        // Register enchants
+
+        getLogger().info("Registering enchants:");
+        EnchantmentManager.registerEnchantment(new EnchantmentSharpness());
     }
     @Override
     public void onDisable() {

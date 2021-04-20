@@ -1,7 +1,7 @@
 package io.github.mrriptide.peakcraft.recipes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.mrriptide.peakcraft.Item;
+import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;

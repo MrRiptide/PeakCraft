@@ -1,6 +1,6 @@
 package io.github.mrriptide.peakcraft.commands;
 
-import io.github.mrriptide.peakcraft.ItemManager;
+import io.github.mrriptide.peakcraft.items.ItemManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
