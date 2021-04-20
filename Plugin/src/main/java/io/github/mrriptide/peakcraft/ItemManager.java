@@ -67,9 +67,9 @@ public class ItemManager {
         ArrayList<Record> allRecords = (ArrayList<Record>) parser.parseAllRecords(file);
 
         for (Record record : allRecords){
-            int i = 8;
+            int i = 7;
             HashMap<String, Integer> attributes = new HashMap<>();
-            while (!record.getString(i).isEmpty()){
+            while (record.getString(i) != null){
                 attributes.put(record.getString(i), record.getInt(i+1));
                 i+=2;
             }

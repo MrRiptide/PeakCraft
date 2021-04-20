@@ -4,6 +4,7 @@ io\github\mrriptide\peakcraft\recipes\RecipeItem.class
 io\github\mrriptide\peakcraft\recipes\RecipeItemChoice$StackProvider.class
 io\github\mrriptide\peakcraft\commands\CommandReloadItems.class
 io\github\mrriptide\peakcraft\recipes\ShapedNMSRecipe.class
+io\github\mrriptide\peakcraft\commands\CommandEnchant.class
 io\github\mrriptide\peakcraft\commands\CommandRecipe_Add.class
 io\github\mrriptide\peakcraft\recipes\RecipeManager.class
 io\github\mrriptide\peakcraft\listeners\GUIEventListener.class

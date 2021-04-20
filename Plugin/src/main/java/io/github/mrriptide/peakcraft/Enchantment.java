@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft;
 
 import net.md_5.bungee.api.ChatColor;
+import org.apache.commons.lang.WordUtils;
 
 import java.util.HashMap;
 
@@ -15,6 +16,12 @@ public class Enchantment {
         attributeModifiers = new HashMap<>();
     }
 
+    public Enchantment(String name, int level){
+        this.name = name;
+        this.level = level;
+        this.attributeModifiers = new HashMap<>();
+    }
+
     public void setName(String name){
         this.name = name;
     }
@@ -24,7 +31,7 @@ public class Enchantment {
     }
 
     public String getDisplayName(){
-        return getName() + getLevel();
+        return WordUtils.capitalizeFully(getName()) + getLevel();
     }
 
     public void setLevel(int level){

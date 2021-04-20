@@ -12,3 +12,6 @@ commands:
   recipe:
     description: Manages recipes
     permission: peakcraft.recipe
+  enchant:
+    description: Enchants an item
+    permission: peakcraft.enchant

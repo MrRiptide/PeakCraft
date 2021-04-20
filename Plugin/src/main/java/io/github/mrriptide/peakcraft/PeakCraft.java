@@ -1,9 +1,6 @@
 package io.github.mrriptide.peakcraft;
 
-import io.github.mrriptide.peakcraft.commands.CommandRecipe;
-import io.github.mrriptide.peakcraft.commands.CommandGive;
-import io.github.mrriptide.peakcraft.commands.CommandRecipe_Add;
-import io.github.mrriptide.peakcraft.commands.CommandReloadItems;
+import io.github.mrriptide.peakcraft.commands.*;
 import io.github.mrriptide.peakcraft.listeners.EntityEventListener;
 import io.github.mrriptide.peakcraft.listeners.GUIEventListener;
 import io.github.mrriptide.peakcraft.recipes.RecipeItem;
@@ -41,6 +38,7 @@ public class PeakCraft extends JavaPlugin {
         // Register all commands
         this.getCommand("give").setExecutor(new CommandGive());
         this.getCommand("reloaditems").setExecutor(new CommandReloadItems());
+        this.getCommand("enchant").setExecutor(new CommandEnchant());
         // Register recipe commands
         CommandRecipe commandRecipe = new CommandRecipe();
         this.getCommand("recipe").setExecutor(commandRecipe);

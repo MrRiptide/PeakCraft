@@ -62,7 +62,6 @@ public final class RecipeItemChoice implements Predicate<ItemStack> {
             } else if (this.recipeItem != null){
                 this.choices = new ItemStack[]{CraftItemStack.asNMSCopy(this.recipeItem.getItemStack())};
             } else {
-                PeakCraft.getPlugin().getLogger().info("SOMETHING HORRIBLE");
                 this.choices = new ItemStack[]{CraftItemStack.asNMSCopy((new RecipeItem("air").getItemStack()))};
             }
         }

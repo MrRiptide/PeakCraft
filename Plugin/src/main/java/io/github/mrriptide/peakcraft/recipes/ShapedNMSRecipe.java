@@ -69,8 +69,6 @@ public class ShapedNMSRecipe extends NMSRecipe {
 
     // so i need to convert
     public RecipeSerializer<?> getRecipeSerializer() {
-        //PeakCraft.getPlugin().getLogger().info("5");
-        Thread.dumpStack();
 
         RecipeSerializer<ShapedNMSRecipe> serializer = RecipeSerializer.a((String)"crafting_shaped", (RecipeSerializer)(new a()));
 

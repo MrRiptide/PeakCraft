@@ -4,6 +4,7 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -32,6 +33,7 @@ public class Item {
         this.rarity = item.rarity;
         this.description = item.description;
         this.material = item.material;
+        this.type = item.type;
         this.attributes = item.attributes;
         this.enchantments = new ArrayList<>();
     }
@@ -43,9 +45,9 @@ public class Item {
         this.rarity = rarity;
         this.description = description;
         this.material = material;
-        this.type = type;
+        this.type = (type != null && !type.isEmpty()) ? type : "item";
         this.attributes = attributes;
-        this.enchantments = enchantments;
+        this.enchantments = new ArrayList<>();
     }
 
     public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Integer> attributes, ArrayList<Enchantment> enchantments){
@@ -55,7 +57,7 @@ public class Item {
         this.rarity = rarity;
         this.description = description;
         this.material = material;
-        this.type = type;
+        this.type = (type != null && !type.isEmpty()) ? type : "item";
         this.attributes = attributes;
         this.enchantments = enchantments;
     }
@@ -64,25 +66,33 @@ public class Item {
         // Get ID of the item from the ItemStack
 
         // Default option
-        this.id = itemSource.getType().name();
+        this.id = getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
 
-        // If a PeakCraft-specific id is defined, use that instead
-        NamespacedKey itemIDKey = new NamespacedKey(PeakCraft.getPlugin(), "ITEM_ID");
-        ItemMeta meta = itemSource.getItemMeta();
-        if (meta != null){
-            PersistentDataContainer container = meta.getPersistentDataContainer();
-            if (container.has(itemIDKey, PersistentDataType.STRING)){
-                this.id = container.get(itemIDKey, PersistentDataType.STRING);
-            }
-        }
-
+        assert this.id != null;
         Item default_item = ItemManager.getItem(this.id);
 
         this.oreDict = default_item.oreDict;
         this.rarity = default_item.rarity;
         this.displayName = default_item.displayName;
         this.description = default_item.description;
+        this.type = default_item.type;
         this.material = default_item.material;
+        this.attributes = default_item.attributes;
+        this.enchantments = default_item.enchantments;
+    }
+
+    private <T> T getValueOrDefault(ItemStack itemStack, PersistentDataType type, String key, T defaultValue){
+        NamespacedKey itemIDKey = new NamespacedKey(PeakCraft.getPlugin(), key);
+        ItemMeta meta = itemStack.getItemMeta();
+        T returnObject = null;
+        if (meta != null){
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            if (container.has(itemIDKey, type)){
+                returnObject = (T) container.get(itemIDKey, type);
+            }
+        }
+
+        return (returnObject != null) ? returnObject : defaultValue;
     }
 
     @Override
@@ -113,6 +123,14 @@ public class Item {
 
         // Set the custom name
         meta.setDisplayName(getRarityColor() + displayName);
+
+        // Apply enchant glint if it is enchanted
+        if (enchantments.size() > 0){
+            meta.addEnchant(org.bukkit.enchantments.Enchantment.SILK_TOUCH, 1, true);
+        }
+
+        // Hide things
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
 
         item.setItemMeta(meta);
 
@@ -171,6 +189,7 @@ public class Item {
 
         if (attributes.size() > 0){
             for (String attribute : attributes.keySet()){
+                PeakCraft.getPlugin().getLogger().info(attribute);
                 lore.add(attribute + ": " + getAttribute(attribute));
             }
 
@@ -188,7 +207,7 @@ public class Item {
         }
 
         // Rarity of item
-        lore.add(getRarityColor() + getRarityName().toUpperCase() + " ITEM"); // @TODO: Should be changed from Item to a value to support different types of items
+        lore.add(getRarityColor() + getRarityName().toUpperCase() + " " + type.toUpperCase());
 
         return lore;
     }
@@ -199,6 +218,18 @@ public class Item {
 
     public void setAttribute(String attributeName, int value){
         attributes.put(attributeName, value);
+    }
+
+    public ArrayList<Enchantment> getEnchants(){
+        return enchantments;
+    }
+
+    public void addEnchantment(Enchantment enchantment){
+        this.enchantments.add(enchantment);
+    }
+
+    public boolean removeEnchantment(Enchantment enchantment){
+        return this.enchantments.remove(enchantment);
     }
 
     private ChatColor getRarityColor(){
