@@ -10,7 +10,7 @@ public abstract class Enchantment {
     private String name;
 
     public void setName(String name){
-        this.name = name;
+        this.name = name.toLowerCase();
     }
 
     public String getName(){

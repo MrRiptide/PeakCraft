@@ -221,10 +221,14 @@ public class Item {
 
         // Attributes of item
 
+        HashMap<String, ChatColor> attributeColor = new HashMap<>();
+        attributeColor.put("damage", ChatColor.DARK_RED);
+        attributeColor.put("defense", ChatColor.GREEN);
+        attributeColor.put("health", ChatColor.RED);
         if (bakedAttributes.size() > 0){
             for (String attribute : bakedAttributes.keySet()){
                 PeakCraft.getPlugin().getLogger().info(attribute);
-                lore.add(ChatColor.DARK_PURPLE + attribute + ": " + getBakedAttribute(attribute));
+                lore.add(attributeColor.getOrDefault(attribute, ChatColor.DARK_PURPLE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + ChatColor.WHITE + ": " + getBakedAttribute(attribute));
             }
 
             lore.add("");
@@ -247,11 +251,11 @@ public class Item {
     }
 
     public int getAttribute(String attributeName){
-        return attributes.getOrDefault(attributeName, 0);
+        return attributes.getOrDefault(attributeName.toLowerCase(), 0);
     }
 
     public void setAttribute(String attributeName, int value){
-        attributes.put(attributeName, value);
+        attributes.put(attributeName.toLowerCase(), value);
     }
 
     public void bakeAttributes(){
@@ -260,11 +264,11 @@ public class Item {
     }
 
     public int getBakedAttribute(String attributeName){
-        return bakedAttributes.getOrDefault(attributeName, 0);
+        return bakedAttributes.getOrDefault(attributeName.toLowerCase(), 0);
     }
 
     public void setBakedAttribute(String attributeName, int value){
-        bakedAttributes.put(attributeName,value);
+        bakedAttributes.put(attributeName.toLowerCase(),value);
     }
 
     public HashMap<String, Integer> getEnchants(){
