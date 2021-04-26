@@ -1,5 +1,5 @@
 name: PeakCraft
-version: 1.0
+version: ${project.version}
 main: io.github.mrriptide.peakcraft.PeakCraft
 api-version: 1.13
 commands:
@@ -15,3 +15,6 @@ commands:
   enchant:
     description: Enchants an item
     permission: peakcraft.enchant
+  summon:
+    description: Summons a mob
+    permission: peakcraft.summon

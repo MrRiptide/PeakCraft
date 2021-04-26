@@ -40,6 +40,7 @@ public class PeakCraft extends JavaPlugin {
         this.getCommand("give").setExecutor(new CommandGive());
         this.getCommand("reloaditems").setExecutor(new CommandReloadItems());
         this.getCommand("enchant").setExecutor(new CommandEnchant());
+        this.getCommand("summon").setExecutor(new CommandSummon());
         // Register recipe commands
         CommandRecipe commandRecipe = new CommandRecipe();
         this.getCommand("recipe").setExecutor(commandRecipe);

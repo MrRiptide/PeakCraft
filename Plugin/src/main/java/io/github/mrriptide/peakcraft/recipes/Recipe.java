@@ -5,11 +5,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import net.minecraft.server.v1_16_R3.IRecipe;
-import net.minecraft.server.v1_16_R3.InventoryCrafting;
-import net.minecraft.server.v1_16_R3.MinecraftKey;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_16_R3.util.CraftNamespacedKey;
 import org.bukkit.inventory.ItemStack;
 
 public abstract class Recipe implements org.bukkit.inventory.Recipe{
