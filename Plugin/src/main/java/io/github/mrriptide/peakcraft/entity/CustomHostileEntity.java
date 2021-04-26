@@ -13,4 +13,12 @@ public class CustomHostileEntity extends CustomDamageableEntity {
     protected CustomHostileEntity(EntityTypes<? extends EntityCreature> type, World world) {
         super(type, world);
     }
+
+    public Item getWeapon(){
+        return weapon;
+    }
+
+    public double getStrength(){
+        return strength;
+    }
 }

@@ -11,10 +11,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class EntityEventListener implements Listener {
 
-    public EntityEventListener(){
-        PeakCraft.getPlugin().getLogger().info("Entity Event Listener initialized");
-    }
-
     @EventHandler
     public void onItemPickup(EntityPickupItemEvent e){
         LivingEntity entity = e.getEntity();

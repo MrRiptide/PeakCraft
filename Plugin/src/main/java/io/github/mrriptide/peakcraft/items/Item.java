@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
+import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -71,7 +72,7 @@ public class Item {
         PeakCraft.getPlugin().getLogger().info("Getting item from ItemStack");
 
         // Default option
-        this.id = getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
+        this.id = PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
 
         assert this.id != null;
         Item default_item = ItemManager.getItem(this.id);
@@ -87,35 +88,9 @@ public class Item {
         // register enchants
         for (NamespacedKey key : Objects.requireNonNull(itemSource.getItemMeta()).getPersistentDataContainer().getKeys()){
             if (key.getKey().startsWith("enchant_")){
-                addEnchantment(key.getKey().substring(8, key.getKey().length() - 6), getValueOrDefault(itemSource, PersistentDataType.INTEGER, key.getKey(), 0));
+                addEnchantment(key.getKey().substring(8, key.getKey().length() - 6), PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.INTEGER, key.getKey(), 0));
             }
         }
-    }
-
-    private <T> T getValueOrDefault(ItemStack itemStack, PersistentDataType type, String key, T defaultValue){
-        NamespacedKey namespacedKey = new NamespacedKey(PeakCraft.getPlugin(), key);
-        ItemMeta meta = itemStack.getItemMeta();
-        T returnObject = null;
-        if (meta != null){
-            PersistentDataContainer container = meta.getPersistentDataContainer();
-            if (container.has(namespacedKey, type)){
-                returnObject = (T) container.get(namespacedKey, type);
-            }
-        }
-
-        return (returnObject != null) ? returnObject : defaultValue;
-    }
-
-    private <T> void setValue(ItemMeta meta, PersistentDataType<T, T> type, String key, T value){
-        NamespacedKey namespacedKey = new NamespacedKey(PeakCraft.getPlugin(), key);
-        if (meta != null){
-            PersistentDataContainer container = meta.getPersistentDataContainer();
-            container.set(namespacedKey, type, value);
-        }
-    }
-
-    private <T> void setValue(ItemStack itemStack, PersistentDataType<T, T> type, String key, T value){
-        setValue(itemStack.getItemMeta(), type, key, value);
     }
 
     @Override
@@ -156,10 +131,10 @@ public class Item {
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
 
         // the item id
-        setValue(meta, PersistentDataType.STRING, "ITEM_ID", id);
+        PersistentDataManager.setValue(meta, PersistentDataType.STRING, "ITEM_ID", id);
         // the enchantments
         for (Map.Entry<String, Integer> enchantment : enchantments.entrySet()){
-            setValue(meta, PersistentDataType.INTEGER, "ENCHANT_" + enchantment.getKey().toUpperCase() + "_LEVEL", enchantment.getValue());
+            PersistentDataManager.setValue(meta, PersistentDataType.INTEGER, "ENCHANT_" + enchantment.getKey().toUpperCase() + "_LEVEL", enchantment.getValue());
         }
 
         // put metadata on item

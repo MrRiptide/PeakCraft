@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.entity;
 
+import io.github.mrriptide.peakcraft.items.Item;
 import net.minecraft.server.v1_16_R3.ChatComponentText;
 import net.minecraft.server.v1_16_R3.EntityCreature;
 import net.minecraft.server.v1_16_R3.EntityTypes;
@@ -25,6 +26,16 @@ public abstract class CustomDamageableEntity extends CustomEntity {
     public void setMaxHealth(double maxHealth){
         this.maxHealth = maxHealth;
         this.health = maxHealth;
+        updateName();
+    }
+
+    public void processAttack(Item weapon, double strength){
+        double damage = 1;
+        if (weapon != null){
+            damage = weapon.getBakedAttribute("damage");
+        }
+
+        health -= damage * (1 + strength * 0.05);
         updateName();
     }
 }
