@@ -17,21 +17,26 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
-public class Item {
-    private final String id;
-    private final String oreDict;
-    private final String displayName;
-    private final int rarity;
-    private final String description;
-    private final Material material;
-    private final String type;
-    private final HashMap<String, Integer> attributes;
+public class Item{
+    private String id;
+    private String oreDict;
+    private String displayName;
+    private int rarity;
+    private String description;
+    private Material material;
+    private String type;
+    private HashMap<String, Integer> attributes;
     private HashMap<String, Integer> bakedAttributes;
     private HashMap<String, Integer> enchantments;
+
+    public Item(){
+
+    }
 
     public Item(String id){
         Item item = ItemManager.getItem(id);
 
+        assert item != null;
         this.id = item.id;
         this.oreDict = item.oreDict;
         this.displayName = item.displayName;
@@ -275,5 +280,27 @@ public class Item {
         String[] names = {"Broken", "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic", "Relic"};
 
         return ChatColor.BOLD + names[rarity];
+    }
+
+    public Item clone() {
+        Item clonedItem = new Item();
+
+        clonedItem.id = this.id;
+        clonedItem.oreDict = this.oreDict;
+        clonedItem.displayName = this.displayName;
+        clonedItem.rarity = this.rarity;
+        clonedItem.description = this.description;
+        clonedItem.material = this.material;
+        clonedItem.type = this.type;
+
+        clonedItem.attributes = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : attributes.entrySet()){
+            clonedItem.attributes.put(entry.getKey(), entry.getValue());
+        }
+        clonedItem.enchantments = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : enchantments.entrySet()){
+            clonedItem.enchantments.put(entry.getKey(), entry.getValue());
+        }
+        return clonedItem;
     }
 }

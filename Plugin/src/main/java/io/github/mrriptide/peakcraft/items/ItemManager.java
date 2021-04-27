@@ -88,11 +88,11 @@ public class ItemManager {
     }
 
     public static Item getItem(String id){
-        return items.get(id.toUpperCase());
+        return items.get(id.toUpperCase()).clone();
     }
 
     private static void createItemList() {
-        ArrayList<String[]> output_data = new ArrayList<String[]>();
+        ArrayList<String[]> output_data = new ArrayList<>();
 
         TsvWriterSettings settings = new TsvWriterSettings();
         settings.getFormat().setLineSeparator("\n");
