@@ -14,7 +14,7 @@ public class CombatEntityWrapper extends HealthEntityWrapper{
     public CombatEntityWrapper(Entity entity){
         super(entity);
         this.strength = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.DOUBLE, "strength", 0.0);
-        if (entity instanceof LivingEntity && ((LivingEntity)entity).getEquipment() != null){
+        if (entity instanceof LivingEntity && ((LivingEntity)entity).getEquipment() != null && ((LivingEntity)entity).getEquipment().getItemInMainHand() != null){
             this.weapon = new Item(((LivingEntity)entity).getEquipment().getItemInMainHand());
         } else {
             this.weapon = null;

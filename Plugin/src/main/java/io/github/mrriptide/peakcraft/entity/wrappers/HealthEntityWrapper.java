@@ -1,6 +1,8 @@
 package io.github.mrriptide.peakcraft.entity.wrappers;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.items.Item;
+import io.github.mrriptide.peakcraft.util.HoloDisplay;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.minecraft.server.v1_16_R3.ChatComponentText;
 import org.bukkit.ChatColor;
@@ -35,7 +37,15 @@ public class HealthEntityWrapper extends EntityWrapper{
             weapon.bakeAttributes();
             damage = (weapon.getBakedAttribute("damage")!=0) ? weapon.getBakedAttribute("damage") : 10;
         }
-        this.health = Math.max(health - damage*(1+0.05*strength)/(1+defense*0.05), 0);
+
+        double damagePotential = damage*(1+0.05*strength)/(1+defense*0.05);
+
+        HoloDisplay damageDisplay = new HoloDisplay(this.source.getLocation().add(Math.random()*1-0.5, Math.random()*1-1.5, Math.random()*1 -0.5));
+        PeakCraft.getPlugin().getLogger().info(String.valueOf(this.source.getLocation().getX()));
+        PeakCraft.getPlugin().getLogger().info(String.valueOf(this.source.getLocation().getZ()));
+        damageDisplay.showThenDie(ChatColor.WHITE + "" + (int)damagePotential, 40);
+
+        this.health = Math.max(health - damagePotential, 0);
         updateEntity();
     }
 

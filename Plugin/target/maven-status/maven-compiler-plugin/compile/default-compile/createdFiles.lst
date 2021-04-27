@@ -21,6 +21,7 @@ io\github\mrriptide\peakcraft\recipes\ShapelessRecipe.class
 io\github\mrriptide\peakcraft\PeakCraft.class
 io\github\mrriptide\peakcraft\entity\CustomHostileEntity.class
 io\github\mrriptide\peakcraft\listeners\DamageListener.class
+io\github\mrriptide\peakcraft\util\HoloDisplay.class
 io\github\mrriptide\peakcraft\entity\CustomDamageableEntity.class
 io\github\mrriptide\peakcraft\recipes\ShapedRecipe.class
 io\github\mrriptide\peakcraft\recipes\NMSRecipe.class

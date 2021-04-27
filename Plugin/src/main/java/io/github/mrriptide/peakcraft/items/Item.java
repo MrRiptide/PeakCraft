@@ -218,7 +218,7 @@ public class Item{
 
         if (enchantments.size() > 0){
             for (Map.Entry<String, Integer> enchantment : enchantments.entrySet()){
-                lore.add(WordUtils.capitalizeFully(enchantment.getKey()) + enchantment.getValue());
+                lore.add(ChatColor.LIGHT_PURPLE + WordUtils.capitalizeFully(enchantment.getKey()) + " " + enchantment.getValue());
             }
 
             lore.add("");

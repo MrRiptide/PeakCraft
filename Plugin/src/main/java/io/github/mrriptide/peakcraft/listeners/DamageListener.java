@@ -20,7 +20,9 @@ public class DamageListener implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event){
-        PeakCraft.getPlugin().getLogger().info("EntityDamageEventCalled " + event.getDamage());
+        if (event.getEntity().isInvulnerable()){
+            return;
+        }
         if (!(event.getEntity() instanceof CustomDamageableEntity)){
             //event.setCancelled(true);
         }
@@ -32,10 +34,11 @@ public class DamageListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
-        PeakCraft.getPlugin().getLogger().info("Damaged by entity " + event.getDamage());
+        if (event.getEntity().isInvulnerable()){
+            return;
+        }
         CombatEntityWrapper damagingEntity;
         if (event.getDamager() instanceof Player){
-            Bukkit.broadcastMessage("Is player");
             damagingEntity = new PlayerWrapper((Player) event.getDamager());
         }
         else {
@@ -51,6 +54,6 @@ public class DamageListener implements Listener {
         }
         damagedEntity.processAttack(damagingEntity);
 
-        event.setDamage(0.1);
+        event.setDamage(0);
     }
 }
