@@ -2,6 +2,8 @@ package io.github.mrriptide.peakcraft.util;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
 import org.bukkit.NamespacedKey;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftCreature;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -33,8 +35,8 @@ public class PersistentDataManager {
         return getValueOrDefault(itemStack.getItemMeta(), type, key, defaultValue);
     }
 
-    public static <T> T getValueOrDefault(Player player, PersistentDataType type, String key, T defaultValue){
-        return getValueOrDefault(player.getPersistentDataContainer(), type, key, defaultValue);
+    public static <T> T getValueOrDefault(Entity entity, PersistentDataType type, String key, T defaultValue){
+        return getValueOrDefault(entity.getPersistentDataContainer(), type, key, defaultValue);
     }
 
     public static <T> void setValue(PersistentDataContainer container, PersistentDataType<T, T> type, String key, T value){
@@ -53,7 +55,7 @@ public class PersistentDataManager {
         setValue(itemStack.getItemMeta(), type, key, value);
     }
 
-    public static <T> void setValue(Player player, PersistentDataType<T, T> type, String key, T value){
-        setValue(player.getPersistentDataContainer(), type, key, value);
+    public static <T> void setValue(Entity entity, PersistentDataType<T, T> type, String key, T value){
+        setValue(entity.getPersistentDataContainer(), type, key, value);
     }
 }

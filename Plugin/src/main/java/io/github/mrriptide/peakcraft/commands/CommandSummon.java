@@ -41,6 +41,7 @@ public class CommandSummon implements CommandExecutor {
         }
 
         WorldServer world = ((CraftWorld) player.getWorld()).getHandle();
+        entity.applyNBT();
         world.addEntity(entity);
 
         return true;

@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.entity;
 
+import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.minecraft.server.v1_16_R3.ChatComponentText;
 import net.minecraft.server.v1_16_R3.EntityCreature;
 import net.minecraft.server.v1_16_R3.EntityTypes;
@@ -7,6 +8,7 @@ import net.minecraft.server.v1_16_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 public abstract class CustomEntity extends EntityCreature {
@@ -25,6 +27,11 @@ public abstract class CustomEntity extends EntityCreature {
 
     public void setName(String name){
         this.name = name;
+
         updateName();
+    }
+
+    public void applyNBT(){
+        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.STRING, "name", name);
     }
 }

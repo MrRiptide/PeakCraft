@@ -20,12 +20,6 @@ public class Player {
         this.health = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "health", 100);
     }
 
-    public void processAttack(Item weapon, double strength){
-        weapon.bakeAttributes();
-        int damage = (weapon.getBakedAttribute("damage")!=0) ? weapon.getBakedAttribute("damage") : 10;
-        this.health -= damage*(1+0.05*strength)/(1+defense*0.05);
-    }
-
     public void updatePlayer(){
         PersistentDataManager.setValue(this.player, PersistentDataType.DOUBLE, "mana", this.mana);
         PersistentDataManager.setValue(this.player, PersistentDataType.DOUBLE, "health", this.health);
