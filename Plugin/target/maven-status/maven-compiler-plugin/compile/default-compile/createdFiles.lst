@@ -42,4 +42,5 @@ io\github\mrriptide\peakcraft\guis\EditRecipeGUI.class
 io\github\mrriptide\peakcraft\listeners\EntityEventListener.class
 io\github\mrriptide\peakcraft\recipes\RecipeItemChoice$Provider.class
 io\github\mrriptide\peakcraft\recipes\RecipeItemChoice$b.class
+io\github\mrriptide\peakcraft\entity\HoloDisplayEntity.class
 io\github\mrriptide\peakcraft\items\Item.class

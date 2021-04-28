@@ -11,6 +11,7 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
 public class HealthEntityWrapper extends EntityWrapper{
@@ -29,28 +30,38 @@ public class HealthEntityWrapper extends EntityWrapper{
         this(creature.getHandle().getBukkitEntity());
     }
 
-    public void processAttack(Item weapon, double strength){
+    public void processAttack(CombatEntityWrapper entity){
         int damage;
-        if (weapon == null){
+        if (entity.weapon == null){
             damage = 10;
         } else{
-            weapon.bakeAttributes();
-            damage = (weapon.getBakedAttribute("damage")!=0) ? weapon.getBakedAttribute("damage") : 10;
+            entity.weapon.bakeAttributes();
+            damage = (entity.weapon.getBakedAttribute("damage")!=0) ? entity.weapon.getBakedAttribute("damage") : 10;
+        }
+        double multiplier = 1.0;
+        if (entity instanceof PlayerWrapper){
+            if (((Player)entity.source).getAttackCooldown() == 1.0 && Math.random() <= ((PlayerWrapper)entity).critChance){
+                multiplier = 1 + ((PlayerWrapper)entity).critDamage;
+            } else {
+                multiplier = ((Player)entity.source).getAttackCooldown();
+            }
         }
 
-        double damagePotential = damage*(1+0.05*strength)/(1+defense*0.05);
+        double damagePotential = damage*(1+0.05*entity.strength)/(1+defense*0.05) * multiplier;
 
         HoloDisplay damageDisplay = new HoloDisplay(this.source.getLocation().add(Math.random()*1-0.5, Math.random()*1-1.5, Math.random()*1 -0.5));
-        PeakCraft.getPlugin().getLogger().info(String.valueOf(this.source.getLocation().getX()));
-        PeakCraft.getPlugin().getLogger().info(String.valueOf(this.source.getLocation().getZ()));
-        damageDisplay.showThenDie(ChatColor.WHITE + "" + (int)damagePotential, 40);
+        ChatColor damageColor;
+        if (multiplier < 1){
+            damageColor = ChatColor.GRAY;
+        } else if (multiplier == 1){
+            damageColor = ChatColor.WHITE;
+        } else {
+            damageColor = ChatColor.DARK_RED;
+        }
+        damageDisplay.showThenDie(damageColor + "" + (int)damagePotential, 40);
 
         this.health = Math.max(health - damagePotential, 0);
         updateEntity();
-    }
-
-    public void processAttack(CombatEntityWrapper entity){
-        processAttack(entity.weapon, entity.strength);
     }
 
     public void updateEntity(){

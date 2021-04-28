@@ -16,8 +16,8 @@ public class Player {
     public Player(org.bukkit.entity.Player player){
         this.player = player;
 
-        this.mana = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "mana", 100);
-        this.health = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "health", 100);
+        this.mana = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "mana", 100.0);
+        this.health = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "health", 100.0);
     }
 
     public void updatePlayer(){

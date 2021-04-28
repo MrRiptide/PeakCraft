@@ -2,12 +2,17 @@ package io.github.mrriptide.peakcraft.util;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.CustomEntity;
+import io.github.mrriptide.peakcraft.entity.HoloDisplayEntity;
+import net.minecraft.server.v1_16_R3.ChatComponentText;
+import net.minecraft.server.v1_16_R3.EntityArmorStand;
 import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.persistence.PersistentDataType;
 
 public class HoloDisplay {
@@ -17,13 +22,16 @@ public class HoloDisplay {
     }
 
     public void showThenDie(String displayText, int ticks){
-        ArmorStand armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
-        armorStand.setVisible(false);
-        armorStand.setInvulnerable(true);
-        armorStand.setGravity(false);
-        armorStand.setCustomName(displayText);
-        armorStand.setCustomNameVisible(true);
+        EntityArmorStand entityArmorStand = new EntityArmorStand(((CraftWorld) location.getWorld()).getHandle(), location.getX(), location.getY(), location.getZ());
 
-        Bukkit.getScheduler().runTaskLater(PeakCraft.instance, armorStand::remove, ticks);
+        entityArmorStand.setInvisible(true);
+        entityArmorStand.setInvulnerable(true);
+        entityArmorStand.setNoGravity(true);
+        entityArmorStand.setCustomName(new ChatComponentText(displayText));
+        entityArmorStand.setCustomNameVisible(true);
+
+        ((CraftWorld) location.getWorld()).getHandle().addEntity(entityArmorStand);
+        Bukkit.getScheduler().runTaskLater(PeakCraft.instance,
+                () -> ((CraftWorld) location.getWorld()).getHandle().removeEntity(entityArmorStand), ticks);
     }
 }

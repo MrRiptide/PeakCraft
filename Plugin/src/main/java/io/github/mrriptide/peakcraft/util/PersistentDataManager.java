@@ -12,7 +12,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class PersistentDataManager {
 
-    public static <T> T getValueOrDefault(PersistentDataContainer container, PersistentDataType type, String key, T defaultValue){
+    public static <T> T getValueOrDefault(PersistentDataContainer container, PersistentDataType<T,T> type, String key, T defaultValue){
         NamespacedKey namespacedKey = new NamespacedKey(PeakCraft.getPlugin(), key);
 
         T returnObject = null;
@@ -23,7 +23,7 @@ public class PersistentDataManager {
         return (returnObject != null) ? returnObject : defaultValue;
     }
 
-    public static <T> T getValueOrDefault(ItemMeta meta, PersistentDataType type, String key, T defaultValue){
+    public static <T> T getValueOrDefault(ItemMeta meta, PersistentDataType<T,T> type, String key, T defaultValue){
         if (meta != null){
             return getValueOrDefault(meta.getPersistentDataContainer(), type, key, defaultValue);
         } else {
@@ -31,11 +31,11 @@ public class PersistentDataManager {
         }
     }
 
-    public static <T> T getValueOrDefault(ItemStack itemStack, PersistentDataType type, String key, T defaultValue){
+    public static <T> T getValueOrDefault(ItemStack itemStack, PersistentDataType<T,T> type, String key, T defaultValue){
         return getValueOrDefault(itemStack.getItemMeta(), type, key, defaultValue);
     }
 
-    public static <T> T getValueOrDefault(Entity entity, PersistentDataType type, String key, T defaultValue){
+    public static <T> T getValueOrDefault(Entity entity, PersistentDataType<T,T> type, String key, T defaultValue){
         return getValueOrDefault(entity.getPersistentDataContainer(), type, key, defaultValue);
     }
 
