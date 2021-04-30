@@ -10,7 +10,7 @@ public class BruteEntity extends CombatEntity {
         super(EntityTypes.ZOMBIE, ((CraftWorld) loc.getWorld()).getHandle());
         this.setPosition(loc.getX(), loc.getY(), loc.getZ());
         setName(ChatColor.GREEN +"Brute");
-        setMaxHealth(100);
+        setMaxHealth(100000);
         this.strength = 50;
     }
 }
