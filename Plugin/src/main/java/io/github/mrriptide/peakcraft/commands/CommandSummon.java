@@ -1,17 +1,13 @@
 package io.github.mrriptide.peakcraft.commands;
 
 import io.github.mrriptide.peakcraft.entity.BruteEntity;
-import io.github.mrriptide.peakcraft.entity.CustomEntity;
-import io.github.mrriptide.peakcraft.items.ItemManager;
+import io.github.mrriptide.peakcraft.entity.Entity;
 import net.minecraft.server.v1_16_R3.WorldServer;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.entity.Player;
-
-import java.util.HashMap;
 
 public class CommandSummon implements CommandExecutor {
     @Override
@@ -29,7 +25,7 @@ public class CommandSummon implements CommandExecutor {
 
         Player player = (Player)sender;
 
-        CustomEntity entity = null;
+        Entity entity = null;
 
         switch (args[0].toLowerCase()){
             case "brute":

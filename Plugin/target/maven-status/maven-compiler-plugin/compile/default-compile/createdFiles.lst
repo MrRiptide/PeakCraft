@@ -1,4 +1,3 @@
-io\github\mrriptide\peakcraft\entity\CustomEntity.class
 io\github\mrriptide\peakcraft\items\enchantments\EnchantmentSharpness.class
 io\github\mrriptide\peakcraft\commands\SubCommand.class
 io\github\mrriptide\peakcraft\recipes\ShapedNMSRecipe$a.class
@@ -18,11 +17,10 @@ io\github\mrriptide\peakcraft\entity\wrappers\PlayerWrapper.class
 io\github\mrriptide\peakcraft\items\enchantments\Enchantment.class
 io\github\mrriptide\peakcraft\listeners\GUIEventListener.class
 io\github\mrriptide\peakcraft\recipes\ShapelessRecipe.class
+io\github\mrriptide\peakcraft\entity\Entity.class
 io\github\mrriptide\peakcraft\PeakCraft.class
-io\github\mrriptide\peakcraft\entity\CustomHostileEntity.class
 io\github\mrriptide\peakcraft\listeners\DamageListener.class
 io\github\mrriptide\peakcraft\util\HoloDisplay.class
-io\github\mrriptide\peakcraft\entity\CustomDamageableEntity.class
 io\github\mrriptide\peakcraft\recipes\ShapedRecipe.class
 io\github\mrriptide\peakcraft\recipes\NMSRecipe.class
 io\github\mrriptide\peakcraft\recipes\RecipeItemChoice.class
@@ -32,10 +30,12 @@ io\github\mrriptide\peakcraft\commands\CommandRecipe.class
 io\github\mrriptide\peakcraft\entity\wrappers\CombatEntityWrapper.class
 io\github\mrriptide\peakcraft\items\ItemManager.class
 io\github\mrriptide\peakcraft\commands\CommandSummon.class
+io\github\mrriptide\peakcraft\entity\CombatEntity.class
 io\github\mrriptide\peakcraft\entity\wrappers\HealthEntityWrapper.class
 io\github\mrriptide\peakcraft\recipes\Recipe.class
 io\github\mrriptide\peakcraft\nms\IRecipe.class
 io\github\mrriptide\peakcraft\listeners\CraftingListener.class
+io\github\mrriptide\peakcraft\entity\LivingEntity.class
 io\github\mrriptide\peakcraft\recipes\RecipeManager$1.class
 io\github\mrriptide\peakcraft\recipes\RecipeItemChoice$1.class
 io\github\mrriptide\peakcraft\guis\EditRecipeGUI.class

@@ -1,15 +1,13 @@
 package io.github.mrriptide.peakcraft.listeners;
 
-import io.github.mrriptide.peakcraft.PeakCraft;
-import io.github.mrriptide.peakcraft.entity.CustomDamageableEntity;
-import io.github.mrriptide.peakcraft.entity.CustomHostileEntity;
+import io.github.mrriptide.peakcraft.entity.BruteEntity;
+import io.github.mrriptide.peakcraft.entity.LivingEntity;
+import io.github.mrriptide.peakcraft.entity.CombatEntity;
 import io.github.mrriptide.peakcraft.entity.wrappers.CombatEntityWrapper;
-import io.github.mrriptide.peakcraft.entity.wrappers.EntityWrapper;
 import io.github.mrriptide.peakcraft.entity.wrappers.HealthEntityWrapper;
 import io.github.mrriptide.peakcraft.entity.wrappers.PlayerWrapper;
-import io.github.mrriptide.peakcraft.items.Item;
-import net.minecraft.server.v1_16_R3.EntityLiving;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftCreature;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +21,7 @@ public class DamageListener implements Listener {
         if (event.getEntity().isInvulnerable()){
             return;
         }
-        if (!(event.getEntity() instanceof CustomDamageableEntity)){
+        if (!(event.getEntity() instanceof LivingEntity)){
             //event.setCancelled(true);
         }
         if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK || event.getCause() == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK){
@@ -37,20 +35,20 @@ public class DamageListener implements Listener {
         if (event.getEntity().isInvulnerable()){
             return;
         }
-        CombatEntityWrapper damagingEntity;
+        CombatEntity damagingEntity;
         if (event.getDamager() instanceof Player){
             damagingEntity = new PlayerWrapper((Player) event.getDamager());
         }
         else {
             Bukkit.broadcastMessage("Is custom hostile entity");
-            damagingEntity = new CombatEntityWrapper(event.getDamager());
+            damagingEntity = ((BruteEntity)event.getDamager());
         }
 
-        HealthEntityWrapper damagedEntity;
+        LivingEntity damagedEntity;
         if (event.getEntity() instanceof Player)
             damagedEntity = new PlayerWrapper((Player) event.getEntity());
         else {
-            damagedEntity = new HealthEntityWrapper(event.getEntity());
+            damagedEntity = (LivingEntity) ((CraftCreature)event.getEntity()).getHandle();
         }
         damagedEntity.processAttack(damagingEntity);
 

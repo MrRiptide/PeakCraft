@@ -8,13 +8,17 @@ import org.bukkit.Location;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scoreboard.ScoreboardManager;
 
-public abstract class CustomEntity extends EntityCreature {
+public abstract class Entity extends EntityCreature {
     protected String name;
 
-    protected CustomEntity(EntityTypes<? extends EntityCreature> type, World world) {
+    protected Entity(EntityTypes<? extends EntityCreature> type, World world) {
         super(type, world);
         updateName();
         setName("Unnamed Mob");
+    }
+
+    public void updateEntity(){
+        this.updateName();
     }
 
     public void updateName(){

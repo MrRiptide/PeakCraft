@@ -29,7 +29,7 @@ public class HealthEntityWrapper extends EntityWrapper{
     public HealthEntityWrapper(CraftCreature creature){
         this(creature.getHandle().getBukkitEntity());
     }
-
+/*
     public void processAttack(CombatEntityWrapper entity){
         int damage;
         if (entity.weapon == null){
@@ -63,7 +63,7 @@ public class HealthEntityWrapper extends EntityWrapper{
         this.health = Math.max(health - damagePotential, 0);
         updateEntity();
     }
-
+*/
     public void updateEntity(){
         super.updateEntity();
         if (health <= 0){
