@@ -4,6 +4,7 @@ import io.github.mrriptide.peakcraft.commands.*;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentSharpness;
+import io.github.mrriptide.peakcraft.listeners.ChunkListener;
 import io.github.mrriptide.peakcraft.listeners.DamageListener;
 import io.github.mrriptide.peakcraft.listeners.EntityEventListener;
 import io.github.mrriptide.peakcraft.listeners.GUIEventListener;
@@ -36,6 +37,7 @@ public class PeakCraft extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
         getServer().getPluginManager().registerEvents(new GUIEventListener(), this);
         getServer().getPluginManager().registerEvents(new DamageListener(), this);
+        getServer().getPluginManager().registerEvents(new ChunkListener(), this);
 
         // Register all commands
         this.getCommand("give").setExecutor(new CommandGive());
@@ -43,6 +45,7 @@ public class PeakCraft extends JavaPlugin {
         this.getCommand("enchant").setExecutor(new CommandEnchant());
         this.getCommand("summon").setExecutor(new CommandSummon());
         this.getCommand("heal").setExecutor(new CommandHeal());
+        this.getCommand("kill").setExecutor(new CommandKill());
         // Register recipe commands
         CommandRecipe commandRecipe = new CommandRecipe();
         this.getCommand("recipe").setExecutor(commandRecipe);

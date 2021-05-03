@@ -24,9 +24,10 @@ public abstract class CombatEntity extends LivingEntity {
         super.updateEntity();
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "strength", this.strength);
 
+        /* not sure if this code is important but it is causing problems
         if (this.weapon != null && this.getBukkitEntity() instanceof org.bukkit.entity.LivingEntity && ((org.bukkit.entity.LivingEntity)this.getBukkitEntity()).getEquipment() != null){
             ((org.bukkit.entity.LivingEntity)this.getBukkitEntity()).getEquipment().setItemInMainHand(weapon.getItemStack());
-        }
+        }*/
     }
 
     public Item getWeapon(){

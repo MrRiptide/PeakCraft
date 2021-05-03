@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.entity;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.util.HoloDisplay;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
@@ -27,7 +28,7 @@ public abstract class LivingEntity extends Entity {
     }
 
     public void processAttack(CombatEntity attacker){
-        int damage;
+        double damage;
 
         Item weapon = attacker.getWeapon();
 
@@ -63,11 +64,17 @@ public abstract class LivingEntity extends Entity {
         updateEntity();
     }
 
+    public void regenHealth(double amount){
+        this.health = Math.min(health + amount, maxHealth);
+        updateEntity();
+    }
+
     public void updateEntity(){
         super.updateEntity();
         if (health <= 0){
             this.health = 0;
         }
+        PeakCraft.getPlugin().getLogger().info(String.valueOf(this.health/this.maxHealth*20.0));
         ((org.bukkit.entity.LivingEntity)this.getBukkitEntity()).setHealth(this.health/this.maxHealth*20.0);
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "health", this.health);
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "maxHealth", this.maxHealth);

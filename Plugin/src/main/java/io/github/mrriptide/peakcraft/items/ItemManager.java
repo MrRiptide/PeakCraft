@@ -66,9 +66,9 @@ public class ItemManager {
 
         for (Record record : allRecords){
             int i = 7;
-            HashMap<String, Integer> attributes = new HashMap<>();
+            HashMap<String, Double> attributes = new HashMap<>();
             while (record.getString(i) != null){
-                attributes.put(record.getString(i).toLowerCase(), record.getInt(i+1));
+                attributes.put(record.getString(i).toLowerCase(), record.getDouble(i+1));
                 i+=2;
             }
             Item item = new Item(

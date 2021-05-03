@@ -25,8 +25,8 @@ public class Item{
     private String description;
     private Material material;
     private String type;
-    private HashMap<String, Integer> attributes;
-    private HashMap<String, Integer> bakedAttributes;
+    private HashMap<String, Double> attributes;
+    private HashMap<String, Double> bakedAttributes;
     private HashMap<String, Integer> enchantments;
 
     public Item(){
@@ -48,7 +48,7 @@ public class Item{
         this.enchantments = new HashMap<>();
     }
 
-    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Integer> attributes){
+    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Double> attributes){
         this.id = id;
         this.oreDict = oreDict;
         this.displayName = displayName;
@@ -60,7 +60,7 @@ public class Item{
         this.enchantments = new HashMap<>();
     }
 
-    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Integer> attributes, HashMap<String, Integer> enchantments){
+    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Double> attributes, HashMap<String, Integer> enchantments){
         this.id = id;
         this.oreDict = oreDict;
         this.displayName = displayName;
@@ -230,11 +230,11 @@ public class Item{
         return lore;
     }
 
-    public int getAttribute(String attributeName){
-        return attributes.getOrDefault(attributeName.toLowerCase(), 0);
+    public double getAttribute(String attributeName){
+        return attributes.getOrDefault(attributeName.toLowerCase(), 0.0);
     }
 
-    public void setAttribute(String attributeName, int value){
+    public void setAttribute(String attributeName, double value){
         attributes.put(attributeName.toLowerCase(), value);
     }
 
@@ -243,11 +243,11 @@ public class Item{
         EnchantmentManager.bakeItem(this);
     }
 
-    public int getBakedAttribute(String attributeName){
-        return bakedAttributes.getOrDefault(attributeName.toLowerCase(), 0);
+    public double getBakedAttribute(String attributeName){
+        return bakedAttributes.getOrDefault(attributeName.toLowerCase(), 0.0);
     }
 
-    public void setBakedAttribute(String attributeName, int value){
+    public void setBakedAttribute(String attributeName, double value){
         bakedAttributes.put(attributeName.toLowerCase(),value);
     }
 
@@ -294,7 +294,7 @@ public class Item{
         clonedItem.type = this.type;
 
         clonedItem.attributes = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : attributes.entrySet()){
+        for (Map.Entry<String, Double> entry : attributes.entrySet()){
             clonedItem.attributes.put(entry.getKey(), entry.getValue());
         }
         clonedItem.enchantments = new HashMap<>();

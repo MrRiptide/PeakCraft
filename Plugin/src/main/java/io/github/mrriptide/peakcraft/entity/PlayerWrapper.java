@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 public class PlayerWrapper extends CombatEntity {
@@ -32,6 +33,18 @@ public class PlayerWrapper extends CombatEntity {
     public PlayerWrapper(Player player){
         super(EntityTypes.SHEEP, ((CraftWorld) player.getWorld()).getHandle());
         this.source = player;
+        this.maxHealth = 100;
+
+        double intelligence = 0;
+
+        for (ItemStack itemStack : player.getInventory().getArmorContents()){
+            Item item = new Item(itemStack);
+            this.maxHealth += item.getBakedAttribute("health");
+            intelligence += item.getBakedAttribute("intelligence");
+        }
+
+        this.maxMana = 100 + intelligence;
+
         this.health = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "health", maxHealth);
         this.mana = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "mana", 0.0);
         this.maxMana = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "maxMana", 100.0);
@@ -52,5 +65,11 @@ public class PlayerWrapper extends CombatEntity {
     @Override
     public CraftEntity getBukkitEntity() {
         return (CraftEntity) source;
+    }
+
+    public void resetStats(){
+        this.health = maxHealth;
+        this.mana = maxMana;
+        updateEntity();
     }
 }

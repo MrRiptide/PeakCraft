@@ -21,3 +21,6 @@ commands:
   heal:
     description: Heals the executor
     permission: peakcraft.heal
+  kill:
+    description: Kills the executor
+    permission: peakcraft.kill

@@ -3,13 +3,13 @@ package io.github.mrriptide.peakcraft.items.enchantments;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.items.Item;
 
-public class EnchantmentSharpness extends Enchantment{
-    public EnchantmentSharpness(){
+public class EnchantmentHealthBoost extends Enchantment{
+    public EnchantmentHealthBoost(){
         setName("sharpness");
     }
 
     @Override
     public void bakeItemAttributes(Item item, int level) {
-        item.setBakedAttribute("damage", item.getBakedAttribute("damage") * 1.05 * level);
+        item.setBakedAttribute("health", item.getBakedAttribute("health") + 50 * level);
     }
 }
