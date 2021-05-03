@@ -1,7 +1,5 @@
 package io.github.mrriptide.peakcraft.entity;
 
-import io.github.mrriptide.peakcraft.entity.wrappers.CombatEntityWrapper;
-import io.github.mrriptide.peakcraft.entity.wrappers.PlayerWrapper;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.util.HoloDisplay;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
@@ -10,7 +8,6 @@ import net.minecraft.server.v1_16_R3.EntityCreature;
 import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.World;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
 public abstract class LivingEntity extends Entity {
@@ -69,8 +66,7 @@ public abstract class LivingEntity extends Entity {
     public void updateEntity(){
         super.updateEntity();
         if (health <= 0){
-            ((org.bukkit.entity.LivingEntity)this.getBukkitEntity()).setHealth(0);
-            return;
+            this.health = 0;
         }
         ((org.bukkit.entity.LivingEntity)this.getBukkitEntity()).setHealth(this.health/this.maxHealth*20.0);
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "health", this.health);

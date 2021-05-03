@@ -18,3 +18,6 @@ commands:
   summon:
     description: Summons a mob
     permission: peakcraft.summon
+  heal:
+    description: Heals the executor
+    permission: peakcraft.heal

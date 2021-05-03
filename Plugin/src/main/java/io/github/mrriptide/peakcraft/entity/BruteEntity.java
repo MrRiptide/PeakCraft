@@ -5,12 +5,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 
-public class BruteEntity extends CombatEntity {
+public class BruteEntity extends HostileEntity {
     public BruteEntity(Location loc){
         super(EntityTypes.ZOMBIE, ((CraftWorld) loc.getWorld()).getHandle());
         this.setPosition(loc.getX(), loc.getY(), loc.getZ());
         setName(ChatColor.GREEN +"Brute");
-        setMaxHealth(100000);
+        setMaxHealth(10000);
         this.strength = 50;
     }
 }

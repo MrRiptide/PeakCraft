@@ -34,7 +34,7 @@ public abstract class HostileEntity extends CombatEntity{
          * this, - the pig
          * 1.0f) - the height of the jump(Please experiment with this to get a height you want)
          */
-        this.goalSelector.a(1, new PathfinderGoalLeapAtTarget(this, 1.0f));
+        this.goalSelector.a(1, new PathfinderGoalMeleeAttack(this, 1.0f, true));
 
     }
 }

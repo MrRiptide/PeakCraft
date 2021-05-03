@@ -1,4 +1,4 @@
-package io.github.mrriptide.peakcraft.entity.wrappers;
+package io.github.mrriptide.peakcraft.entity;
 
 import io.github.mrriptide.peakcraft.entity.CombatEntity;
 import io.github.mrriptide.peakcraft.items.Item;
@@ -6,6 +6,7 @@ import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.minecraft.server.v1_16_R3.EntityTypes;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -31,6 +32,7 @@ public class PlayerWrapper extends CombatEntity {
     public PlayerWrapper(Player player){
         super(EntityTypes.SHEEP, ((CraftWorld) player.getWorld()).getHandle());
         this.source = player;
+        this.health = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "health", maxHealth);
         this.mana = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "mana", 0.0);
         this.maxMana = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "maxMana", 100.0);
         this.critChance = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "critChance", 0.5);
@@ -45,5 +47,10 @@ public class PlayerWrapper extends CombatEntity {
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "mana", this.mana);
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "critChance", this.critChance);
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "critDamage", this.critDamage);
+    }
+
+    @Override
+    public CraftEntity getBukkitEntity() {
+        return (CraftEntity) source;
     }
 }
