@@ -1,6 +1,8 @@
 package io.github.mrriptide.peakcraft.listeners;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.BruteEntity;
+import io.github.mrriptide.peakcraft.entity.HostileEntity;
 import io.github.mrriptide.peakcraft.entity.LivingEntity;
 import io.github.mrriptide.peakcraft.entity.CombatEntity;
 import io.github.mrriptide.peakcraft.entity.wrappers.CombatEntityWrapper;
@@ -39,16 +41,22 @@ public class DamageListener implements Listener {
         if (event.getDamager() instanceof Player){
             damagingEntity = new PlayerWrapper((Player) event.getDamager());
         }
-        else {
+        else if (event.getEntity() instanceof LivingEntity) {
             Bukkit.broadcastMessage("Is custom hostile entity");
-            damagingEntity = ((BruteEntity)event.getDamager());
+            damagingEntity = ((HostileEntity)event.getDamager());
+        } else {
+            PeakCraft.getPlugin().getLogger().warning("Some unregistered entity tried dealing damage");
+            return;
         }
 
         LivingEntity damagedEntity;
         if (event.getEntity() instanceof Player)
             damagedEntity = new PlayerWrapper((Player) event.getEntity());
-        else {
+        else if (event.getEntity() instanceof LivingEntity) {
             damagedEntity = (LivingEntity) ((CraftCreature)event.getEntity()).getHandle();
+        } else {
+            PeakCraft.getPlugin().getLogger().warning("Some entity tried damaging an unregistered entity");
+            return;
         }
         damagedEntity.processAttack(damagingEntity);
 

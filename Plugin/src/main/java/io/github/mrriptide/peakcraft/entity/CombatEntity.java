@@ -7,7 +7,7 @@ import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.World;
 import org.bukkit.persistence.PersistentDataType;
 
-public class CombatEntity extends LivingEntity {
+public abstract class CombatEntity extends LivingEntity {
     protected double strength;
     protected Item weapon;
 
