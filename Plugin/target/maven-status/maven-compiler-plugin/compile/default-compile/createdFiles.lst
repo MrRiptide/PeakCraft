@@ -5,11 +5,13 @@ io\github\mrriptide\peakcraft\util\PersistentDataManager.class
 io\github\mrriptide\peakcraft\commands\CommandEnchant.class
 io\github\mrriptide\peakcraft\commands\CommandRecipe_Add.class
 io\github\mrriptide\peakcraft\recipes\RecipeManager.class
+io\github\mrriptide\peakcraft\listeners\PlayerListener.class
 io\github\mrriptide\peakcraft\entity\Entity.class
 io\github\mrriptide\peakcraft\listeners\DamageListener.class
 io\github\mrriptide\peakcraft\items\enchantments\EnchantmentHealthBoost.class
 io\github\mrriptide\peakcraft\recipes\NMSRecipe.class
 io\github\mrriptide\peakcraft\guis\InventoryGui.class
+io\github\mrriptide\peakcraft\util\TablistManager.class
 io\github\mrriptide\peakcraft\commands\CommandRecipe.class
 io\github\mrriptide\peakcraft\recipes\Recipe.class
 io\github\mrriptide\peakcraft\nms\IRecipe.class
