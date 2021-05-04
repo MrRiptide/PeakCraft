@@ -5,7 +5,7 @@ import io.github.mrriptide.peakcraft.items.Item;
 
 public class EnchantmentHealthBoost extends Enchantment{
     public EnchantmentHealthBoost(){
-        setName("sharpness");
+        super("healthboost", "Health Boost");
     }
 
     @Override

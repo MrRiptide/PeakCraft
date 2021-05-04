@@ -20,6 +20,14 @@ public class EnchantmentManager {
         PeakCraft.getPlugin().getLogger().info("Successfully registered the " + enchantment.getName().toLowerCase() + " enchantment");
     }
 
+    public static boolean validateEnchantment(String name){
+        return enchantments.containsKey(name);
+    }
+
+    public static Enchantment getEnchantment(String name){
+        return enchantments.get(name);
+    }
+
     public static void bakeItem(Item item){
         for (Map.Entry<String, Integer> enchantment : item.getEnchants().entrySet()){
             if (enchantments.containsKey(enchantment.getKey())){

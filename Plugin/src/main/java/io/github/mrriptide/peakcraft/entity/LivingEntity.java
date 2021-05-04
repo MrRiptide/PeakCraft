@@ -9,7 +9,10 @@ import net.minecraft.server.v1_16_R3.EntityCreature;
 import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.World;
 import org.bukkit.ChatColor;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
+
+import java.util.Date;
 
 public abstract class LivingEntity extends Entity {
     protected double health;
@@ -60,8 +63,17 @@ public abstract class LivingEntity extends Entity {
         }
         damageDisplay.showThenDie(damageColor + "" + (int)damagePotential, 40);
 
-        this.health = Math.max(health - damagePotential, 0);
+        processDamage(damagePotential);
+    }
+
+    public void processDamage(double amount, EntityDamageEvent.DamageCause cause){
+        processDamage(amount);
+    }
+
+    public void processDamage(double amount){
+        this.health = Math.max(health - amount, 0);
         updateEntity();
+
     }
 
     public void regenHealth(double amount){
@@ -71,11 +83,9 @@ public abstract class LivingEntity extends Entity {
 
     public void updateEntity(){
         super.updateEntity();
-        if (health <= 0){
-            this.health = 0;
-        }
-        PeakCraft.getPlugin().getLogger().info(String.valueOf(this.health/this.maxHealth*20.0));
-        ((org.bukkit.entity.LivingEntity)this.getBukkitEntity()).setHealth(this.health/this.maxHealth*20.0);
+        this.health = Math.max(0, Math.min(health, maxHealth));
+
+        ((org.bukkit.entity.LivingEntity)this.getBukkitEntity()).setHealth(Math.min(this.health/this.maxHealth*20.0, 20.0));
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "health", this.health);
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "maxHealth", this.maxHealth);
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "defense", this.defense);

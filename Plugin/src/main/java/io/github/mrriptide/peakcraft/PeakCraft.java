@@ -2,6 +2,7 @@ package io.github.mrriptide.peakcraft;
 
 import io.github.mrriptide.peakcraft.commands.*;
 import io.github.mrriptide.peakcraft.items.ItemManager;
+import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentHealthBoost;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentSharpness;
 import io.github.mrriptide.peakcraft.listeners.*;
@@ -154,6 +155,7 @@ public class PeakCraft extends JavaPlugin {
 
         getLogger().info("Registering enchants:");
         EnchantmentManager.registerEnchantment(new EnchantmentSharpness());
+        EnchantmentManager.registerEnchantment(new EnchantmentHealthBoost());
     }
     @Override
     public void onDisable() {

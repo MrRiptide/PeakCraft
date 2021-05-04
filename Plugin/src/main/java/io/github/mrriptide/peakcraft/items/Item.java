@@ -1,7 +1,6 @@
 package io.github.mrriptide.peakcraft.items;
 
 import com.google.common.collect.Sets;
-import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
@@ -9,6 +8,7 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -74,7 +74,6 @@ public class Item{
 
     public Item(ItemStack itemSource){
         // Get ID of the item from the ItemStack
-        PeakCraft.getPlugin().getLogger().info("Getting item from ItemStack");
 
         // Default option
         this.id = PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
@@ -129,7 +128,7 @@ public class Item{
 
         // Apply enchant glint if it is enchanted
         if (enchantments.size() > 0){
-            meta.addEnchant(org.bukkit.enchantments.Enchantment.SILK_TOUCH, 1, true);
+            meta.addEnchant(Enchantment.DAMAGE_ALL, 1, true);
         }
 
         // Hide things
@@ -197,18 +196,15 @@ public class Item{
             lore.add("");
         }
 
-        bakeAttributes();
-
         // Attributes of item
 
         HashMap<String, ChatColor> attributeColor = new HashMap<>();
         attributeColor.put("damage", ChatColor.DARK_RED);
         attributeColor.put("defense", ChatColor.GREEN);
         attributeColor.put("health", ChatColor.RED);
-        if (bakedAttributes.size() > 0){
-            for (String attribute : bakedAttributes.keySet()){
-                PeakCraft.getPlugin().getLogger().info(attribute);
-                lore.add(attributeColor.getOrDefault(attribute, ChatColor.DARK_PURPLE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + ChatColor.WHITE + ": " + getBakedAttribute(attribute));
+        if (attributes.size() > 0){
+            for (String attribute : attributes.keySet()){
+                lore.add(attributeColor.getOrDefault(attribute, ChatColor.DARK_PURPLE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + ChatColor.WHITE + ": " + getAttribute(attribute));
             }
 
             lore.add("");
@@ -218,7 +214,11 @@ public class Item{
 
         if (enchantments.size() > 0){
             for (Map.Entry<String, Integer> enchantment : enchantments.entrySet()){
-                lore.add(ChatColor.LIGHT_PURPLE + WordUtils.capitalizeFully(enchantment.getKey()) + " " + enchantment.getValue());
+                lore.add(ChatColor.LIGHT_PURPLE +
+                        ((EnchantmentManager.validateEnchantment(enchantment.getKey()) ?
+                        EnchantmentManager.getEnchantment(enchantment.getKey()).getDisplayName() :
+                        "Unknown Enchantment")
+                        + " " + enchantment.getValue()));
             }
 
             lore.add("");
@@ -244,6 +244,9 @@ public class Item{
     }
 
     public double getBakedAttribute(String attributeName){
+        if (bakedAttributes.isEmpty()){
+            bakeAttributes();
+        }
         return bakedAttributes.getOrDefault(attributeName.toLowerCase(), 0.0);
     }
 

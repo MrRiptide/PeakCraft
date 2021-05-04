@@ -20,13 +20,21 @@ public class DamageListener implements Listener {
         if (event.getEntity().isInvulnerable()){
             return;
         }
-        if (!(event.getEntity() instanceof LivingEntity)){
-            //event.setCancelled(true);
-        }
         if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK || event.getCause() == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK){
             //event.setDamage(0);
             return;
         }
+        LivingEntity entity;
+
+        if (event.getEntity() instanceof Player){
+            entity = new PlayerWrapper((Player)event.getEntity());
+        } else if (((CraftCreature)event.getEntity()).getHandle() instanceof LivingEntity){
+            entity = (LivingEntity) ((CraftCreature)event.getEntity()).getHandle();
+        } else {
+            return;
+        }
+        entity.processDamage(event.getDamage() * 5, event.getCause());
+        event.setDamage(0);
     }
 
     @EventHandler

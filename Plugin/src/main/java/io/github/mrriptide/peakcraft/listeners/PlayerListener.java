@@ -1,11 +1,14 @@
 package io.github.mrriptide.peakcraft.listeners;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.runnables.UpdatePlayer;
 import io.github.mrriptide.peakcraft.util.TablistManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 public class PlayerListener implements Listener {
     @EventHandler
@@ -15,5 +18,7 @@ public class PlayerListener implements Listener {
 
             TablistManager.fillBoard(e.getPlayer());
         }, 10);
+
+        BukkitTask task = new UpdatePlayer(e.getPlayer()).runTaskTimer(PeakCraft.instance, 0, 10);
     }
 }

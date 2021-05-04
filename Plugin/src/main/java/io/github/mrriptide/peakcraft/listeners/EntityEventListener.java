@@ -39,7 +39,9 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void onRegainHealth(EntityRegainHealthEvent e){
-        if (e.getEntity() instanceof Player){
+        if (e.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED){
+            e.setCancelled(true);
+        } else if (e.getEntity() instanceof Player){
             PlayerWrapper wrapper = new PlayerWrapper((Player)e.getEntity());
             wrapper.regenHealth(e.getAmount());
         } else if (((CraftCreature)e.getEntity()).getHandle() instanceof LivingEntity){

@@ -5,7 +5,7 @@ import io.github.mrriptide.peakcraft.items.Item;
 
 public class EnchantmentSharpness extends Enchantment{
     public EnchantmentSharpness(){
-        setName("sharpness");
+        super("sharpness", "Sharpness");
     }
 
     @Override

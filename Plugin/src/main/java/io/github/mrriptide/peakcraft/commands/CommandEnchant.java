@@ -2,6 +2,7 @@ package io.github.mrriptide.peakcraft.commands;
 
 import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
 import io.github.mrriptide.peakcraft.items.Item;
+import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,7 +17,18 @@ public class CommandEnchant implements CommandExecutor {
             return false;
         }
 
+        if (args.length != 3){
+            sender.sendMessage("Please provide 3 arguments");
+            return false;
+        }
+
         String enchantName = args[1];
+
+        if (!EnchantmentManager.validateEnchantment(enchantName)){
+            sender.sendMessage("Invalid enchant name");
+            return false;
+        }
+
         int enchantLevel = Integer.parseInt(args[2]);
 
         if (enchantLevel < 0){
