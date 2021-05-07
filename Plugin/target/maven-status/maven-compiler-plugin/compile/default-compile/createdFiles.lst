@@ -1,11 +1,14 @@
 io\github\mrriptide\peakcraft\runnables\UpdatePlayer.class
 io\github\mrriptide\peakcraft\entity\pathfinding\PathfindingGoalHostile.class
+io\github\mrriptide\peakcraft\items\MagicWeaponItem.class
 io\github\mrriptide\peakcraft\Player.class
 io\github\mrriptide\peakcraft\commands\CommandReloadItems.class
 io\github\mrriptide\peakcraft\util\PersistentDataManager.class
 io\github\mrriptide\peakcraft\commands\CommandEnchant.class
 io\github\mrriptide\peakcraft\commands\CommandRecipe_Add.class
 io\github\mrriptide\peakcraft\recipes\RecipeManager.class
+io\github\mrriptide\peakcraft\items\ArmorItem.class
+io\github\mrriptide\peakcraft\items\EnchantableItem.class
 io\github\mrriptide\peakcraft\listeners\PlayerListener.class
 io\github\mrriptide\peakcraft\entity\Entity.class
 io\github\mrriptide\peakcraft\listeners\DamageListener.class
@@ -32,6 +35,7 @@ io\github\mrriptide\peakcraft\recipes\ShapedNMSRecipe.class
 io\github\mrriptide\peakcraft\items\enchantments\Enchantment.class
 io\github\mrriptide\peakcraft\listeners\GUIEventListener.class
 io\github\mrriptide\peakcraft\recipes\ShapelessRecipe.class
+io\github\mrriptide\peakcraft\items\WeaponItem.class
 io\github\mrriptide\peakcraft\PeakCraft.class
 io\github\mrriptide\peakcraft\util\HoloDisplay.class
 io\github\mrriptide\peakcraft\listeners\ChunkListener.class

@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.items.enchantments;
 
+import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
@@ -32,5 +33,5 @@ public abstract class Enchantment {
         return displayName;
     }
 
-    public abstract void bakeItemAttributes(Item item, int level);
+    public abstract void bakeItemAttributes(EnchantableItem item, int level);
 }

@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.entity;
 
+import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.minecraft.server.v1_16_R3.EntityCreature;
@@ -9,7 +10,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public abstract class CombatEntity extends LivingEntity {
     protected double strength;
-    protected Item weapon;
+    protected EnchantableItem weapon;
 
     protected CombatEntity(EntityTypes<? extends EntityCreature> type, World world) {
         super(type, world);
@@ -30,7 +31,7 @@ public abstract class CombatEntity extends LivingEntity {
         }*/
     }
 
-    public Item getWeapon(){
+    public EnchantableItem getWeapon(){
         return weapon;
     }
 

@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.items.enchantments;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
 
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class EnchantmentManager {
         return enchantments.get(name);
     }
 
-    public static void bakeItem(Item item){
+    public static void bakeItem(EnchantableItem item){
         for (Map.Entry<String, Integer> enchantment : item.getEnchants().entrySet()){
             if (enchantments.containsKey(enchantment.getKey())){
                 enchantments.get(enchantment.getKey()).bakeItemAttributes(item, enchantment.getValue());

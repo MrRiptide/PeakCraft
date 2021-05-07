@@ -2,6 +2,7 @@ package io.github.mrriptide.peakcraft.entity;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.CombatEntity;
+import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatMessageType;
@@ -46,7 +47,7 @@ public class PlayerWrapper extends CombatEntity {
 
         for (ItemStack itemStack : player.getInventory().getArmorContents()){
             if (itemStack != null && itemStack.getType() != Material.AIR){
-                Item item = new Item(itemStack);
+                EnchantableItem item = new EnchantableItem(itemStack);
                 item.bakeAttributes();
                 this.maxHealth += item.getBakedAttribute("health");
                 intelligence += item.getBakedAttribute("intelligence");
@@ -62,7 +63,7 @@ public class PlayerWrapper extends CombatEntity {
         this.critChance = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "critChance", 0.5);
         this.critDamage = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "critDamage", 0.5);
         this.name = player.getName();
-        this.weapon = (!player.getInventory().getItemInMainHand().getType().equals(Material.AIR)) ? new Item(player.getInventory().getItemInMainHand()) : null;
+        this.weapon = (!player.getInventory().getItemInMainHand().getType().equals(Material.AIR)) ? new EnchantableItem(player.getInventory().getItemInMainHand()) : null;
     }
 
     public void processDamage(double amount){

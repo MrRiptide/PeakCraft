@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.entity;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.util.HoloDisplay;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
@@ -33,7 +34,7 @@ public abstract class LivingEntity extends Entity {
     public void processAttack(CombatEntity attacker){
         double damage;
 
-        Item weapon = attacker.getWeapon();
+        EnchantableItem weapon = attacker.getWeapon();
 
         if (weapon == null){
             damage = 10;
@@ -104,7 +105,7 @@ public abstract class LivingEntity extends Entity {
         updateName();
     }
 
-    public void processAttack(Item weapon, double strength){
+    public void processAttack(EnchantableItem weapon, double strength){
         double damage = 1;
         if (weapon != null){
             damage = weapon.getBakedAttribute("damage");

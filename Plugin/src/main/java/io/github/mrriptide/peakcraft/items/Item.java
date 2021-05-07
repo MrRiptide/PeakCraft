@@ -15,22 +15,23 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Item{
-    private String id;
+public class Item implements Serializable {
+    protected String id;
     private String oreDict;
     private String displayName;
     private int rarity;
     private String description;
     private Material material;
-    private String type;
+    protected String type;
 
     public Item(){
 
     }
 
-    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Double> attributes, HashMap<String, Integer> enchantments){
+    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type){
         this.id = id;
         this.oreDict = oreDict;
         this.displayName = displayName;
@@ -38,9 +39,6 @@ public class Item{
         this.description = description;
         this.material = material;
         this.type = (type != null && !type.isEmpty()) ? type : "item";
-        this.attributes = attributes;
-        this.enchantments = enchantments;
-        bakeAttributes();
     }
 
     public Item(String id){
@@ -54,26 +52,6 @@ public class Item{
         this.description = item.description;
         this.material = item.material;
         this.type = item.type;
-        this.attributes = item.attributes;
-        this.enchantments = new HashMap<>();
-
-        bakeAttributes();
-    }
-
-    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Double> attributes){
-        this(
-                id,
-                oreDict,
-                displayName,
-                rarity,
-                description,
-                material,
-                type,
-                attributes,
-                new HashMap<>()
-        );
-
-        bakeAttributes();
     }
 
     public Item(ItemStack itemSource){
@@ -91,16 +69,6 @@ public class Item{
         this.description = default_item.description;
         this.type = default_item.type;
         this.material = default_item.material;
-        this.attributes = default_item.attributes;
-        this.enchantments = new HashMap<>();
-        // register enchants
-        for (NamespacedKey key : Objects.requireNonNull(itemSource.getItemMeta()).getPersistentDataContainer().getKeys()){
-            if (key.getKey().startsWith("enchant_")){
-                addEnchantment(key.getKey().substring(8, key.getKey().length() - 6), PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.INTEGER, key.getKey(), 0));
-            }
-        }
-
-        bakeAttributes();
     }
 
     @Override
@@ -132,20 +100,8 @@ public class Item{
         // Set the custom name
         meta.setDisplayName(getRarityColor() + displayName);
 
-        // Apply enchant glint if it is enchanted
-        if (enchantments.size() > 0){
-            meta.addEnchant(Enchantment.DAMAGE_ALL, 1, true);
-        }
-
         // Hide things
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
-
-        // the item id
-        PersistentDataManager.setValue(meta, PersistentDataType.STRING, "ITEM_ID", id);
-        // the enchantments
-        for (Map.Entry<String, Integer> enchantment : enchantments.entrySet()){
-            PersistentDataManager.setValue(meta, PersistentDataType.INTEGER, "ENCHANT_" + enchantment.getKey().toUpperCase() + "_LEVEL", enchantment.getValue());
-        }
 
         // put metadata on item
 
@@ -170,24 +126,8 @@ public class Item{
         return item;
     }
 
-    public String getID(){
-        return id;
-    }
-
-    public String getOreDict(){
-        return oreDict;
-    }
-
-    public String getDisplayName(){
-        return displayName;
-    }
-
     public String getFormattedDisplayName(){
         return getRarityColor() + displayName;
-    }
-
-    public String getDescription(){
-        return description;
     }
 
     public ArrayList<String> getLore(){
@@ -208,7 +148,7 @@ public class Item{
         return lore;
     }
 
-    private ChatColor getRarityColor(){
+    protected ChatColor getRarityColor(){
         ChatColor[] colors = {
                 ChatColor.DARK_RED, // Broken
                 ChatColor.GRAY, // Common
@@ -221,7 +161,7 @@ public class Item{
         return colors[rarity];
     }
 
-    private String getRarityName() {
+    protected String getRarityName() {
         String[] names = {"Broken", "Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic", "Relic"};
 
         return ChatColor.BOLD + names[rarity];
@@ -237,15 +177,62 @@ public class Item{
         clonedItem.description = this.description;
         clonedItem.material = this.material;
         clonedItem.type = this.type;
-
-        clonedItem.attributes = new HashMap<>();
-        for (Map.Entry<String, Double> entry : attributes.entrySet()){
-            clonedItem.attributes.put(entry.getKey(), entry.getValue());
-        }
-        clonedItem.enchantments = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : enchantments.entrySet()){
-            clonedItem.enchantments.put(entry.getKey(), entry.getValue());
-        }
         return clonedItem;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getOreDict() {
+        return oreDict;
+    }
+
+    public void setOreDict(String oreDict) {
+        this.oreDict = oreDict;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public int getRarity() {
+        return rarity;
+    }
+
+    public void setRarity(int rarity) {
+        this.rarity = rarity;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Material getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(Material material) {
+        this.material = material;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
