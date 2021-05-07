@@ -25,12 +25,22 @@ public class Item{
     private String description;
     private Material material;
     private String type;
-    private HashMap<String, Double> attributes;
-    private HashMap<String, Double> bakedAttributes;
-    private HashMap<String, Integer> enchantments;
 
     public Item(){
 
+    }
+
+    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Double> attributes, HashMap<String, Integer> enchantments){
+        this.id = id;
+        this.oreDict = oreDict;
+        this.displayName = displayName;
+        this.rarity = rarity;
+        this.description = description;
+        this.material = material;
+        this.type = (type != null && !type.isEmpty()) ? type : "item";
+        this.attributes = attributes;
+        this.enchantments = enchantments;
+        bakeAttributes();
     }
 
     public Item(String id){
@@ -46,30 +56,24 @@ public class Item{
         this.type = item.type;
         this.attributes = item.attributes;
         this.enchantments = new HashMap<>();
+
+        bakeAttributes();
     }
 
     public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Double> attributes){
-        this.id = id;
-        this.oreDict = oreDict;
-        this.displayName = displayName;
-        this.rarity = rarity;
-        this.description = description;
-        this.material = material;
-        this.type = (type != null && !type.isEmpty()) ? type : "item";
-        this.attributes = attributes;
-        this.enchantments = new HashMap<>();
-    }
+        this(
+                id,
+                oreDict,
+                displayName,
+                rarity,
+                description,
+                material,
+                type,
+                attributes,
+                new HashMap<>()
+        );
 
-    public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Double> attributes, HashMap<String, Integer> enchantments){
-        this.id = id;
-        this.oreDict = oreDict;
-        this.displayName = displayName;
-        this.rarity = rarity;
-        this.description = description;
-        this.material = material;
-        this.type = (type != null && !type.isEmpty()) ? type : "item";
-        this.attributes = attributes;
-        this.enchantments = enchantments;
+        bakeAttributes();
     }
 
     public Item(ItemStack itemSource){
@@ -95,6 +99,8 @@ public class Item{
                 addEnchantment(key.getKey().substring(8, key.getKey().length() - 6), PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.INTEGER, key.getKey(), 0));
             }
         }
+
+        bakeAttributes();
     }
 
     @Override
@@ -196,74 +202,10 @@ public class Item{
             lore.add("");
         }
 
-        // Attributes of item
-
-        HashMap<String, ChatColor> attributeColor = new HashMap<>();
-        attributeColor.put("damage", ChatColor.DARK_RED);
-        attributeColor.put("defense", ChatColor.GREEN);
-        attributeColor.put("health", ChatColor.RED);
-        if (attributes.size() > 0){
-            for (String attribute : attributes.keySet()){
-                lore.add(attributeColor.getOrDefault(attribute, ChatColor.DARK_PURPLE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + ChatColor.WHITE + ": " + getAttribute(attribute));
-            }
-
-            lore.add("");
-        }
-
-        // Enchantments of item
-
-        if (enchantments.size() > 0){
-            for (Map.Entry<String, Integer> enchantment : enchantments.entrySet()){
-                lore.add(ChatColor.LIGHT_PURPLE +
-                        ((EnchantmentManager.validateEnchantment(enchantment.getKey()) ?
-                        EnchantmentManager.getEnchantment(enchantment.getKey()).getDisplayName() :
-                        "Unknown Enchantment")
-                        + " " + enchantment.getValue()));
-            }
-
-            lore.add("");
-        }
-
         // Rarity of item
         lore.add(getRarityColor() + getRarityName().toUpperCase() + " " + type.toUpperCase());
 
         return lore;
-    }
-
-    public double getAttribute(String attributeName){
-        return attributes.getOrDefault(attributeName.toLowerCase(), 0.0);
-    }
-
-    public void setAttribute(String attributeName, double value){
-        attributes.put(attributeName.toLowerCase(), value);
-    }
-
-    public void bakeAttributes(){
-        bakedAttributes = attributes;
-        EnchantmentManager.bakeItem(this);
-    }
-
-    public double getBakedAttribute(String attributeName){
-        if (bakedAttributes.isEmpty()){
-            bakeAttributes();
-        }
-        return bakedAttributes.getOrDefault(attributeName.toLowerCase(), 0.0);
-    }
-
-    public void setBakedAttribute(String attributeName, double value){
-        bakedAttributes.put(attributeName.toLowerCase(),value);
-    }
-
-    public HashMap<String, Integer> getEnchants(){
-        return enchantments;
-    }
-
-    public void addEnchantment(String enchantment, int level){
-        this.enchantments.put(enchantment.toLowerCase(), level);
-    }
-
-    public boolean removeEnchantment(String enchantment){
-        return (this.enchantments.remove(enchantment.toLowerCase()) != null);
     }
 
     private ChatColor getRarityColor(){
