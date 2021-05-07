@@ -1,3 +1,4 @@
+io\github\mrriptide\peakcraft\items\ItemBeanInfo.class
 io\github\mrriptide\peakcraft\runnables\UpdatePlayer.class
 io\github\mrriptide\peakcraft\entity\pathfinding\PathfindingGoalHostile.class
 io\github\mrriptide\peakcraft\items\MagicWeaponItem.class
@@ -42,6 +43,7 @@ io\github\mrriptide\peakcraft\listeners\ChunkListener.class
 io\github\mrriptide\peakcraft\recipes\ShapedRecipe.class
 io\github\mrriptide\peakcraft\recipes\RecipeItemChoice.class
 io\github\mrriptide\peakcraft\commands\CommandGive.class
+io\github\mrriptide\peakcraft\items\ItemManager$1.class
 io\github\mrriptide\peakcraft\items\ItemManager.class
 io\github\mrriptide\peakcraft\commands\CommandSummon.class
 io\github\mrriptide\peakcraft\entity\CombatEntity.class

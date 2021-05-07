@@ -133,6 +133,36 @@ public class Item implements Serializable {
     public ArrayList<String> getLore(){
         ArrayList<String> lore = new ArrayList<>();
 
+        if (this instanceof EnchantableItem){
+            // Attributes of item
+
+            HashMap<String, ChatColor> attributeColor = new HashMap<>();
+            attributeColor.put("damage", ChatColor.DARK_RED);
+            attributeColor.put("defense", ChatColor.GREEN);
+            attributeColor.put("health", ChatColor.RED);
+            if (((EnchantableItem)this).attributes.size() > 0){
+                for (String attribute : ((EnchantableItem)this).attributes.keySet()){
+                    lore.add(attributeColor.getOrDefault(attribute, ChatColor.DARK_PURPLE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + ChatColor.WHITE + ": " + ((EnchantableItem)this).getAttribute(attribute));
+                }
+
+                lore.add("");
+            }
+
+            // Enchantments of item
+
+            if (((EnchantableItem)this).enchantments.size() > 0){
+                for (Map.Entry<String, Integer> enchantment : ((EnchantableItem)this).enchantments.entrySet()){
+                    lore.add(ChatColor.LIGHT_PURPLE +
+                            ((EnchantmentManager.validateEnchantment(enchantment.getKey()) ?
+                                    EnchantmentManager.getEnchantment(enchantment.getKey()).getDisplayName() :
+                                    "Unknown Enchantment")
+                                    + " " + enchantment.getValue()));
+                }
+
+                lore.add("");
+            }
+        }
+
         // Description of item
         if (description != null && description.length() > 0){
             String[] wrapped_description = WordUtils.wrap(description, 30, "\n", true).split("\n");
@@ -178,6 +208,20 @@ public class Item implements Serializable {
         clonedItem.material = this.material;
         clonedItem.type = this.type;
         return clonedItem;
+    }
+
+    public static Item loadFromHashMap(HashMap<String, String> itemData){
+        Item item = new Item();
+        item.id = itemData.get("id");
+        item.oreDict = itemData.get("oreDict");
+        item.displayName = itemData.get("displayName");
+        item.rarity = Integer.parseInt(itemData.get("rarity"));
+        item.description = itemData.get("description");
+        item.material = Material.getMaterial(itemData.get("materialID"));
+        item.type = itemData.get("type");
+
+
+        return item;
     }
 
     public String getId() {
@@ -226,6 +270,14 @@ public class Item implements Serializable {
 
     public void setMaterial(Material material) {
         this.material = material;
+    }
+
+    public String getMaterialStr() {
+        return material.name();
+    }
+
+    public void setMaterialFromStr(String materialName) {
+        this.material = Material.getMaterial(materialName);
     }
 
     public String getType() {

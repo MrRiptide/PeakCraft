@@ -81,45 +81,6 @@ public class EnchantableItem extends Item {
         bakeAttributes();
     }
 
-    public ArrayList<String> getLore(){
-        ArrayList<String> lore = super.getLore();
-
-        lore.remove(lore.size()-1);
-
-        // Attributes of item
-
-        HashMap<String, ChatColor> attributeColor = new HashMap<>();
-        attributeColor.put("damage", ChatColor.DARK_RED);
-        attributeColor.put("defense", ChatColor.GREEN);
-        attributeColor.put("health", ChatColor.RED);
-        if (attributes.size() > 0){
-            for (String attribute : attributes.keySet()){
-                lore.add(attributeColor.getOrDefault(attribute, ChatColor.DARK_PURPLE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + ChatColor.WHITE + ": " + getAttribute(attribute));
-            }
-
-            lore.add("");
-        }
-
-        // Enchantments of item
-
-        if (enchantments.size() > 0){
-            for (Map.Entry<String, Integer> enchantment : enchantments.entrySet()){
-                lore.add(ChatColor.LIGHT_PURPLE +
-                        ((EnchantmentManager.validateEnchantment(enchantment.getKey()) ?
-                                EnchantmentManager.getEnchantment(enchantment.getKey()).getDisplayName() :
-                                "Unknown Enchantment")
-                                + " " + enchantment.getValue()));
-            }
-
-            lore.add("");
-        }
-
-        // Rarity of item
-        lore.add(getRarityColor() + getRarityName().toUpperCase() + " " + type.toUpperCase());
-
-        return lore;
-    }
-
     public double getAttribute(String attributeName){
         return attributes.getOrDefault(attributeName.toLowerCase(), 0.0);
     }

@@ -21,6 +21,8 @@ public abstract class Enchantment {
         this.displayName = WordUtils.capitalizeFully(name);
     }
 
+    public abstract boolean validateEnchant(EnchantableItem item);
+
     public void setName(String name){
         this.name = name.toLowerCase();
     }
