@@ -13,7 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Xml;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ItemManager
 {
@@ -22,7 +23,7 @@ namespace ItemManager
     /// </summary>
     public partial class MainWindow : Window
     {
-        private XmlDocument doc;
+        private List<Item> items;
         public MainWindow()
         {
             InitializeComponent();
@@ -30,24 +31,15 @@ namespace ItemManager
 
         private void loadItemFile(string path)
         {
-            doc = new XmlDocument();
-            doc.PreserveWhitespace = true;
-            try
-            {
-                doc.Load(path);
-            }
-            catch (System.IO.FileNotFoundException)
-            {
-                return;
-            }
+            List<Dictionary<String, String>> data = JsonSerializer.Deserialize<List<Dictionary<String, String>>>()
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
 
-            dialog.DefaultExt = ".xml";
-            dialog.Filter = "XML Files (.xml) | *.xml";
+            dialog.DefaultExt = ".json";
+            dialog.Filter = "JSON Files (.json) | *.json";
             bool? result = dialog.ShowDialog();
 
             if (result == true)
