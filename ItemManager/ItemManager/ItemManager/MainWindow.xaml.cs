@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.IO;
 
 namespace ItemManager
 {
@@ -31,7 +32,12 @@ namespace ItemManager
 
         private void loadItemFile(string path)
         {
-            List<Dictionary<String, String>> data = JsonSerializer.Deserialize<List<Dictionary<String, String>>>()
+            List<Dictionary<String, String>> data = JsonSerializer.Deserialize<List<Dictionary<String, String>>>(File.OpenText(path).ReadToEnd());
+
+            foreach (Dictionary<String, String> itemData in data)
+            {
+
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
