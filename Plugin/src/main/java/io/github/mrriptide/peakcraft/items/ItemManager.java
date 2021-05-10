@@ -81,9 +81,9 @@ public class ItemManager {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            ArrayList<HashMap<String, String>> itemsSource = objectMapper.readValue(file, new TypeReference<ArrayList<HashMap<String, String>>>(){});
+            HashMap<String, HashMap<String, String>> itemsSource = objectMapper.readValue(file, new TypeReference<HashMap<String, HashMap<String, String>>>(){});
 
-            for (HashMap<String, String> itemData : itemsSource){
+            for (HashMap<String, String> itemData : itemsSource.values()){
 
                 Item item;
 
@@ -116,7 +116,7 @@ public class ItemManager {
                 PeakCraft.instance.getDataFolder().mkdirs();
             }
 
-            ArrayList<HashMap<String, String>> items = new ArrayList<>();
+            HashMap<String, HashMap<String, String>> items = new HashMap<>();
 
             for (Material mat : Material.values()){
                 if (mat.isItem()){
@@ -129,7 +129,7 @@ public class ItemManager {
                     map.put("materialID", mat.name());
                     map.put("type", "Item");
 
-                    items.add(map);
+                    items.put(mat.name(), map);
                 } else {
                     PeakCraft.getPlugin().getLogger().info(mat.name() + " is not an item");
                 }

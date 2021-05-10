@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ItemManager
 {
-    class Item
+    class Item:IComparable<Item>
     {
         public readonly String id;
         public readonly String oreDict;
@@ -35,6 +35,39 @@ namespace ItemManager
             this.description = description;
             this.material = new Material(materialId);
             this.type = (type != null && !String.IsNullOrEmpty(type)) ? type : "item";
+        }
+
+        public static Item fromDictionary(Dictionary<string, string> data)
+        {
+            return new Item(
+                data["id"],
+                data["oreDict"],
+                data["displayName"],
+                Int32.Parse(data["rarity"]),
+                data["description"],
+                new Material(data["materialID"]),
+                data["type"]
+                );
+        }
+
+        public int CompareTo(Item other)
+        {
+            return id.CompareTo(other.id);
+        }
+
+        public Dictionary<string, string> toDictionary()
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+
+            data.Add("id", this.id);
+            data.Add("oreDict", this.oreDict);
+            data.Add("displayName", this.displayName);
+            data.Add("rarity", this.rarity.ToString());
+            data.Add("description", this.description);
+            data.Add("materialID", this.material.id);
+            data.Add("type", this.type);
+
+            return data;
         }
     }
 }

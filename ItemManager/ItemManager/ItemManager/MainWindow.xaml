@@ -13,11 +13,58 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"></RowDefinition>
-            <RowDefinition Height="10*"></RowDefinition>
+            <RowDefinition Height="9*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
-        <ListBox Grid.Row="1" Grid.Column="0">
+        <ListBox x:Name="itemListBox" Grid.Row="1" Grid.Column="0" SelectionChanged="itemListBox_SelectionChanged">
         </ListBox>
-        <Button Content="Load File" Grid.Column="0" Click="Button_Click" />
-
+        <Button Content="Load File" Grid.Column="1" Click="Button_Click" />
+        <TextBox x:Name="searchBox" TextWrapping="Wrap" Text="Search" Grid.Column="0" Grid.Row="0" TextAlignment="Center" TextChanged="searchBox_TextChanged" IsEnabled="False"/>
+        <ScrollViewer x:Name="itemDataViewer" Grid.Column="1" Grid.Row="1" Visibility="Visible">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="7*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="2*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="1" Grid.Column="1">ID:</Label>
+                <TextBox x:Name="itemIDTextBox" Grid.Row="1" Grid.Column="2"></TextBox>
+                <Label Grid.Row="2" Grid.Column="1">Ore Dictionary:</Label>
+                <TextBox x:Name="oreDictTextBox" Grid.Row="2" Grid.Column="2"></TextBox>
+                <Label Grid.Row="3" Grid.Column="1">Display Name:</Label>
+                <TextBox x:Name="displayNameTextBox" Grid.Row="3" Grid.Column="2"></TextBox>
+                <Label Grid.Row="4" Grid.Column="1">Rarity:</Label>
+                <ComboBox x:Name="rarityComboBox" Grid.Row="4" Grid.Column="2">
+                    <ComboBoxItem>Common</ComboBoxItem>
+                    <ComboBoxItem>Uncommon</ComboBoxItem>
+                    <ComboBoxItem>Rare</ComboBoxItem>
+                    <ComboBoxItem>Epic</ComboBoxItem>
+                    <ComboBoxItem>Legendary</ComboBoxItem>
+                    <ComboBoxItem>Mythic</ComboBoxItem>
+                    <ComboBoxItem>Relic</ComboBoxItem>
+                </ComboBox>
+                <Label Grid.Row="5" Grid.Column="1">Material:</Label>
+                <TextBox x:Name="materialTextBox" Grid.Row="5" Grid.Column="2"></TextBox>
+                <Label Grid.Row="6" Grid.Column="1">Type:</Label>
+                <TextBox x:Name="typeTextBox" Grid.Row="6" Grid.Column="2"></TextBox>
+                <Label Grid.Row="7" Grid.Column="1">Description:</Label>
+                <TextBox x:Name="descriptionTextBox" Grid.Row="7" Grid.Column="2"></TextBox>
+                <Button x:Name="saveItemButton" Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Click="saveItemButton_Click">Save Item</Button>
+            </Grid>
+        </ScrollViewer>
+        <Button x:Name="addItemButton" Grid.Column="0" Grid.Row="10" Click="addItem_Click" IsEnabled="False">Add Item</Button>
+        <Button x:Name="saveItemsButton" Grid.Column="1" Grid.Row="10" Click="saveItemsButton_Click" IsEnabled="False">Save Items</Button>
     </Grid>
 </Window>
