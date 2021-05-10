@@ -27,9 +27,15 @@ namespace ItemManager
         private SortedDictionary<String, Item> items;
         private int index = -1;
         private String path;
+        private string[] types = new string[] { "item", "armor", "chestplate", "helmet", "leggings", "boots", "weapon", "sword" };
+
         public MainWindow()
         {
             InitializeComponent();
+            foreach (string type in types)
+            {
+                typeComboBox.Items.Add(type);
+            }
         }
 
         private void loadItemFile(string path)
@@ -127,13 +133,7 @@ namespace ItemManager
                 {
                     itemDataViewer.Visibility = Visibility.Visible;
 
-                    itemIDTextBox.Text = item.id;
-                    oreDictTextBox.Text = item.oreDict;
-                    displayNameTextBox.Text = item.displayName;
-                    rarityComboBox.SelectedIndex = item.rarity - 1;
-                    descriptionTextBox.Text = item.description;
-                    materialTextBox.Text = item.material.id;
-                    typeTextBox.Text = item.type;
+                    loadItem(item);
                 }
             }
             
@@ -143,19 +143,29 @@ namespace ItemManager
         {
             try
             {
-                items[itemIDTextBox.Text.ToLower()] = new Item(
+                items[itemIDTextBox.Text.ToLower()] = getCurrentItem();
+            }
+            catch (FormatException exception)
+            {
+                MessageBox.Show("Invalid values");
+            }
+        }
+
+        private Item getCurrentItem()
+        {
+            AttributedItem item = new AttributedItem(
                     itemIDTextBox.Text,
                     oreDictTextBox.Text,
                     displayNameTextBox.Text,
                     rarityComboBox.SelectedIndex + 1,
                     descriptionTextBox.Text,
                     new Material(materialTextBox.Text),
-                    typeTextBox.Text);
-            }
-            catch (FormatException exception)
+                    types[typeComboBox.SelectedIndex]);
+            for (int i = 0; i < attributeLabels.Count; i++)
             {
-                MessageBox.Show("Invalid values");
+                item.setAttribute(attributeLabels[i].Content.ToString(), double.Parse(attributeBoxes[i].Text));
             }
+            return item;
         }
 
         private void addItem_Click(object sender, RoutedEventArgs e)
@@ -190,6 +200,70 @@ namespace ItemManager
                     ""));
 
             loadItems();
+        }
+
+        private List<Label> attributeLabels = new List<Label>();
+        private List<TextBox> attributeBoxes = new List<TextBox>();
+
+        private void typeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            loadItem(getCurrentItem());
+        }
+
+        private void addAttributeLabel(string name)
+        {
+            TextBox attributeTextBox = new TextBox();
+            attributeTextBox.Text = "0";
+            Grid.SetRow(attributeTextBox, attributeBoxes.Count + 8);
+            Grid.SetColumn(attributeTextBox, 2);
+
+            Label attributeLabel = new Label();
+            attributeLabel.Content = name + ": ";
+            Grid.SetRow(attributeLabel, attributeLabels.Count + 8);
+            Grid.SetColumn(attributeLabel, 1);
+
+            itemGrid.Children.Add(attributeLabel);
+            itemGrid.Children.Add(attributeTextBox);
+            attributeBoxes.Add(attributeTextBox);
+            attributeLabels.Add(attributeLabel);
+        }
+
+        private void loadItem(Item item)
+        {
+            itemIDTextBox.Text = item.id;
+            oreDictTextBox.Text = item.oreDict;
+            displayNameTextBox.Text = item.displayName;
+            rarityComboBox.SelectedIndex = item.rarity - 1;
+            descriptionTextBox.Text = item.description;
+            materialTextBox.Text = item.material.id;
+            typeComboBox.SelectedIndex = Math.Max(Array.IndexOf(types, item.type), 0);
+
+            // remove any current labels or text boxes
+            for (int i = 0; i < attributeLabels.Count; i++)
+            {
+                itemGrid.Children.Remove(attributeLabels[i]);
+                itemGrid.Children.Remove(attributeBoxes[i]);
+            }
+
+            attributeLabels.Clear();
+            attributeBoxes.Clear();
+
+            // armor
+            if (typeComboBox.SelectedIndex >= 1 && typeComboBox.SelectedIndex <= 5)
+            {
+                addAttributeLabel("Health");
+                addAttributeLabel("Defense");
+            }
+
+            itemGrid.Height = itemDataViewer.ActualHeight * (1 + 0.1 * attributeBoxes.Count);
+
+            itemGrid.RowDefinitions.RemoveRange(8, itemGrid.RowDefinitions.Count - 9);
+            for (int i = 0; i < attributeBoxes.Count; i++)
+            {
+                RowDefinition rowDefinition = new RowDefinition();
+                rowDefinition.Height = new GridLength(1, GridUnitType.Star);
+                itemGrid.RowDefinitions.Add(rowDefinition);
+            }
         }
     }
 }

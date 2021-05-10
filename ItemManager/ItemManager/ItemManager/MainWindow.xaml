@@ -21,7 +21,7 @@
         <Button Content="Load File" Grid.Column="1" Click="Button_Click" />
         <TextBox x:Name="searchBox" TextWrapping="Wrap" Text="Search" Grid.Column="0" Grid.Row="0" TextAlignment="Center" TextChanged="searchBox_TextChanged" IsEnabled="False"/>
         <ScrollViewer x:Name="itemDataViewer" Grid.Column="1" Grid.Row="1" Visibility="Visible">
-            <Grid>
+            <Grid x:Name="itemGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -58,7 +58,7 @@
                 <Label Grid.Row="5" Grid.Column="1">Material:</Label>
                 <TextBox x:Name="materialTextBox" Grid.Row="5" Grid.Column="2"></TextBox>
                 <Label Grid.Row="6" Grid.Column="1">Type:</Label>
-                <TextBox x:Name="typeTextBox" Grid.Row="6" Grid.Column="2"></TextBox>
+                <ComboBox x:Name="typeComboBox" Grid.Row="6" Grid.Column="2" SelectionChanged="typeComboBox_SelectionChanged"/>
                 <Label Grid.Row="7" Grid.Column="1">Description:</Label>
                 <TextBox x:Name="descriptionTextBox" Grid.Row="7" Grid.Column="2"></TextBox>
                 <Button x:Name="saveItemButton" Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Click="saveItemButton_Click">Save Item</Button>

@@ -53,5 +53,10 @@ namespace ItemManager
 
             return data;
         }
+
+        public void setAttribute(string name, double value)
+        {
+            attributes[name] = value;
+        }
     }
 }
