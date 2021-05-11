@@ -8,10 +8,14 @@ public class WeaponItem extends EnchantableItem {
 
     }
 
-    public static Item loadFromHashMap(HashMap<String, String> itemData){
-        WeaponItem item = (WeaponItem) Item.loadFromHashMap(itemData);
+    public WeaponItem(Item item){
+        super(item);
+    }
 
-        item.setAttribute("damage", Double.parseDouble(itemData.get("damage")));
+    public static Item loadFromHashMap(HashMap<String, String> itemData){
+        WeaponItem item = new WeaponItem(Item.loadFromHashMap(itemData));
+
+        item.setAttribute("damage", Double.parseDouble(itemData.getOrDefault("damage", "10.0")));
 
         return item;
     }

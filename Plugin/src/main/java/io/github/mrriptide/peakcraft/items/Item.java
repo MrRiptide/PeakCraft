@@ -54,6 +54,15 @@ public class Item implements Serializable {
         this.type = item.type;
     }
 
+    public Item(Item item){this.id = item.id;
+        this.oreDict = item.oreDict;
+        this.displayName = item.displayName;
+        this.rarity = item.rarity;
+        this.description = item.description;
+        this.material = item.material;
+        this.type = item.type;
+    }
+
     public Item(ItemStack itemSource){
         // Get ID of the item from the ItemStack
 
@@ -217,7 +226,7 @@ public class Item implements Serializable {
         item.displayName = itemData.get("displayName");
         item.rarity = Integer.parseInt(itemData.get("rarity"));
         item.description = itemData.get("description");
-        item.material = Material.getMaterial(itemData.get("materialID"));
+        item.material = Material.getMaterial(itemData.get("materialID").toUpperCase());
         item.type = itemData.get("type");
 
 

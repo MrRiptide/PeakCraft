@@ -153,7 +153,7 @@ namespace ItemManager
 
         private Item getCurrentItem()
         {
-            AttributedItem item = new AttributedItem(
+            Item item = new Item(
                     itemIDTextBox.Text,
                     oreDictTextBox.Text,
                     displayNameTextBox.Text,
@@ -161,9 +161,15 @@ namespace ItemManager
                     descriptionTextBox.Text,
                     new Material(materialTextBox.Text),
                     types[typeComboBox.SelectedIndex]);
-            for (int i = 0; i < attributeLabels.Count; i++)
+
+            if ((new string[] { "armor", "chestplate", "helmet", "leggings", "boots", "weapon", "sword" }).Contains(item.type))
             {
-                item.setAttribute(attributeLabels[i].Content.ToString(), double.Parse(attributeBoxes[i].Text));
+                item = new AttributedItem(item);
+
+                for (int i = 0; i < attributeLabels.Count; i++)
+                {
+                    ((AttributedItem)item).setAttribute(attributeLabels[i].Content.ToString(), double.Parse(attributeBoxes[i].Text));
+                }
             }
             return item;
         }
@@ -253,6 +259,10 @@ namespace ItemManager
             {
                 addAttributeLabel("Health");
                 addAttributeLabel("Defense");
+            } // armor
+            else if (typeComboBox.SelectedIndex >= 6 && typeComboBox.SelectedIndex <= 7)
+            {
+                addAttributeLabel("Damage");
             }
 
             itemGrid.Height = itemDataViewer.ActualHeight * (1 + 0.1 * attributeBoxes.Count);

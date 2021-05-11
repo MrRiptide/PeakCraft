@@ -25,6 +25,12 @@ public class EnchantableItem extends Item {
 
     }
 
+    public EnchantableItem(Item item){
+        super(item);
+        this.attributes = new HashMap<>();
+        this.enchantments = new HashMap<>();
+    }
+
     public EnchantableItem(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Double> attributes, HashMap<String, Integer> enchantments){
         super(id, oreDict, displayName, rarity, description, material, type);
 
@@ -35,7 +41,7 @@ public class EnchantableItem extends Item {
 
     public EnchantableItem(String id){
         super(id);
-        EnchantableItem item = (EnchantableItem) ItemManager.getItem(id);
+        EnchantableItem item = new EnchantableItem(ItemManager.getItem(id));
 
         this.attributes = item.attributes;
         this.enchantments = new HashMap<>();
@@ -67,7 +73,7 @@ public class EnchantableItem extends Item {
         this.id = PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
 
         assert this.id != null;
-        EnchantableItem default_item = (EnchantableItem) ItemManager.getItem(this.id);
+        EnchantableItem default_item = new EnchantableItem(ItemManager.getItem(this.id));
 
         this.attributes = default_item.attributes;
         this.enchantments = new HashMap<>();
@@ -139,7 +145,7 @@ public class EnchantableItem extends Item {
 
     @Override
     public Item clone() {
-        EnchantableItem clonedItem = (EnchantableItem) super.clone();
+        EnchantableItem clonedItem = new EnchantableItem(super.clone());
 
 
 

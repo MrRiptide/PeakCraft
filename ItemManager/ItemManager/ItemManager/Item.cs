@@ -15,6 +15,18 @@ namespace ItemManager
         public readonly String description;
         public readonly Material material;
         public readonly String type;
+
+        public Item(Item item)
+        {
+            this.id = item.id;
+            this.oreDict = item.oreDict;
+            this.displayName = item.displayName;
+            this.rarity = item.rarity;
+            this.description = item.description;
+            this.material = item.material;
+            this.type = (item.type != null && !String.IsNullOrEmpty(item.type)) ? item.type : "item";
+        }
+
         public Item(String id, String oreDict, String displayName, int rarity, String description, Material material, String type)
         {
             this.id = id;

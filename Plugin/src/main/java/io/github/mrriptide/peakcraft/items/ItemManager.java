@@ -96,7 +96,7 @@ public class ItemManager {
                     item = Item.loadFromHashMap(itemData);
                 }
 
-                items.put(item.getId(), item);
+                items.put(item.getId().toUpperCase(), item);
             }
         } catch (IOException e) {
             e.printStackTrace();

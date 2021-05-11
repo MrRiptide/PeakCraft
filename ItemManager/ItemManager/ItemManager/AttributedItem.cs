@@ -16,6 +16,11 @@ namespace ItemManager
             attributes = new Dictionary<string, double>();
         }
 
+        public AttributedItem(Item item) : base(item)
+        {
+            attributes = new Dictionary<string, double>();
+        }
+
         public static new Item fromDictionary(Dictionary<string, string> data)
         {
             AttributedItem item =  new AttributedItem(
