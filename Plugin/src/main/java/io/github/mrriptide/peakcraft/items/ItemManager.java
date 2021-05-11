@@ -11,6 +11,7 @@ import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.recipes.ShapedRecipe;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -88,9 +89,13 @@ public class ItemManager {
                 Item item;
 
                 String type = itemData.get("type").toLowerCase(Locale.ROOT);
-                if ((Arrays.asList(new String[]{"armor", "chestplate", "helmet", "leggings", "boots"})).contains(type)) {
+                if (!type.equals("item")){
+                    Bukkit.broadcastMessage(type);
+                }
+                if (ArmorItem.validateType(type)) {
                     item = ArmorItem.loadFromHashMap(itemData);
-                } else if ((Arrays.asList(new String[]{"weapon", "sword"})).contains(type)) {
+                    Bukkit.broadcastMessage("loaded as armor");
+                } else if (WeaponItem.validateType(type)) {
                     item = WeaponItem.loadFromHashMap(itemData);
                 } else {
                     item = Item.loadFromHashMap(itemData);

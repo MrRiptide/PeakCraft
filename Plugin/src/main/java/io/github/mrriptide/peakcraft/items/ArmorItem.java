@@ -1,6 +1,8 @@
 package io.github.mrriptide.peakcraft.items;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 public class ArmorItem extends EnchantableItem {
 
@@ -17,6 +19,9 @@ public class ArmorItem extends EnchantableItem {
         return item;
     }
 
+    public static boolean validateType(String type){
+        return Arrays.asList("armor", "chestplate", "helmet", "leggings", "boots").contains(type);
+    }
 
 
 }

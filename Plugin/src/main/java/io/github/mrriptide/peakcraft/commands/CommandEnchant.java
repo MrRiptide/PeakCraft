@@ -36,18 +36,23 @@ public class CommandEnchant implements CommandExecutor {
         if (enchantLevel < 0){
             sender.sendMessage("Cannot provide an enchantment level below 0");
             return false;
-        } else if (enchantLevel == 0){
-            sender.sendMessage("Removed enchantment");
+        } else{
 
-            EnchantableItem newItem = new EnchantableItem(enchantPlayer.getInventory().getItemInMainHand());
-            newItem.removeEnchantment(enchantName);
-            enchantPlayer.getInventory().setItemInMainHand(newItem.getItemStack());
-            return true;
-        } else {
-            EnchantableItem newItem = new EnchantableItem(enchantPlayer.getInventory().getItemInMainHand());
-            newItem.addEnchantment(enchantName, enchantLevel);
-            enchantPlayer.getInventory().setItemInMainHand(newItem.getItemStack());
-            return true;
+            try{
+                EnchantableItem newItem = new EnchantableItem(enchantPlayer.getInventory().getItemInMainHand());
+
+                if (enchantLevel == 0){
+                    sender.sendMessage("Removed enchantment");
+                    newItem.removeEnchantment(enchantName);
+                } else {
+                    newItem.addEnchantment(enchantName, enchantLevel);
+                }
+                enchantPlayer.getInventory().setItemInMainHand(newItem.getItemStack());
+                return true;
+            } catch (IllegalArgumentException e){
+                sender.sendMessage("That item cannot be enchanted");
+                return false;
+            }
         }
     }
 }

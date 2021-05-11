@@ -143,6 +143,7 @@ public class Item implements Serializable {
         ArrayList<String> lore = new ArrayList<>();
 
         if (this instanceof EnchantableItem){
+            ((EnchantableItem)this).bakeAttributes();
             // Attributes of item
 
             HashMap<String, ChatColor> attributeColor = new HashMap<>();
@@ -151,7 +152,7 @@ public class Item implements Serializable {
             attributeColor.put("health", ChatColor.RED);
             if (((EnchantableItem)this).attributes.size() > 0){
                 for (String attribute : ((EnchantableItem)this).attributes.keySet()){
-                    lore.add(attributeColor.getOrDefault(attribute, ChatColor.DARK_PURPLE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + ChatColor.WHITE + ": " + ((EnchantableItem)this).getAttribute(attribute));
+                    lore.add(attributeColor.getOrDefault(attribute, ChatColor.DARK_PURPLE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + ChatColor.WHITE + ": " + (int)((EnchantableItem)this).getAttribute(attribute));
                 }
 
                 lore.add("");

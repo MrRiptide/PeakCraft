@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.items;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class WeaponItem extends EnchantableItem {
@@ -18,6 +19,10 @@ public class WeaponItem extends EnchantableItem {
         item.setAttribute("damage", Double.parseDouble(itemData.getOrDefault("damage", "10.0")));
 
         return item;
+    }
+
+    public static boolean validateType(String type){
+        return Arrays.asList("weapon", "sword").contains(type);
     }
 
 }

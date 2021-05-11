@@ -65,7 +65,7 @@ public class EnchantableItem extends Item {
         bakeAttributes();
     }
 
-    public EnchantableItem(ItemStack itemSource){
+    public EnchantableItem(ItemStack itemSource) throws IllegalArgumentException{
         super(itemSource);
         // Get ID of the item from the ItemStack
 
@@ -73,18 +73,23 @@ public class EnchantableItem extends Item {
         this.id = PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
 
         assert this.id != null;
-        EnchantableItem default_item = new EnchantableItem(ItemManager.getItem(this.id));
+        Item tmp = ItemManager.getItem(this.id);
+        if (tmp instanceof EnchantableItem){
+            EnchantableItem default_item = (EnchantableItem) tmp;
 
-        this.attributes = default_item.attributes;
-        this.enchantments = new HashMap<>();
-        // register enchants
-        for (NamespacedKey key : Objects.requireNonNull(itemSource.getItemMeta()).getPersistentDataContainer().getKeys()){
-            if (key.getKey().startsWith("enchant_")){
-                addEnchantment(key.getKey().substring(8, key.getKey().length() - 6), PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.INTEGER, key.getKey(), 0));
+            this.attributes = default_item.attributes;
+            this.enchantments = new HashMap<>();
+            // register enchants
+            for (NamespacedKey key : Objects.requireNonNull(itemSource.getItemMeta()).getPersistentDataContainer().getKeys()){
+                if (key.getKey().startsWith("enchant_")){
+                    addEnchantment(key.getKey().substring(8, key.getKey().length() - 6), PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.INTEGER, key.getKey(), 0));
+                }
             }
-        }
 
-        bakeAttributes();
+            bakeAttributes();
+        } else{
+            throw new IllegalArgumentException("The item provided is not enchantable");
+        }
     }
 
     public double getAttribute(String attributeName){
@@ -96,7 +101,10 @@ public class EnchantableItem extends Item {
     }
 
     public void bakeAttributes(){
-        bakedAttributes = attributes;
+        bakedAttributes = new HashMap<>();
+        for (Map.Entry<String, Double> attribute : attributes.entrySet()){
+            bakedAttributes.put(attribute.getKey(), attribute.getValue());
+        }
         EnchantmentManager.bakeItem(this);
     }
 
