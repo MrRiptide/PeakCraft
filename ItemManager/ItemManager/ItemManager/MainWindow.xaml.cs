@@ -166,9 +166,9 @@ namespace ItemManager
             {
                 item = new AttributedItem(item);
 
-                for (int i = 0; i < attributeLabels.Count; i++)
+                foreach (TextBox box in attributeBoxes)
                 {
-                    ((AttributedItem)item).setAttribute(attributeLabels[i].Content.ToString(), double.Parse(attributeBoxes[i].Text));
+                    ((AttributedItem)item).setAttribute(box.Tag.ToString(), double.Parse(box.Text));
                 }
             }
             return item;
@@ -187,7 +187,15 @@ namespace ItemManager
 
             foreach (Item item in items.Values)
             {
-                data.Add(item.id, item.toDictionary());
+                Dictionary<string, string> itemData;
+                if (item is AttributedItem)
+                {
+                    itemData = ((AttributedItem)item).toDictionary();
+                } else
+                {
+                    itemData = item.toDictionary();
+                }
+                data.Add(item.id, itemData);
             }
 
             File.WriteAllText(path, JsonSerializer.Serialize(data));
@@ -220,11 +228,13 @@ namespace ItemManager
         {
             TextBox attributeTextBox = new TextBox();
             attributeTextBox.Text = "0";
+            attributeTextBox.Tag = name.ToLower();
             Grid.SetRow(attributeTextBox, attributeBoxes.Count + 8);
             Grid.SetColumn(attributeTextBox, 2);
 
             Label attributeLabel = new Label();
             attributeLabel.Content = name + ": ";
+            attributeLabel.Tag = name.ToLower();
             Grid.SetRow(attributeLabel, attributeLabels.Count + 8);
             Grid.SetColumn(attributeLabel, 1);
 
