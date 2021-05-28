@@ -1,19 +1,19 @@
 package io.github.mrriptide.peakcraft.entity;
 
-import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
+import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.HoloDisplay;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
+import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_16_R3.ChatComponentText;
 import net.minecraft.server.v1_16_R3.EntityCreature;
 import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.World;
-import org.bukkit.ChatColor;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Date;
+import java.text.NumberFormat;
 
 public abstract class LivingEntity extends Entity {
     protected double health;
@@ -27,20 +27,20 @@ public abstract class LivingEntity extends Entity {
 
     @Override
     public void updateName(){
-        this.setCustomName(new ChatComponentText(name + " " + ChatColor.WHITE + ((int)health) + ChatColor.DARK_RED + " ❤"));
+        this.setCustomName(new ChatComponentText(name + " " + CustomColors.HEALTH + ((int)health) + " ❤"));
         this.setCustomNameVisible(true);
     }
 
     public void processAttack(CombatEntity attacker){
         double damage;
 
-        EnchantableItem weapon = attacker.getWeapon();
+        Item weapon = attacker.getWeapon();
 
-        if (weapon == null){
+        if (!(weapon instanceof EnchantableItem)){
             damage = 10;
         } else{
-            weapon.bakeAttributes();
-            damage = (weapon.getBakedAttribute("damage")!=0) ? weapon.getBakedAttribute("damage") : 10;
+            ((EnchantableItem)weapon).bakeAttributes();
+            damage = (((EnchantableItem)weapon).getBakedAttribute("damage")!=0) ? ((EnchantableItem)weapon).getBakedAttribute("damage") : 10;
         }
         double multiplier = 1.0;
         if (attacker instanceof PlayerWrapper){
@@ -56,13 +56,17 @@ public abstract class LivingEntity extends Entity {
         HoloDisplay damageDisplay = new HoloDisplay(this.getBukkitEntity().getLocation().add(Math.random()*1-0.5, Math.random()*1-1.5, Math.random()*1 -0.5));
         ChatColor damageColor;
         if (multiplier < 1){
-            damageColor = ChatColor.GRAY;
+            damageColor = CustomColors.WEAK_ATTACK;
         } else if (multiplier == 1){
-            damageColor = ChatColor.WHITE;
+            damageColor = CustomColors.NORMAL_ATTACK;
         } else {
-            damageColor = ChatColor.DARK_RED;
+            damageColor = CustomColors.CRIT_ATTACK;
         }
-        damageDisplay.showThenDie(damageColor + "" + (int)damagePotential, 40);
+
+        NumberFormat format = NumberFormat.getInstance();
+        format.setGroupingUsed(true);
+
+        damageDisplay.showThenDie(damageColor + "" + format.format((int)damagePotential), 40);
 
         processDamage(damagePotential);
     }

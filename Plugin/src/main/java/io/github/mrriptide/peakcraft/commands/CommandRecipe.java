@@ -1,6 +1,6 @@
 package io.github.mrriptide.peakcraft.commands;
 
-import org.bukkit.ChatColor;
+import io.github.mrriptide.peakcraft.util.CustomColors;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -26,7 +26,7 @@ public class CommandRecipe implements CommandExecutor {
             if (player.hasPermission(subCommand.getPermission())){
                 return subCommand.onCommand(player, command, args);
             } else {
-                player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+                player.sendMessage(CustomColors.ERROR + "You do not have permission to use this command.");
                 return false;
             }
         } else {

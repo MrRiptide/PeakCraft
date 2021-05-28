@@ -4,8 +4,8 @@ import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.recipes.ShapedRecipe;
 import io.github.mrriptide.peakcraft.recipes.RecipeItem;
 import io.github.mrriptide.peakcraft.recipes.RecipeManager;
+import io.github.mrriptide.peakcraft.util.CustomColors;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -76,7 +76,7 @@ public class EditRecipeGUI implements InventoryGui{
         // Create confirm button
         ItemStack save = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         ItemMeta save_meta = save.getItemMeta();
-        save_meta.setDisplayName(ChatColor.GREEN + "Save Recipe");
+        save_meta.setDisplayName(CustomColors.YES + "Save Recipe");
         save.setItemMeta(save_meta);
 
         // Place save button
@@ -85,7 +85,7 @@ public class EditRecipeGUI implements InventoryGui{
         // Create cancel button
         ItemStack cancel = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta cancel_meta = cancel.getItemMeta();
-        cancel_meta.setDisplayName(ChatColor.RED + "Cancel");
+        cancel_meta.setDisplayName(CustomColors.NO + "Cancel");
         cancel.setItemMeta(cancel_meta);
 
         // Place cancel button

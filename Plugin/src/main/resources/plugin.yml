@@ -24,3 +24,6 @@ commands:
   kill:
     description: Kills the executor
     permission: peakcraft.kill
+  test:
+    description: Tests whatever I'm needed tested at the moment
+    permission: peakcraft.test

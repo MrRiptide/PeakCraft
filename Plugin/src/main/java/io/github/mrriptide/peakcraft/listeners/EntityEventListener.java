@@ -23,7 +23,7 @@ public class EntityEventListener implements Listener {
 
             ItemStack originalItem = e.getItem().getItemStack();
 
-            ItemStack newItem = ItemManager.ConvertItem(originalItem);
+            ItemStack newItem = ItemManager.convertItem(originalItem).getItemStack();
 
 
             //player.getInventory().addItem(newItem);

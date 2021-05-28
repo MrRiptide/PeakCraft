@@ -1,9 +1,7 @@
 package io.github.mrriptide.peakcraft.commands;
 
-import io.github.mrriptide.peakcraft.items.EnchantableItem;
-import io.github.mrriptide.peakcraft.items.WeaponItem;
+import io.github.mrriptide.peakcraft.items.*;
 import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
-import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -37,20 +35,19 @@ public class CommandEnchant implements CommandExecutor {
             sender.sendMessage("Cannot provide an enchantment level below 0");
             return false;
         } else{
+            Item newItem = ItemManager.convertItem(enchantPlayer.getInventory().getItemInMainHand());
 
-            try{
-                EnchantableItem newItem = new EnchantableItem(enchantPlayer.getInventory().getItemInMainHand());
-
+            if (newItem instanceof EnchantableItem){
                 if (enchantLevel == 0){
                     sender.sendMessage("Removed enchantment");
-                    newItem.removeEnchantment(enchantName);
+                    ((EnchantableItem)newItem).removeEnchantment(enchantName);
                 } else {
-                    newItem.addEnchantment(enchantName, enchantLevel);
+                    ((EnchantableItem)newItem).addEnchantment(enchantName, enchantLevel);
                 }
                 enchantPlayer.getInventory().setItemInMainHand(newItem.getItemStack());
                 return true;
-            } catch (IllegalArgumentException e){
-                sender.sendMessage("That item cannot be enchanted");
+            } else {
+                sender.sendMessage("This item cannot be enchanted!");
                 return false;
             }
         }

@@ -1,34 +1,30 @@
 package io.github.mrriptide.peakcraft.items.enchantments;
 
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
-import io.github.mrriptide.peakcraft.items.Item;
-import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
 
-import java.util.HashMap;
-
 public abstract class Enchantment {
-    private String name;
-    private String displayName;
+    protected String id;
+    protected String displayName;
 
-    public Enchantment(String name, String displayName){
-        this.name = name;
+    public Enchantment(String id, String displayName){
+        this.id = id;
         this.displayName = displayName;
     }
 
-    public Enchantment(String name){
-        this.name = name;
-        this.displayName = WordUtils.capitalizeFully(name);
+    public Enchantment(String id){
+        this.id = id;
+        this.displayName = WordUtils.capitalizeFully(id);
     }
 
     public abstract boolean validateEnchant(EnchantableItem item);
 
-    public void setName(String name){
-        this.name = name.toLowerCase();
+    public void setId(String id){
+        this.id = id.toLowerCase();
     }
 
-    public String getName(){
-        return this.name;
+    public String getId(){
+        return this.id;
     }
 
     public String getDisplayName(){

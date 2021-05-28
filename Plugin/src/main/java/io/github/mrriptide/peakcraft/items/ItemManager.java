@@ -32,23 +32,6 @@ public class ItemManager {
     private static String itemFilePath = "items.json";
     private static HashMap<String, Item> items;
 
-    public static ItemStack ConvertItem(ItemStack item){
-        NamespacedKey key = new NamespacedKey(PeakCraft.instance, "ITEM_ID");
-        ItemMeta origMeta = item.getItemMeta();
-        String item_id = item.getType().name();
-        if (origMeta != null){
-            PersistentDataContainer container = origMeta.getPersistentDataContainer();
-            if (container.has(key, PersistentDataType.STRING)){
-                item_id = container.get(key, PersistentDataType.STRING);
-            }
-        }
-
-        assert item_id != null;
-        Item item_data = getItem(item_id);
-
-        return item_data.convertItem(item);
-    }
-
     public static void getItemFromItemStack(ItemStack itemStack){
         Item item;
 
@@ -112,6 +95,33 @@ public class ItemManager {
 
     public static Item getItem(String id){
         return items.get(id.toUpperCase()).clone();
+    }
+
+    public static Item convertItem(org.bukkit.inventory.ItemStack itemSource){
+        if (itemSource == null){
+            return getItem("air");
+        }
+        String id = PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
+
+        Item item = getItem(id);
+
+        // Move any general attributes to the item from the itemstack
+        item.setAmount(itemSource.getAmount());
+
+        if (item instanceof EnchantableItem){
+
+            ((EnchantableItem)item).enchantments = new HashMap<>();
+            // register enchants
+            for (NamespacedKey key : Objects.requireNonNull(itemSource.getItemMeta()).getPersistentDataContainer().getKeys()){
+                if (key.getKey().startsWith("enchant_")){
+                    ((EnchantableItem)item).addEnchantment(key.getKey().substring(8, key.getKey().length() - 6), PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.INTEGER, key.getKey(), 0));
+                }
+            }
+
+            ((EnchantableItem)item).bakeAttributes();
+        }
+
+        return item;
     }
 
     private static void createItemList() {

@@ -7,7 +7,7 @@ import io.github.mrriptide.peakcraft.items.Item;
 
 public class EnchantmentHealthBoost extends Enchantment{
     public EnchantmentHealthBoost(){
-        super("healthboost", "Health Boost");
+        super("health_boost", "Health Boost");
     }
 
     public boolean validateEnchant(EnchantableItem item){

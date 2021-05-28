@@ -166,9 +166,15 @@ namespace ItemManager
             {
                 item = new AttributedItem(item);
 
-                foreach (TextBox box in attributeBoxes)
+                for (int i = 0; i < attributeLabels.Count; i++)
                 {
-                    ((AttributedItem)item).setAttribute(box.Tag.ToString(), double.Parse(box.Text));
+                    if (attributeLimit[i] && !double.TryParse(attributeBoxes[i].Text, out double k))
+                    {
+                        MessageBox.Show($"Invalid data at index {i} \"{attributeBoxes[i].Text}\"");
+                    } else
+                    {
+                        ((AttributedItem)item).setAttribute(attributeBoxes[i].Tag.ToString(), attributeBoxes[i].Text);
+                    }
                 }
             }
             return item;
@@ -218,16 +224,17 @@ namespace ItemManager
 
         private List<Label> attributeLabels = new List<Label>();
         private List<TextBox> attributeBoxes = new List<TextBox>();
+        private List<Boolean> attributeLimit = new List<bool>();
 
         private void typeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             loadItem(getCurrentItem());
         }
 
-        private void addAttributeLabel(string name)
+        private void addAttributeLabel(string name, string value = "0", bool limitTypes = true)
         {
             TextBox attributeTextBox = new TextBox();
-            attributeTextBox.Text = "0";
+            attributeTextBox.Text = value;
             attributeTextBox.Tag = name.ToLower();
             Grid.SetRow(attributeTextBox, attributeBoxes.Count + 8);
             Grid.SetColumn(attributeTextBox, 2);
@@ -242,6 +249,7 @@ namespace ItemManager
             itemGrid.Children.Add(attributeTextBox);
             attributeBoxes.Add(attributeTextBox);
             attributeLabels.Add(attributeLabel);
+            attributeLimit.Add(limitTypes);
         }
 
         private void loadItem(Item item)
@@ -267,23 +275,27 @@ namespace ItemManager
             // armor
             if (typeComboBox.SelectedIndex >= 1 && typeComboBox.SelectedIndex <= 5)
             {
-                addAttributeLabel("Health");
-                addAttributeLabel("Defense");
-            } // armor
+                addAttributeLabel("Set", limitTypes:false, value:(item is AttributedItem ? ((AttributedItem)item).getAttributeOrDefault("set", "") : ""));
+                addAttributeLabel("Health", value: (item is AttributedItem ? ((AttributedItem)item).getAttributeOrDefault("health", "0") : "0"));
+                addAttributeLabel("Defense", value: (item is AttributedItem ? ((AttributedItem)item).getAttributeOrDefault("defense", "0") : "0"));
+            } // weapons
             else if (typeComboBox.SelectedIndex >= 6 && typeComboBox.SelectedIndex <= 7)
             {
-                addAttributeLabel("Damage");
+                addAttributeLabel("Ability", limitTypes:false, value: (item is AttributedItem ? ((AttributedItem)item).getAttributeOrDefault("ability", "") : ""));
+                addAttributeLabel("Damage", value: (item is AttributedItem ? ((AttributedItem)item).getAttributeOrDefault("damage", "0") : "0"));
             }
 
             itemGrid.Height = itemDataViewer.ActualHeight * (1 + 0.1 * attributeBoxes.Count);
 
-            itemGrid.RowDefinitions.RemoveRange(8, itemGrid.RowDefinitions.Count - 9);
+            itemGrid.RowDefinitions.RemoveRange(9, itemGrid.RowDefinitions.Count - 10);
             for (int i = 0; i < attributeBoxes.Count; i++)
             {
                 RowDefinition rowDefinition = new RowDefinition();
                 rowDefinition.Height = new GridLength(1, GridUnitType.Star);
                 itemGrid.RowDefinitions.Add(rowDefinition);
             }
+
+            Grid.SetRow(saveItemButton, itemGrid.RowDefinitions.Count - 1);
         }
     }
 }

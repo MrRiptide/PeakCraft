@@ -2,12 +2,17 @@ package io.github.mrriptide.peakcraft.commands;
 
 import io.github.mrriptide.peakcraft.entity.BruteEntity;
 import io.github.mrriptide.peakcraft.entity.Entity;
+import io.github.mrriptide.peakcraft.entity.EntityManager;
+import io.github.mrriptide.peakcraft.entity.PotatoKingEntity;
+import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.entity.Player;
+
+import java.util.Locale;
 
 public class CommandSummon implements CommandExecutor {
     @Override
@@ -27,13 +32,12 @@ public class CommandSummon implements CommandExecutor {
 
         Entity entity = null;
 
-        switch (args[0].toLowerCase()){
-            case "brute":
-                entity = new BruteEntity(player.getLocation());
-                break;
-            default:
-                sender.sendMessage("I'm sorry but that entity does not exist.");
-                return false;
+        try {
+            entity = EntityManager.getEntity(args[0].toLowerCase(Locale.ROOT), player.getLocation());
+        } catch (EntityException e) {
+            e.printStackTrace();
+            sender.sendMessage("I'm sorry but that entity does not exist.");
+            return false;
         }
 
         WorldServer world = ((CraftWorld) player.getWorld()).getHandle();

@@ -2,9 +2,13 @@ package io.github.mrriptide.peakcraft;
 
 import io.github.mrriptide.peakcraft.commands.*;
 import io.github.mrriptide.peakcraft.items.ItemManager;
+import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
+import io.github.mrriptide.peakcraft.items.abilities.PotatoSwordAbility;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentHealthBoost;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentSharpness;
+import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonusManager;
+import io.github.mrriptide.peakcraft.items.fullsetbonus.SpaceSuitFullSetBonus;
 import io.github.mrriptide.peakcraft.listeners.*;
 import io.github.mrriptide.peakcraft.recipes.RecipeManager;
 import org.bukkit.Bukkit;
@@ -26,6 +30,11 @@ public class PeakCraft extends JavaPlugin {
     public void onEnable() {
         instance = this; // provides an instance of the plugin to the rest of the code !!MUST BE DONE BEFORE ANYTHING ELSE!!
 
+        // Register abilities, must be done before loading items
+
+        getLogger().info("Registering abilities:");
+        AbilityManager.registerAbility(new PotatoSwordAbility());
+
         // Load items from items.tsv, must be done as one of the first things
         getLogger().info("Loading items");
         ItemManager.loadItems();
@@ -45,6 +54,7 @@ public class PeakCraft extends JavaPlugin {
         this.getCommand("summon").setExecutor(new CommandSummon());
         this.getCommand("heal").setExecutor(new CommandHeal());
         this.getCommand("kill").setExecutor(new CommandKill());
+        this.getCommand("test").setExecutor(new CommandTest());
         // Register recipe commands
         CommandRecipe commandRecipe = new CommandRecipe();
         this.getCommand("recipe").setExecutor(commandRecipe);
@@ -58,7 +68,7 @@ public class PeakCraft extends JavaPlugin {
 
         // Re-Register Vanilla Recipes
         while (recipeIterator.hasNext()) {
-            org.bukkit.inventory.Recipe vanilla_recipe = (org.bukkit.inventory.Recipe) recipeIterator.next();
+            org.bukkit.inventory.Recipe vanilla_recipe = recipeIterator.next();
             String recipe_name = ((Keyed)vanilla_recipe).getKey().getKey();
 
             if (RecipeManager.recipeExists(recipe_name)){
@@ -154,8 +164,13 @@ public class PeakCraft extends JavaPlugin {
         // Register enchants
 
         getLogger().info("Registering enchants:");
-        EnchantmentManager.registerEnchantment(new EnchantmentSharpness());
-        EnchantmentManager.registerEnchantment(new EnchantmentHealthBoost());
+        EnchantmentManager.registerEnchantments();
+
+        // Register full set bonuses
+
+        getLogger().info("Registering full set bonuses:");
+        FullSetBonusManager.registerSet(new SpaceSuitFullSetBonus());
+
     }
     @Override
     public void onDisable() {

@@ -38,6 +38,7 @@
                     <RowDefinition Height="1*"></RowDefinition>
                     <RowDefinition Height="2*"></RowDefinition>
                     <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="1" Grid.Column="1">ID:</Label>
                 <TextBox x:Name="itemIDTextBox" Grid.Row="1" Grid.Column="2"></TextBox>
@@ -61,7 +62,7 @@
                 <ComboBox x:Name="typeComboBox" Grid.Row="6" Grid.Column="2" SelectionChanged="typeComboBox_SelectionChanged"/>
                 <Label Grid.Row="7" Grid.Column="1">Description:</Label>
                 <TextBox x:Name="descriptionTextBox" Grid.Row="7" Grid.Column="2"></TextBox>
-                <Button x:Name="saveItemButton" Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Click="saveItemButton_Click">Save Item</Button>
+                <Button x:Name="saveItemButton" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" Click="saveItemButton_Click">Save Item</Button>
             </Grid>
         </ScrollViewer>
         <Button x:Name="addItemButton" Grid.Column="0" Grid.Row="10" Click="addItem_Click" IsEnabled="False">Add Item</Button>

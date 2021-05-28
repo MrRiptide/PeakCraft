@@ -1,22 +1,22 @@
 package io.github.mrriptide.peakcraft.items;
 
-import com.google.common.collect.Sets;
-import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.items.abilities.Ability;
+import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
-import io.github.mrriptide.peakcraft.util.PersistentDataManager;
+import io.github.mrriptide.peakcraft.util.CustomColors;
+import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class Item implements Serializable {
     protected String id;
@@ -26,6 +26,8 @@ public class Item implements Serializable {
     private String description;
     private Material material;
     protected String type;
+    private Ability ability;
+    private int amount;
 
     public Item(){
 
@@ -39,6 +41,8 @@ public class Item implements Serializable {
         this.description = description;
         this.material = material;
         this.type = (type != null && !type.isEmpty()) ? type : "item";
+        this.ability = null;
+        this.amount = 1;
     }
 
     public Item(String id){
@@ -52,18 +56,23 @@ public class Item implements Serializable {
         this.description = item.description;
         this.material = item.material;
         this.type = item.type;
+        this.ability = item.ability;
+        this.amount = item.amount;
     }
 
-    public Item(Item item){this.id = item.id;
+    public Item(Item item){
+        this.id = item.id;
         this.oreDict = item.oreDict;
         this.displayName = item.displayName;
         this.rarity = item.rarity;
         this.description = item.description;
         this.material = item.material;
         this.type = item.type;
+        this.ability = item.ability;
+        this.amount = item.amount;
     }
 
-    public Item(ItemStack itemSource){
+    /*public Item(ItemStack itemSource){
         // Get ID of the item from the ItemStack
 
         // Default option
@@ -78,7 +87,8 @@ public class Item implements Serializable {
         this.description = default_item.description;
         this.type = default_item.type;
         this.material = default_item.material;
-    }
+        this.ability = default_item.ability;
+    }*/
 
     @Override
     public boolean equals(Object o) {
@@ -147,12 +157,12 @@ public class Item implements Serializable {
             // Attributes of item
 
             HashMap<String, ChatColor> attributeColor = new HashMap<>();
-            attributeColor.put("damage", ChatColor.DARK_RED);
-            attributeColor.put("defense", ChatColor.GREEN);
-            attributeColor.put("health", ChatColor.RED);
+            attributeColor.put("damage", CustomColors.DAMAGE);
+            attributeColor.put("defense", CustomColors.DEFENSE);
+            attributeColor.put("health", CustomColors.HEALTH);
             if (((EnchantableItem)this).attributes.size() > 0){
                 for (String attribute : ((EnchantableItem)this).attributes.keySet()){
-                    lore.add(attributeColor.getOrDefault(attribute, ChatColor.DARK_PURPLE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + ChatColor.WHITE + ": " + (int)((EnchantableItem)this).getAttribute(attribute));
+                    lore.add(attributeColor.getOrDefault(attribute, CustomColors.ATTRIBUTE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + CustomColors.ATTRIBUTE_VALUE + ": " + (int)((EnchantableItem)this).getAttribute(attribute));
                 }
 
                 lore.add("");
@@ -162,7 +172,7 @@ public class Item implements Serializable {
 
             if (((EnchantableItem)this).enchantments.size() > 0){
                 for (Map.Entry<String, Integer> enchantment : ((EnchantableItem)this).enchantments.entrySet()){
-                    lore.add(ChatColor.LIGHT_PURPLE +
+                    lore.add(CustomColors.ENCHANTMENT +
                             ((EnchantmentManager.validateEnchantment(enchantment.getKey()) ?
                                     EnchantmentManager.getEnchantment(enchantment.getKey()).getDisplayName() :
                                     "Unknown Enchantment")
@@ -182,22 +192,42 @@ public class Item implements Serializable {
             lore.add("");
         }
 
+        if (ability != null){
+            lore.addAll(ability.getLore());
+            lore.add("");
+        }
+
+        if (this instanceof ArmorItem && ((ArmorItem)this).getSet() != null){
+            lore.addAll(((ArmorItem)this).getSet().getLore());
+            lore.add("");
+        }
+
         // Rarity of item
         lore.add(getRarityColor() + getRarityName().toUpperCase() + " " + type.toUpperCase());
 
         return lore;
     }
 
+    public boolean hasAbility(){
+        return ability != null;
+    }
+
+    public void useAbility(PlayerWrapper player){
+        if (ability != null){
+            AbilityManager.triggerAbility(ability, player);
+        }
+    }
+
     protected ChatColor getRarityColor(){
         ChatColor[] colors = {
-                ChatColor.DARK_RED, // Broken
-                ChatColor.GRAY, // Common
-                ChatColor.GREEN, // Uncommon
-                ChatColor.BLUE, // Rare
-                ChatColor.DARK_PURPLE, // Epic
-                ChatColor.GOLD, // Legendary
-                ChatColor.LIGHT_PURPLE, // Mythic
-                ChatColor.AQUA}; // Relic
+                CustomColors.ERROR, // Broken
+                CustomColors.COMMON, // Common
+                CustomColors.UNCOMMON, // Uncommon
+                CustomColors.RARE, // Rare
+                CustomColors.EPIC, // Epic
+                CustomColors.LEGENDARY, // Legendary
+                CustomColors.MYTHIC, // Mythic
+                CustomColors.RELIC}; // Relic
         return colors[rarity];
     }
 
@@ -217,6 +247,7 @@ public class Item implements Serializable {
         clonedItem.description = this.description;
         clonedItem.material = this.material;
         clonedItem.type = this.type;
+        clonedItem.ability = this.ability;
         return clonedItem;
     }
 
@@ -229,7 +260,11 @@ public class Item implements Serializable {
         item.description = itemData.get("description");
         item.material = Material.getMaterial(itemData.get("materialID").toUpperCase());
         item.type = itemData.get("type");
-
+        if (itemData.containsKey("ability") && AbilityManager.validateAbility(itemData.get("ability"))){
+            item.ability = AbilityManager.getAbility(itemData.get("ability"));
+        } else {
+            item.ability = null;
+        }
 
         return item;
     }
@@ -296,5 +331,9 @@ public class Item implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public void setAmount(int amount){
+        this.amount = amount;
     }
 }

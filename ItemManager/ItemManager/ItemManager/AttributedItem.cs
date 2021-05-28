@@ -8,17 +8,17 @@ namespace ItemManager
 {
     class AttributedItem : Item
     {
-        Dictionary<String, Double> attributes;
+        Dictionary<String, String> attributes;
 
         public AttributedItem(String id, String oreDict, String displayName, int rarity, String description, Material material, String type) 
             : base(id, oreDict, displayName, rarity, description, material, type)
         {
-            attributes = new Dictionary<string, double>();
+            attributes = new Dictionary<string, string>();
         }
 
         public AttributedItem(Item item) : base(item)
         {
-            attributes = new Dictionary<string, double>();
+            attributes = new Dictionary<string, string>();
         }
 
         public static new Item fromDictionary(Dictionary<string, string> data)
@@ -41,7 +41,7 @@ namespace ItemManager
 
             foreach (string key in data.Keys)
             {
-                item.attributes.Add(key, double.Parse(data[key]));
+                item.attributes.Add(key, data[key]);
             }
 
             return item;
@@ -59,9 +59,14 @@ namespace ItemManager
             return data;
         }
 
-        public void setAttribute(string name, double value)
+        public void setAttribute(string name, string value)
         {
             attributes[name] = value;
+        }
+
+        public string getAttributeOrDefault(string name, string defaultValue)
+        {
+            return attributes.ContainsKey(name) ? attributes[name] : defaultValue;
         }
     }
 }

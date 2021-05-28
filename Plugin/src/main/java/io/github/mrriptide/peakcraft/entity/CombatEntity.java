@@ -10,7 +10,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public abstract class CombatEntity extends LivingEntity {
     protected double strength;
-    protected EnchantableItem weapon;
+    protected Item weapon;
 
     protected CombatEntity(EntityTypes<? extends EntityCreature> type, World world) {
         super(type, world);
@@ -31,7 +31,7 @@ public abstract class CombatEntity extends LivingEntity {
         }*/
     }
 
-    public EnchantableItem getWeapon(){
+    public Item getWeapon(){
         return weapon;
     }
 

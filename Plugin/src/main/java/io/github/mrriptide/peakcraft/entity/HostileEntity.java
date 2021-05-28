@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.entity;
 
+import io.github.mrriptide.peakcraft.entity.pathfinding.PathfinderGoalHostileTarget;
 import net.minecraft.server.v1_16_R3.*;
 
 public abstract class HostileEntity extends CombatEntity{
@@ -9,7 +10,6 @@ public abstract class HostileEntity extends CombatEntity{
 
     @Override
     public void initPathfinder() { // This method will apply some custom pathfinders to our pig
-        super.initPathfinder(); // This will apply all default pathfinders to the pig
 
         /*
          * this.targetSelector - Communicates what the pig's target to walk to will be.
@@ -34,7 +34,9 @@ public abstract class HostileEntity extends CombatEntity{
          * this, - the pig
          * 1.0f) - the height of the jump(Please experiment with this to get a height you want)
          */
-        this.goalSelector.a(1, new PathfinderGoalMeleeAttack(this, 1.0f, true));
+        this.goalSelector.a(1, new PathfinderGoalHostileTarget(this, 1.0f, 15));
+        this.goalSelector.a(0, new PathfinderGoalFloat(this));
+        this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 
     }
 }

@@ -14,7 +14,7 @@ import java.util.UUID;
  *
  * **/
 public class UpdatePlayer extends BukkitRunnable {
-    private UUID playerUUID;
+    private final UUID playerUUID;
     public UpdatePlayer(Player player){
         this.playerUUID = player.getUniqueId();
     }
@@ -24,9 +24,14 @@ public class UpdatePlayer extends BukkitRunnable {
         Player player = Bukkit.getServer().getPlayer(playerUUID);
         if (player != null){
             PlayerWrapper wrapper = new PlayerWrapper(player);
-            wrapper.updateEntity();
-
             wrapper.tryNaturalRegen();
+            wrapper.regenMana();
+
+            if (wrapper.getFullSet() != null){
+                wrapper.getFullSet().applyBonus(wrapper);
+            }
+
+            wrapper.updateEntity();
         } else {
             this.cancel();
         }

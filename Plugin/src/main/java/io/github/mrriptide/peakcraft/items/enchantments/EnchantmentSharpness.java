@@ -6,6 +6,9 @@ import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.WeaponItem;
 
 public class EnchantmentSharpness extends Enchantment{
+    protected String id = "sharpness";
+    protected String displayName = "Sharpness";
+
     public EnchantmentSharpness(){
         super("sharpness", "Sharpness");
     }
@@ -17,6 +20,6 @@ public class EnchantmentSharpness extends Enchantment{
 
     @Override
     public void bakeItemAttributes(EnchantableItem item, int level) {
-        item.setBakedAttribute("damage", item.getBakedAttribute("damage") * 1.05 * level);
+        item.setBakedAttribute("damage", item.getBakedAttribute("damage") * Math.pow(1.05, level));
     }
 }

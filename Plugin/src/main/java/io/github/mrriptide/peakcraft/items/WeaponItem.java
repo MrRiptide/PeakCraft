@@ -25,4 +25,9 @@ public class WeaponItem extends EnchantableItem {
         return Arrays.asList("weapon", "sword").contains(type);
     }
 
+    @Override
+    public Item clone(){
+        return new WeaponItem(super.clone());
+    }
+
 }

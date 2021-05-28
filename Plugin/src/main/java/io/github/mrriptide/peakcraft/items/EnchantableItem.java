@@ -2,8 +2,6 @@ package io.github.mrriptide.peakcraft.items;
 
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
-import org.apache.commons.lang.WordUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -27,8 +25,13 @@ public class EnchantableItem extends Item {
 
     public EnchantableItem(Item item){
         super(item);
-        this.attributes = new HashMap<>();
-        this.enchantments = new HashMap<>();
+        if (item instanceof EnchantableItem){
+            this.attributes = ((EnchantableItem) item).attributes;
+            this.enchantments = ((EnchantableItem) item).enchantments;
+        } else {
+            this.attributes = new HashMap<>();
+            this.enchantments = new HashMap<>();
+        }
     }
 
     public EnchantableItem(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Double> attributes, HashMap<String, Integer> enchantments){
@@ -65,7 +68,7 @@ public class EnchantableItem extends Item {
         bakeAttributes();
     }
 
-    public EnchantableItem(ItemStack itemSource) throws IllegalArgumentException{
+    /*public EnchantableItem(ItemStack itemSource) throws IllegalArgumentException{
         super(itemSource);
         // Get ID of the item from the ItemStack
 
@@ -90,7 +93,7 @@ public class EnchantableItem extends Item {
         } else{
             throw new IllegalArgumentException("The item provided is not enchantable");
         }
-    }
+    }*/
 
     public double getAttribute(String attributeName){
         return attributes.getOrDefault(attributeName.toLowerCase(), 0.0);
@@ -168,5 +171,9 @@ public class EnchantableItem extends Item {
 
 
         return clonedItem;
+    }
+
+    public HashMap<String, Double> getAttributes() {
+        return attributes;
     }
 }
