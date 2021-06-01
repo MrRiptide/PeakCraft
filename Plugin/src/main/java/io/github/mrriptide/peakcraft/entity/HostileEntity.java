@@ -3,7 +3,11 @@ package io.github.mrriptide.peakcraft.entity;
 import io.github.mrriptide.peakcraft.entity.pathfinding.PathfinderGoalHostileTarget;
 import net.minecraft.server.v1_16_R3.*;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 public abstract class HostileEntity extends CombatEntity{
+    protected HashMap<UUID, Double> anger = new HashMap<>();
     protected HostileEntity(EntityTypes<? extends EntityCreature> type, World world) {
         super(type, world);
     }
@@ -11,6 +15,7 @@ public abstract class HostileEntity extends CombatEntity{
     @Override
     public void initPathfinder() { // This method will apply some custom pathfinders to our pig
 
+        PathfinderGoalNearestAttackableTarget
         /*
          * this.targetSelector - Communicates what the pig's target to walk to will be.
          *
@@ -25,7 +30,7 @@ public abstract class HostileEntity extends CombatEntity{
          * true) - this part is weird, but it tells the pig weather to target its own kind. We really don't need to worry about this, but
          * if we used EntityCreature as the target this would stop the pig from attacking itself.
          */
-        this.targetSelector.a(0, new PathfinderGoalNearestAttackableTarget<EntityHuman>(this, EntityHuman.class, true));
+        //this.targetSelector.a(0, new PathfinderGoalNearestAttackableTarget<EntityHuman>(this, EntityHuman.class, true));
 
         /*
          * this.goalSelector - Communicates what the pig's goal to perform will be.
@@ -39,4 +44,11 @@ public abstract class HostileEntity extends CombatEntity{
         this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 
     }
+
+    public HashMap<UUID,Double> getAnger(){return anger;}
+    public HashMap<UUID,Double> getPlayerAnger(UUID player){return anger.getOrDefault(player);}
+    public void setPlayerAnger(UUID player, double angerValue){
+        this.anger.put(player, angerValue);
+    }
+
 }
