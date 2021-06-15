@@ -977,3 +977,4 @@ CRACKED_POLISHED_BLACKSTONE_BRICKS		Cracked Polished Blackstone Bricks	1		CRACKE
 RESPAWN_ANCHOR		Respawn Anchor	1		RESPAWN_ANCHOR			
 COMPACT_COBBLE		Compact Cobblestone	2		COBBLESTONE			
 COMPACT_DIAMOND_SWORD		Compact Diamond Sword	2	A sword made of compacted diamonds	DIAMOND_SWORD	Sword	Damage	50
+COMPACT_OBSIDIAN_CHESTPLATE		Compact Obsidian Chestplate	3	A chestplate made of compacted obsidian	NETHERITE_CHESTPLATE	Chestplate	Health	50
