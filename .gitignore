@@ -37,6 +37,9 @@ Plugin/.idea/modules
 Plugin/*.iml
 Plugin/*.ipr
 
+# Ignore built files
+Plugin/target/
+
 # CMake
 cmake-build-*/
 
