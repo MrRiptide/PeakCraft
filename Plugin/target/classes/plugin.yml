@@ -27,3 +27,6 @@ commands:
   test:
     description: Tests whatever I'm needed tested at the moment
     permission: peakcraft.test
+  creativeinv:
+    decription: Shows a creative inventory that allows users to give themselves items
+    permission: peakcraft.creativeinv

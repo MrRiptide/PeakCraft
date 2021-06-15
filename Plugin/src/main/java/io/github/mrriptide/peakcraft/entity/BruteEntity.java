@@ -7,7 +7,7 @@ import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 
 public class BruteEntity extends HostileEntity {
     public BruteEntity(Location loc){
-        super(EntityTypes.ZOMBIE, ((CraftWorld) loc.getWorld()).getHandle());
+        super("brute", EntityTypes.ZOMBIE, ((CraftWorld) loc.getWorld()).getHandle());
         this.setPosition(loc.getX(), loc.getY(), loc.getZ());
         setName(CustomColors.BASIC_ENTITY +"Brute");
         setMaxHealth(10000);

@@ -10,7 +10,7 @@ import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 
 public class PotatoKingEntity extends HostileEntity {
     public PotatoKingEntity(Location loc) {
-        super(EntityTypes.ZOMBIE, ((CraftWorld) loc.getWorld()).getHandle());
+        super("potato_king", EntityTypes.ZOMBIE, ((CraftWorld) loc.getWorld()).getHandle());
 
         this.setSlot(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy((new Item("diamond_chestplate")).getItemStack()));
         this.setPosition(loc.getX(), loc.getY(), loc.getZ());
@@ -19,4 +19,6 @@ public class PotatoKingEntity extends HostileEntity {
         this.strength = 150;
 
     }
+
+
 }

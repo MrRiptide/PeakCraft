@@ -7,11 +7,13 @@ import org.bukkit.scoreboard.ScoreboardManager;
 
 public abstract class Entity extends EntityCreature {
     protected String name;
+    protected final String id;
 
-    protected Entity(EntityTypes<? extends EntityCreature> type, World world) {
+    protected Entity(String id, EntityTypes<? extends EntityCreature> type, World world) {
         super(type, world);
         updateName();
         setName("Unnamed Mob");
+        this.id = id;
     }
 
     public void updateEntity(){
@@ -31,5 +33,6 @@ public abstract class Entity extends EntityCreature {
 
     public void applyNBT(){
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.STRING, "name", name);
+        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.STRING, "id", id);
     }
 }

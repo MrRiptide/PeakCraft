@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.entity;
 
+import io.github.mrriptide.peakcraft.entity.pathfinding.PathfinderGoalAngeredTarget;
 import io.github.mrriptide.peakcraft.entity.pathfinding.PathfinderGoalHostileTarget;
 import net.minecraft.server.v1_16_R3.*;
 
@@ -8,14 +9,14 @@ import java.util.UUID;
 
 public abstract class HostileEntity extends CombatEntity{
     protected HashMap<UUID, Double> anger = new HashMap<>();
-    protected HostileEntity(EntityTypes<? extends EntityCreature> type, World world) {
-        super(type, world);
+    protected HostileEntity(String id, EntityTypes<? extends EntityCreature> type, World world) {
+        super(id, type, world);
     }
 
     @Override
     public void initPathfinder() { // This method will apply some custom pathfinders to our pig
 
-        PathfinderGoalNearestAttackableTarget
+        //PathfinderGoalNearestAttackableTarget
         /*
          * this.targetSelector - Communicates what the pig's target to walk to will be.
          *
@@ -39,16 +40,25 @@ public abstract class HostileEntity extends CombatEntity{
          * this, - the pig
          * 1.0f) - the height of the jump(Please experiment with this to get a height you want)
          */
-        this.goalSelector.a(1, new PathfinderGoalHostileTarget(this, 1.0f, 15));
+        this.targetSelector.a(0, new PathfinderGoalAngeredTarget(this, false));
         this.goalSelector.a(0, new PathfinderGoalFloat(this));
+        this.goalSelector.a(1, new PathfinderGoalMeleeAttack(this, 1.0, true));
         this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 
     }
 
     public HashMap<UUID,Double> getAnger(){return anger;}
-    public HashMap<UUID,Double> getPlayerAnger(UUID player){return anger.getOrDefault(player);}
+    public double getPlayerAnger(UUID player){return anger.getOrDefault(player, 0.0);}
     public void setPlayerAnger(UUID player, double angerValue){
         this.anger.put(player, angerValue);
     }
 
+    @Override
+    public void processAttack(CombatEntity attacker) {
+        if (attacker instanceof PlayerWrapper){
+            anger.put(((PlayerWrapper) attacker).getSource().getPlayer().getUniqueId(), anger.getOrDefault(attacker.getUniqueID(), 0.0) + 50);
+        }
+
+        super.processAttack(attacker);
+    }
 }

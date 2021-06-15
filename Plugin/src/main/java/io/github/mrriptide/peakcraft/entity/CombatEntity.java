@@ -12,8 +12,8 @@ public abstract class CombatEntity extends LivingEntity {
     protected double strength;
     protected Item weapon;
 
-    protected CombatEntity(EntityTypes<? extends EntityCreature> type, World world) {
-        super(type, world);
+    protected CombatEntity(String id, EntityTypes<? extends EntityCreature> type, World world) {
+        super(id, type, world);
     }
 
     public void applyNBT(){

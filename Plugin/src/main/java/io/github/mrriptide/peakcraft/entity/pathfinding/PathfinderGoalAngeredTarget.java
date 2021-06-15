@@ -1,16 +1,17 @@
 package io.github.mrriptide.peakcraft.entity.pathfinding;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.CombatEntity;
 import io.github.mrriptide.peakcraft.entity.HostileEntity;
 import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import javax.annotation.Nullable;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class PathfinderGoalAngeredTarget extends PathfinderGoalTarget {
@@ -40,13 +41,28 @@ public class PathfinderGoalAngeredTarget extends PathfinderGoalTarget {
 
     public void g(){
         // select target
-        CraftPlayer maxPlayer = null;
-        for (Map.Entry<UUID, Double> entry : ((HostileEntity)this.e).getAnger().entrySet()){
-            if (maxPlayer == null){
-                maxPlayer = (CraftPlayer) Bukkit.getPlayer(entry.getKey());
-            } else {
-                if (maxPlayer.getLocation().distance())
+        UUID maxPlayer = null;
+        List<Entity> entities =  this.e.getBukkitEntity().getNearbyEntities(15, 15, 15);
+        HashMap<UUID, Double> angers = ((HostileEntity)this.e).getAnger();
+        double currentAngerAmount = -100;
+        if (this.e.getGoalTarget() instanceof EntityPlayer){
+            maxPlayer = ((EntityPlayer) this.e.getGoalTarget()).getBukkitEntity().getUniqueId();
+            currentAngerAmount = angers.getOrDefault(maxPlayer, 0.0);
+        }
+        //double currentAngerAmount = (this.e.getGoalTarget() instanceof EntityPlayer ? angers.getOrDefault(((EntityPlayer) this.e.getGoalTarget()).getBukkitEntity().getUniqueId(), 0.0) : 0.0);
+        for (Entity entity : entities){
+            if (entity instanceof Player){
+                double potentialAnger = angers.getOrDefault(entity.getUniqueId(), 0.0);
+                if (potentialAnger > currentAngerAmount + 25 && potentialAnger >= angers.getOrDefault(maxPlayer, 0.0)){
+                    maxPlayer = entity.getUniqueId();
+                }
             }
+        }
+
+        if (maxPlayer != null){
+            this.target = ((CraftPlayer) Bukkit.getPlayer(maxPlayer)).getHandle();
+        } else {
+            this.target = null;
         }
     }
 

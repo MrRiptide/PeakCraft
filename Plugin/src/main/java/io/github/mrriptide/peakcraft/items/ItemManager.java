@@ -38,6 +38,10 @@ public class ItemManager {
         String type = PersistentDataManager.getValueOrDefault(itemStack, PersistentDataType.STRING, "type", "item");
     }
 
+    public static HashMap<String, Item> getItems(){
+        return items;
+    };
+
     public static void loadItems() {
         items = new HashMap<String, Item>();
 

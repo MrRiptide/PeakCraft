@@ -11,7 +11,9 @@ io\github\mrriptide\peakcraft\items\ArmorItem.class
 io\github\mrriptide\peakcraft\items\EnchantableItem.class
 io\github\mrriptide\peakcraft\listeners\PlayerListener.class
 io\github\mrriptide\peakcraft\entity\Entity.class
+io\github\mrriptide\peakcraft\guis\CreativeGUI$Tab.class
 io\github\mrriptide\peakcraft\listeners\DamageListener.class
+io\github\mrriptide\peakcraft\commands\CommandCreativeInventory.class
 io\github\mrriptide\peakcraft\items\enchantments\EnchantmentHealthBoost.class
 io\github\mrriptide\peakcraft\recipes\NMSRecipe.class
 io\github\mrriptide\peakcraft\commands\CommandTest.class
@@ -22,6 +24,7 @@ io\github\mrriptide\peakcraft\commands\CommandRecipe.class
 io\github\mrriptide\peakcraft\recipes\Recipe.class
 io\github\mrriptide\peakcraft\nms\IRecipe.class
 io\github\mrriptide\peakcraft\listeners\CraftingListener.class
+io\github\mrriptide\peakcraft\entity\pathfinding\PathfinderGoalPotatoKing$Phase.class
 io\github\mrriptide\peakcraft\util\CustomColors.class
 io\github\mrriptide\peakcraft\items\fullsetbonus\SpaceSuitFullSetBonus.class
 io\github\mrriptide\peakcraft\entity\EntityManager.class
@@ -45,7 +48,9 @@ io\github\mrriptide\peakcraft\items\enchantments\Enchantment.class
 io\github\mrriptide\peakcraft\exceptions\EntityException.class
 io\github\mrriptide\peakcraft\listeners\GUIEventListener.class
 io\github\mrriptide\peakcraft\recipes\ShapelessRecipe.class
+io\github\mrriptide\peakcraft\guis\CreativeGUI.class
 io\github\mrriptide\peakcraft\items\WeaponItem.class
+io\github\mrriptide\peakcraft\entity\pathfinding\PathfinderGoalAngeredTarget.class
 io\github\mrriptide\peakcraft\PeakCraft.class
 io\github\mrriptide\peakcraft\items\fullsetbonus\FullSetBonusManager.class
 io\github\mrriptide\peakcraft\util\HoloDisplay.class
@@ -61,6 +66,7 @@ io\github\mrriptide\peakcraft\commands\CommandSummon.class
 io\github\mrriptide\peakcraft\items\ItemStack.class
 io\github\mrriptide\peakcraft\guis\CraftingGUI.class
 io\github\mrriptide\peakcraft\entity\CombatEntity.class
+io\github\mrriptide\peakcraft\entity\pathfinding\PathfinderGoalPotatoKing.class
 io\github\mrriptide\peakcraft\commands\CommandHeal.class
 io\github\mrriptide\peakcraft\entity\LivingEntity.class
 io\github\mrriptide\peakcraft\recipes\RecipeManager$1.class

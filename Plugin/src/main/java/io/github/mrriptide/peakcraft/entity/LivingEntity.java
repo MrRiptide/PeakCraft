@@ -20,8 +20,8 @@ public abstract class LivingEntity extends Entity {
     protected double maxHealth;
     protected double defense;
 
-    protected LivingEntity(EntityTypes<? extends EntityCreature> type, World world) {
-        super(type, world);
+    protected LivingEntity(String id, EntityTypes<? extends EntityCreature> type, World world) {
+        super(id, type, world);
         updateName();
     }
 

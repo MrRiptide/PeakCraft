@@ -41,9 +41,11 @@ public class PlayerWrapper extends CombatEntity {
     protected double critChance;
     protected double critDamage;
     protected long lastDamageTime;
+    protected double hunger;
+    protected final double maxHunger = 500;
 
     public PlayerWrapper(Player player){
-        super(EntityTypes.SHEEP, ((CraftWorld) player.getWorld()).getHandle());
+        super("player", EntityTypes.SHEEP, ((CraftWorld) player.getWorld()).getHandle());
         this.source = player;
         this.maxHealth = 100;
 
@@ -64,6 +66,7 @@ public class PlayerWrapper extends CombatEntity {
 
         this.health = Math.min(PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "health", maxHealth), maxHealth);
         this.mana = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "mana", 0.0);
+        this.hunger = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "hunger", 0.0);
         this.maxMana = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "maxMana", 100.0);
         this.lastDamageTime = PersistentDataManager.getValueOrDefault(player, PersistentDataType.LONG, "lastDamageTime", Long.valueOf(0));
         this.critChance = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "critChance", 0.5);
@@ -83,10 +86,19 @@ public class PlayerWrapper extends CombatEntity {
         }
     }
 
+    public void regenHealth(double amount){
+        this.hunger -= Math.min(amount, maxHealth-health);
+
+        super.regenHealth(amount);
+    }
+
     @Override
     public void updateEntity(){
         super.updateEntity();
+
+        ((org.bukkit.entity.Player)this.getBukkitEntity()).setSaturation((float) Math.min(this.hunger/this.maxHunger*20.0, 20.0));
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "mana", this.mana);
+        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "hunger", this.mana);
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "critChance", this.critChance);
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "critDamage", this.critDamage);
         PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.LONG, "lastDamageTime", this.lastDamageTime);
