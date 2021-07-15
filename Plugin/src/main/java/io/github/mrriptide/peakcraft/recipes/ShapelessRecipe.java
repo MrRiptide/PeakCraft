@@ -1,6 +1,5 @@
 package io.github.mrriptide.peakcraft.recipes;
 
-import net.minecraft.server.v1_16_R3.IRecipe;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -81,7 +80,7 @@ public class ShapelessRecipe extends Recipe{
     }
 
     @Override
-    public IRecipe<?> toNMS(String recipe_name) {
+    public net.minecraft.world.item.crafting.Recipe<?> toNMS(String recipe_name) {
         return null;
     }
 }

@@ -1,14 +1,19 @@
 package io.github.mrriptide.peakcraft.recipes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.items.ItemManager;
+import net.minecraft.network.FriendlyByteBuf;
 import org.bukkit.NamespacedKey;
+import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class RecipeItem {
@@ -109,5 +114,23 @@ public class RecipeItem {
         itemStack.setAmount(count);
 
         return itemStack;
+    }
+
+    public boolean test(RecipeItem item){
+        return item != null && this.getId().equals(item.getId()) && item.getCount() >= this.getCount();
+    }
+
+    /*
+    *
+    * Copying code from Ingredient
+    *
+    * */
+
+    public void toNetwork(FriendlyByteBuf packetdataserializer) {
+        try {
+            packetdataserializer.writeCollection(Arrays.asList(CraftItemStack.asNMSCopy(ItemManager.getItem(id).getItemStack())), FriendlyByteBuf::writeItem);
+        } catch (ItemException e) {
+            e.printStackTrace();
+        }
     }
 }

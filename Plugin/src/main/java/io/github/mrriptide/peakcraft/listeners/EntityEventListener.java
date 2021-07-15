@@ -1,9 +1,11 @@
 package io.github.mrriptide.peakcraft.listeners;
 
 import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.PeakCraft;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftCreature;
+import io.github.mrriptide.peakcraft.util.CustomColors;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
 import io.github.mrriptide.peakcraft.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,11 +25,13 @@ public class EntityEventListener implements Listener {
 
             ItemStack originalItem = e.getItem().getItemStack();
 
-            ItemStack newItem = ItemManager.convertItem(originalItem).getItemStack();
-
-
-            //player.getInventory().addItem(newItem);
-            e.getItem().setItemStack(newItem);
+            try{
+                ItemStack newItem = ItemManager.convertItem(originalItem).getItemStack();
+                e.getItem().setItemStack(newItem);
+            } catch (ItemException error){
+                player.sendMessage(CustomColors.ERROR + "That item had an invalid id tag, please report this!");
+                PeakCraft.getPlugin().getLogger().warning("Player " + player.getName() + " picked up an item with an invalid id!");
+            }
         }
     }
 

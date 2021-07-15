@@ -6,52 +6,51 @@
 package io.github.mrriptide.peakcraft.recipes;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
+import io.github.mrriptide.peakcraft.PeakCraft;
+import net.minecraft.world.item.ItemStack;
+import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntList;
+import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 
-import java.io.InvalidObjectException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-import javax.annotation.Nullable;
-
-import io.github.mrriptide.peakcraft.PeakCraft;
-import net.minecraft.server.v1_16_R3.*;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntArrayList;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntComparators;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntList;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 
 public final class RecipeItemChoice implements Predicate<ItemStack> {
-    public static final RecipeItemChoice a = new RecipeItemChoice(Stream.empty());
-    private final RecipeItemChoice.Provider[] b;
+    //public static final RecipeItemChoice a = new RecipeItemChoice(Stream.empty());
+    //private final RecipeItemChoice.Provider[] b;
     private final RecipeItem recipeItem;
     public ItemStack[] choices;
     private IntList d;
     public boolean exact;
 
-    public RecipeItemChoice(Stream<? extends RecipeItemChoice.Provider> stream) {
+    /*public RecipeItemChoice(Stream<? extends RecipeItemChoice.Provider> stream) {
         PeakCraft.getPlugin().getLogger().info("AAAA");
         this.b = (RecipeItemChoice.Provider[])stream.toArray((i) -> {
             return new RecipeItemChoice.Provider[i];
         });
         this.recipeItem = null;
-    }
+    }*/
 
     public RecipeItemChoice(RecipeItem recipeItem){
-        this.b = null;
+        //this.b = null;
         this.recipeItem = recipeItem;
     }
 
-    public void buildChoices() {
+    /**
+     * Evaluates this predicate on the given argument.
+     *
+     * @param itemStack the input argument
+     * @return {@code true} if the input argument matches the predicate,
+     * otherwise {@code false}
+     */
+    @Override
+    public boolean test(ItemStack itemStack) {
+        return false;
+    }
+
+    /*public void buildChoices() {
         if (this.choices == null) {
             if (this.b != null){
                 this.choices = (ItemStack[])Arrays.stream(this.b).flatMap((RecipeItemChoice_provider) -> {
@@ -82,7 +81,7 @@ public final class RecipeItemChoice implements Predicate<ItemStack> {
                 for(int j = 0; j < i; ++j) {
                     ItemStack itemstack1 = aitemstack[j];
                     if (this.exact) {
-                        if (itemstack1.getItem() == itemstack.getItem() && ItemStack.equals(itemstack, itemstack1)) {
+                        if (itemstack1.getItem() == itemstack.getItem() && itemstack.equals(itemstack1)) {
                             return true;
                         }
                     } else if (itemstack1.getItem() == itemstack.getItem()) {
@@ -119,6 +118,18 @@ public final class RecipeItemChoice implements Predicate<ItemStack> {
         }
 
         return this.d;
+    }
+
+    /**
+     * Evaluates this predicate on the given argument.
+     *
+     * @param itemStack the input argument
+     * @return {@code true} if the input argument matches the predicate,
+     * otherwise {@code false}
+
+    @Override
+    public boolean test(ItemStack itemStack) {
+        return false;
     }
 
     public void a(PacketDataSerializer packetdataserializer) {
@@ -275,5 +286,5 @@ public final class RecipeItemChoice implements Predicate<ItemStack> {
             jsonobject.addProperty("tag", TagsInstance.a().getItemTags().b(this.a).toString());
             return jsonobject;
         }
-    }
+    }*/
 }

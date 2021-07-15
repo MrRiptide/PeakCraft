@@ -2,24 +2,28 @@ package io.github.mrriptide.peakcraft.entity;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.CombatEntity;
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonus;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonusManager;
+import io.github.mrriptide.peakcraft.runnables.UpdatePlayer;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_16_R3.EntityTypes;
+import net.minecraft.world.entity.EntityType;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class PlayerWrapper extends CombatEntity {
@@ -43,22 +47,29 @@ public class PlayerWrapper extends CombatEntity {
     protected long lastDamageTime;
     protected double hunger;
     protected final double maxHunger = 500;
+    protected PlayerStatus status;
 
     public PlayerWrapper(Player player){
-        super("player", EntityTypes.SHEEP, ((CraftWorld) player.getWorld()).getHandle());
+        super("player", EntityType.SHEEP, ((CraftWorld) player.getWorld()).getHandle());
         this.source = player;
         this.maxHealth = 100;
 
         double intelligence = 0;
 
         for (ItemStack itemStack : player.getInventory().getArmorContents()){
+            // IntelliJ will say that itemStack != null is always true, this is wrong.
             if (itemStack != null && itemStack.getType() != Material.AIR){
-                Item item = ItemManager.convertItem(itemStack);
-                if (item instanceof EnchantableItem){
-                    ((EnchantableItem)item).bakeAttributes();
-                    this.maxHealth += ((EnchantableItem)item).getBakedAttribute("health");
-                    intelligence += ((EnchantableItem)item).getBakedAttribute("intelligence");
+                try{
+                    Item item = ItemManager.convertItem(itemStack);
+                    if (item instanceof EnchantableItem){
+                        ((EnchantableItem)item).bakeAttributes();
+                        this.maxHealth += ((EnchantableItem)item).getBakedAttribute("health");
+                        intelligence += ((EnchantableItem)item).getBakedAttribute("intelligence");
+                    }
+                } catch (ItemException e){
+                    PeakCraft.getPlugin().getLogger().warning("Player " + player.getName() + " has an invalid armor item!");
                 }
+
             }
         }
 
@@ -72,7 +83,14 @@ public class PlayerWrapper extends CombatEntity {
         this.critChance = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "critChance", 0.5);
         this.critDamage = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "critDamage", 0.5);
         this.name = player.getName();
-        this.weapon = (!player.getInventory().getItemInMainHand().getType().equals(Material.AIR)) ? ItemManager.convertItem(player.getInventory().getItemInMainHand()) : null;
+        try{
+            this.weapon = (!player.getInventory().getItemInMainHand().getType().equals(Material.AIR)) ? ItemManager.convertItem(player.getInventory().getItemInMainHand()) : null;
+        } catch (ItemException e) {
+            PeakCraft.getPlugin().getLogger().warning("Player " + player.getName() + " has an invalid item in their hand!");
+            this.weapon = null;
+        }
+        this.status = new PlayerStatus(player);
+
     }
 
     public void processDamage(double amount){
@@ -82,7 +100,7 @@ public class PlayerWrapper extends CombatEntity {
 
     public void tryNaturalRegen(){
         if ((new Date()).getTime() - lastDamageTime > 5000){
-            regenHealth(maxHealth / 100 * 2.5);
+            regenHealth(maxHealth / 100 * 5 / (20.0/UpdatePlayer.ticksPerUpdate));
         }
     }
 
@@ -92,16 +110,41 @@ public class PlayerWrapper extends CombatEntity {
         super.regenHealth(amount);
     }
 
+    public ArrayList<Item> getAbilityItems(){
+        ArrayList<Item> abilityItems = new ArrayList<>();
+        for (ItemStack itemStack : source.getInventory()){
+            if (itemStack != null && !itemStack.getType().equals(Material.AIR)){
+                try{
+                    Item item = ItemManager.convertItem(itemStack);
+                    if (item.hasAbility()){
+                        abilityItems.add(item);
+                    }
+                } catch (ItemException e) {
+                    PeakCraft.getPlugin().getLogger().warning("Player " + source.getName() + " has an invalid item in their inventory!");
+                }
+            }
+        }
+
+        return abilityItems;
+    }
+
+    @Override
+    public void initPathfinder() {
+        // no need?
+    }
+
     @Override
     public void updateEntity(){
         super.updateEntity();
 
         ((org.bukkit.entity.Player)this.getBukkitEntity()).setSaturation((float) Math.min(this.hunger/this.maxHunger*20.0, 20.0));
-        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "mana", this.mana);
-        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "hunger", this.mana);
-        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "critChance", this.critChance);
-        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "critDamage", this.critDamage);
-        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.LONG, "lastDamageTime", this.lastDamageTime);
+        PersistentDataManager.setValue(this.getBukkitEntity(), "mana", this.mana);
+        PersistentDataManager.setValue(this.getBukkitEntity(), "hunger", this.mana);
+        PersistentDataManager.setValue(this.getBukkitEntity(), "critChance", this.critChance);
+        PersistentDataManager.setValue(this.getBukkitEntity(), "critDamage", this.critDamage);
+        PersistentDataManager.setValue(this.getBukkitEntity(), "lastDamageTime", this.lastDamageTime);
+        source.setLevel((int)mana);
+        source.setExp((float) (mana / maxMana));
         sendActionBar();
     }
 
@@ -121,7 +164,7 @@ public class PlayerWrapper extends CombatEntity {
     }
 
     public void regenMana(){
-        mana = Math.min(mana + maxMana*0.05, maxMana);
+        mana = Math.min(mana + maxMana*0.05/(20.0/UpdatePlayer.ticksPerUpdate), maxMana);
         updateEntity();
     }
 
@@ -135,11 +178,23 @@ public class PlayerWrapper extends CombatEntity {
         }
     }
 
+    public double getMana(){
+        return mana;
+    }
+
+    public PlayerStatus getStatus() {
+        return status;
+    }
+
     public boolean hasFullSet(){
         ItemStack[] armorContents = this.source.getInventory().getArmorContents();
         for (int i = 0; i < 3; i++){
-            if (!((ArmorItem)ItemManager.convertItem(armorContents[i])).getSet().equals(((ArmorItem)ItemManager.convertItem(armorContents[i+1])).getSet())){
-                return false;
+            try{
+                if (!((ArmorItem)ItemManager.convertItem(armorContents[i])).getSet().equals(((ArmorItem)ItemManager.convertItem(armorContents[i+1])).getSet())){
+                    return false;
+                }
+            } catch (ItemException e){
+                PeakCraft.getPlugin().getLogger().warning("Player " + source.getName() + " has an invalid armor item equipped!");
             }
         }
         return true;
@@ -150,15 +205,25 @@ public class PlayerWrapper extends CombatEntity {
         if (armorContents[0] == null){
             return null;
         }
-        String setName = ((ArmorItem)ItemManager.convertItem(armorContents[0])).getSetName();
-        for (int i = 1; i < 4; i++){
-            if (armorContents[i] == null || !setName.equals(((ArmorItem)ItemManager.convertItem(armorContents[i])).getSetName())){
+        try{
+            String setName = ((ArmorItem)ItemManager.convertItem(armorContents[0])).getSetName();
+            for (int i = 1; i < 4; i++){
+                try{
+                    if (armorContents[i] == null || !setName.equals(((ArmorItem)ItemManager.convertItem(armorContents[i])).getSetName())){
+                        return null;
+                    }
+                } catch (ItemException e){
+                    PeakCraft.getPlugin().getLogger().warning("Player " + source.getName() + " has an invalid armor item equipped!");
+                    return null;
+                }
+            }
+            if (FullSetBonusManager.validSet(setName)){
+                return FullSetBonusManager.getSet(setName);
+            } else {
                 return null;
             }
-        }
-        if (FullSetBonusManager.validSet(setName)){
-            return FullSetBonusManager.getSet(setName);
-        } else {
+        } catch (ItemException e){
+            PeakCraft.getPlugin().getLogger().warning("Player " + source.getName() + " has an invalid armor item equipped!");
             return null;
         }
     }
@@ -169,5 +234,36 @@ public class PlayerWrapper extends CombatEntity {
 
     public void giveItem(String name){
         giveItem(new Item(name));
+    }
+
+    public class PlayerStatus{
+
+        private boolean flightAllowed;
+        private boolean flying;
+
+        public PlayerStatus(Player player){
+            flightAllowed = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
+            flying = player.isFlying();
+        }
+
+        public void apply(){
+            source.setAllowFlight(flightAllowed);
+            source.setFlying(flightAllowed && flying);
+        }
+
+        public void setFlightAllowed(boolean flightAllowed){
+            this.flightAllowed = flightAllowed;
+        }
+
+        public void setFlying(boolean flying){
+            this.flying = flying;
+        }
+        public boolean isFlightAllowed() {
+            return flightAllowed;
+        }
+
+        public boolean isFlying() {
+            return flying;
+        }
     }
 }

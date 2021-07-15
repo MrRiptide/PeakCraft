@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 public abstract class EntityManager {
-    private static HashMap<String, Class<? extends Entity>> entities;
+    private static HashMap<String, Class<? extends LivingEntity>> entities;
 
     public static void registerEntities(){
         entities = new HashMap<>();
@@ -16,13 +16,13 @@ public abstract class EntityManager {
         entities.put("potato_king", PotatoKingEntity.class);
     }
 
-    public static Entity getEntity(String id, Location location) throws EntityException {
+    public static LivingEntity getEntity(String id, Location location) throws EntityException {
         if (entities == null){
             registerEntities();
         }
         if (entities.containsKey(id)){
             try {
-                Constructor<? extends Entity> constructor = entities.get(id).getConstructor(Location.class);
+                Constructor<? extends LivingEntity> constructor = entities.get(id).getConstructor(Location.class);
                 return constructor.newInstance(location);
             } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 e.printStackTrace();

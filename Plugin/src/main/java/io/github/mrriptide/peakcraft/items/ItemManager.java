@@ -8,6 +8,7 @@ import com.univocity.parsers.tsv.TsvParserSettings;
 import com.univocity.parsers.tsv.TsvWriter;
 import com.univocity.parsers.tsv.TsvWriterSettings;
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.recipes.ShapedRecipe;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import org.apache.commons.lang.WordUtils;
@@ -51,7 +52,6 @@ public class ItemManager {
 
         TsvParser parser = new TsvParser(settings);
 
-
         FileInputStream file = null;
         try {
             file = new FileInputStream(new File(PeakCraft.getPlugin().getDataFolder() + File.separator + itemFilePath));
@@ -76,12 +76,8 @@ public class ItemManager {
                 Item item;
 
                 String type = itemData.get("type").toLowerCase(Locale.ROOT);
-                if (!type.equals("item")){
-                    Bukkit.broadcastMessage(type);
-                }
                 if (ArmorItem.validateType(type)) {
                     item = ArmorItem.loadFromHashMap(itemData);
-                    Bukkit.broadcastMessage("loaded as armor");
                 } else if (WeaponItem.validateType(type)) {
                     item = WeaponItem.loadFromHashMap(itemData);
                 } else {
@@ -97,13 +93,20 @@ public class ItemManager {
         PeakCraft.getPlugin().getLogger().info("Successfully loaded " + items.size() + " items.");
     }
 
-    public static Item getItem(String id){
+    public static Item getItem(String id) throws ItemException {
+        if (!items.containsKey(id.toUpperCase())){
+            throw new ItemException("An item was requested that doesn't exist in the item database: \"" + id.toUpperCase() + "\"");
+        }
         return items.get(id.toUpperCase()).clone();
     }
 
-    public static Item convertItem(org.bukkit.inventory.ItemStack itemSource){
-        if (itemSource == null){
-            return getItem("air");
+    public static Item convertItem(org.bukkit.inventory.ItemStack itemSource) throws ItemException {
+        if (itemSource == null || itemSource.getType().equals(Material.AIR)){
+            try {
+                return getItem("air");
+            } catch (ItemException e) {
+                e.printStackTrace();
+            }
         }
         String id = PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
 
@@ -129,15 +132,18 @@ public class ItemManager {
     }
 
     private static void createItemList() {
-        try {
+        writeMaterialsToFile(Arrays.asList(Material.values()), itemFilePath);
+    }
 
+    public static void writeMaterialsToFile(List<Material> materials, String fileName){
+        try {
             if (!PeakCraft.instance.getDataFolder().exists()){
                 PeakCraft.instance.getDataFolder().mkdirs();
             }
 
             HashMap<String, HashMap<String, String>> items = new HashMap<>();
 
-            for (Material mat : Material.values()){
+            for (Material mat : materials){
                 if (mat.isItem()){
                     HashMap<String, String> map = new HashMap<>();
                     map.put("id", mat.name());
@@ -156,7 +162,7 @@ public class ItemManager {
 
             // save using jackson https://stackabuse.com/reading-and-writing-json-in-java/
 
-            File recipeFile = new File(PeakCraft.instance.getDataFolder() + File.separator + itemFilePath);
+            File recipeFile = new File(PeakCraft.instance.getDataFolder() + File.separator + fileName);
 
             OutputStream outputStream = new FileOutputStream(recipeFile);
 
@@ -166,8 +172,5 @@ public class ItemManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
     }
 }

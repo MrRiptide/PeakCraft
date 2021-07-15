@@ -1,5 +1,7 @@
 package io.github.mrriptide.peakcraft.guis;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
@@ -19,10 +21,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 public class CreativeGUI implements InventoryGui{
-    private enum Tab {ITEM, WEAPONS, ARMOR}
+    private enum Tab {ITEM, WEAPONS, ARMOR, RELIC}
     private ItemStack[][] armorTabItems;
     private ItemStack[][] weaponTabItems;
     private ItemStack[][] itemTabItems;
+    private ItemStack[][] relicTabItems;
     private Tab currentTab;
     private int scroll;
 
@@ -30,6 +33,7 @@ public class CreativeGUI implements InventoryGui{
         ArrayList<Item> armorItems = new ArrayList<Item>();
         ArrayList<Item> weaponItems = new ArrayList<Item>();
         ArrayList<Item> itemItems = new ArrayList<Item>();
+        ArrayList<Item> relicItems = new ArrayList<Item>();
 
 
         for (Item item : ItemManager.getItems().values()){
@@ -40,11 +44,15 @@ public class CreativeGUI implements InventoryGui{
             } else{
                 itemItems.add(item);
             }
+            if (item.getRarity() == 7){
+                relicItems.add(item);
+            }
         }
 
         armorTabItems = arrayify(armorItems);
         weaponTabItems = arrayify(weaponItems);
         itemTabItems = arrayify(itemItems);
+        relicTabItems = arrayify(relicItems);
         scroll = 0;
     }
 
@@ -70,6 +78,9 @@ public class CreativeGUI implements InventoryGui{
         } else if (slot == 27){
             scroll = 0;
             loadTab(Tab.ARMOR, e.getClickedInventory());
+        } else if (slot == 36){
+            scroll = 0;
+            loadTab(Tab.RELIC, e.getClickedInventory());
         } else if (slot == 4 && scroll > 0){
             scroll--;
             loadTab(currentTab, e.getClickedInventory());
@@ -80,11 +91,17 @@ public class CreativeGUI implements InventoryGui{
             int row = slot / 9;
             int col = slot % 9;
             if (row > 0 && row < 5 && col > 0 && col < 8){
-                ItemStack item = ItemManager.convertItem(e.getClickedInventory().getItem(slot)).getItemStack();
-                if (e.isShiftClick()){
-                    item.setAmount(item.getMaxStackSize());
+                try{
+                    ItemStack item = ItemManager.convertItem(e.getClickedInventory().getItem(slot)).getItemStack();
+                    if (e.isShiftClick()){
+                        item.setAmount(item.getMaxStackSize());
+                    }
+                    player.getInventory().addItem(item);
+                } catch (ItemException error) {
+                    player.sendMessage("You clicked on an invalid item! Please report this!");
+                    PeakCraft.getPlugin().getLogger().warning("Player " + player.getName() + " clicked on an invalid item in the creative menu!");
                 }
-                player.getInventory().addItem(item);
+
             }
         }
         return slot < 54;
@@ -131,6 +148,14 @@ public class CreativeGUI implements InventoryGui{
         armorTabItem.setItemMeta(itemMeta);
         inventory.setItem(27, armorTabItem);
 
+        // add relic tab
+        ItemStack relicTabItem = new ItemStack(Material.BEACON);
+        itemMeta = relicTabItem.getItemMeta();
+        itemMeta.setDisplayName(ChatColor.WHITE + "Relics");
+        itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        relicTabItem.setItemMeta(itemMeta);
+        inventory.setItem(27, relicTabItem);
+
         loadTab(Tab.ITEM, inventory);
 
         return inventory;
@@ -150,6 +175,8 @@ public class CreativeGUI implements InventoryGui{
             tabItems = weaponTabItems;
         } else if (tab == Tab.ARMOR){
             tabItems = armorTabItems;
+        } else if (tab == Tab.RELIC){
+            tabItems = relicTabItems;
         }
 
         for (int i = 0; i < 4; i++){

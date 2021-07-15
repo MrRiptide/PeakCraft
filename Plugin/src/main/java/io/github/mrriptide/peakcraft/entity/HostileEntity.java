@@ -1,16 +1,23 @@
 package io.github.mrriptide.peakcraft.entity;
 
 import io.github.mrriptide.peakcraft.entity.pathfinding.PathfinderGoalAngeredTarget;
-import io.github.mrriptide.peakcraft.entity.pathfinding.PathfinderGoalHostileTarget;
-import net.minecraft.server.v1_16_R3.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
 public abstract class HostileEntity extends CombatEntity{
     protected HashMap<UUID, Double> anger = new HashMap<>();
-    protected HostileEntity(String id, EntityTypes<? extends EntityCreature> type, World world) {
+    protected HostileEntity(String id, EntityType<? extends PathfinderMob> type, Level world) {
         super(id, type, world);
+
     }
 
     @Override
@@ -40,10 +47,10 @@ public abstract class HostileEntity extends CombatEntity{
          * this, - the pig
          * 1.0f) - the height of the jump(Please experiment with this to get a height you want)
          */
-        this.targetSelector.a(0, new PathfinderGoalAngeredTarget(this, false));
-        this.goalSelector.a(0, new PathfinderGoalFloat(this));
-        this.goalSelector.a(1, new PathfinderGoalMeleeAttack(this, 1.0, true));
-        this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+        this.targetSelector.addGoal(0, new PathfinderGoalAngeredTarget(this, false));
+        this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.0, true));
+        this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, Player.class, 8.0F));
 
     }
 
@@ -56,9 +63,21 @@ public abstract class HostileEntity extends CombatEntity{
     @Override
     public void processAttack(CombatEntity attacker) {
         if (attacker instanceof PlayerWrapper){
-            anger.put(((PlayerWrapper) attacker).getSource().getPlayer().getUniqueId(), anger.getOrDefault(attacker.getUniqueID(), 0.0) + 50);
+            anger.put(((PlayerWrapper) attacker).getSource().getPlayer().getUniqueId(), anger.getOrDefault(((PlayerWrapper) attacker).getSource().getPlayer().getUniqueId(), 0.0) + 50);
         }
 
         super.processAttack(attacker);
+    }
+
+    @Override
+    public ArrayList<String> getData(){
+        ArrayList<String> data = super.getData();
+
+        data.add("");
+        data.add("Anger levels:");
+        for (UUID uuid : anger.keySet()){
+            data.add("    " + uuid.toString() + ": " + anger.get(uuid).toString());
+        }
+        return data;
     }
 }

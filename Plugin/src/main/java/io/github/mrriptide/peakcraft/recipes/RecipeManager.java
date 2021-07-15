@@ -2,11 +2,11 @@ package io.github.mrriptide.peakcraft.recipes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.mrriptide.peakcraft.PeakCraft;
-import net.minecraft.server.v1_16_R3.MinecraftKey;
+import net.minecraft.world.Container;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R3.util.CraftNamespacedKey;
+import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_17_R1.util.CraftNamespacedKey;
 import org.bukkit.inventory.ItemStack;
 
 import javax.xml.stream.events.Namespace;
@@ -87,8 +87,17 @@ public class RecipeManager {
 
         // remove the recipe if it already exists
         Bukkit.removeRecipe(new NamespacedKey(PeakCraft.instance, recipeName));
+        Bukkit.addRecipe(recipe);
         // register it directly to the server
-        ((CraftServer) Bukkit.getServer()).getServer().getCraftingManager().addRecipe(recipe.toNMS(recipeName));
+        if (((CraftServer) Bukkit.getServer()).getServer().getRecipeManager().hadErrorsLoading()){
+            PeakCraft.getPlugin().getLogger().warning("The recipe manager failed to load, this will cause problems");
+        }
+        NMSRecipe<?> nmsRecipe = (NMSRecipe<?>) recipe.toNMS(recipeName);
+        if (nmsRecipe.getResult() == null){
+            PeakCraft.getPlugin().getLogger().warning("Found a recipe with null result");
+        } else {
+            ((CraftServer) Bukkit.getServer()).getServer().getRecipeManager().addRecipe(recipe.toNMS(recipeName));
+        }
     }
 
     public static void registerRecipes(){

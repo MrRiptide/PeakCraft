@@ -1,40 +1,45 @@
 package io.github.mrriptide.peakcraft.entity;
 
-//import net.minecraft.server.v1_16_R3.*;
-import net.minecraft.server.v1_16_R3.*;
+//import net.minecraft.server.v1_17_R1.*;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 
-public class HoloDisplayEntity extends EntityLiving {
+public class HoloDisplayEntity extends LivingEntity {
     public HoloDisplayEntity(Location location, String text) {
-        super(EntityTypes.ARMOR_STAND, ((CraftWorld) location.getWorld()).getHandle());
-        this.setPosition(location.getX(), location.getY(), location.getZ());
+        super(EntityType.ARMOR_STAND, ((CraftWorld) location.getWorld()).getHandle());
+        this.setPos(location.getX(), location.getY(), location.getZ());
         //this.setSlot(EnumItemSlot.MAINHAND, new org.bukkit.inventory.ItemStack(Material.AIR, 1));
         this.setInvisible(true);
         this.setInvulnerable(true);
         this.setNoGravity(true);
-        this.setCustomName(new ChatComponentText(text));
+        this.setCustomName(new TextComponent(text));
         this.setCustomNameVisible(true);
     }
 
     @Override
-    public Iterable<ItemStack> getArmorItems() {
+    public Iterable<ItemStack> getArmorSlots() {
         return null;
     }
 
     @Override
-    public ItemStack getEquipment(EnumItemSlot enumItemSlot) {
+    public ItemStack getItemBySlot(EquipmentSlot equipmentSlot) {
         return null;
     }
 
     @Override
-    public void setSlot(EnumItemSlot enumItemSlot, ItemStack itemStack) {
+    public void setItemSlot(EquipmentSlot equipmentSlot, ItemStack itemStack) {
 
     }
 
     @Override
-    public EnumMainHand getMainHand() {
+    public HumanoidArm getMainArm() {
         return null;
     }
 

@@ -30,3 +30,9 @@ commands:
   creativeinv:
     decription: Shows a creative inventory that allows users to give themselves items
     permission: peakcraft.creativeinv
+  materiallist:
+    decription: Generates a json file listing all spigot-native materials
+    permission: peakcraft.materiallist
+  vault:
+    decription: Opens your private vault, a place to store items
+    permission: peakcraft.vault

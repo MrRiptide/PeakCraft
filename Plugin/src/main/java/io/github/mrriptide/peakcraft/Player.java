@@ -21,7 +21,7 @@ public class Player {
     }
 
     public void updatePlayer(){
-        PersistentDataManager.setValue(this.player, PersistentDataType.DOUBLE, "mana", this.mana);
-        PersistentDataManager.setValue(this.player, PersistentDataType.DOUBLE, "health", this.health);
+        PersistentDataManager.setValue(this.player, "mana", this.mana);
+        PersistentDataManager.setValue(this.player, "health", this.health);
     }
 }

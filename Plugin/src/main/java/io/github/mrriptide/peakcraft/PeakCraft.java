@@ -3,21 +3,26 @@ package io.github.mrriptide.peakcraft;
 import io.github.mrriptide.peakcraft.commands.*;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
+import io.github.mrriptide.peakcraft.items.abilities.FlightFeatherAbility;
+import io.github.mrriptide.peakcraft.items.abilities.InspectAbility;
 import io.github.mrriptide.peakcraft.items.abilities.PotatoSwordAbility;
-import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentHealthBoost;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
-import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentSharpness;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonusManager;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.SpaceSuitFullSetBonus;
 import io.github.mrriptide.peakcraft.listeners.*;
 import io.github.mrriptide.peakcraft.recipes.RecipeManager;
+import io.github.mrriptide.peakcraft.recipes.ShapedNMSRecipe;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class PeakCraft extends JavaPlugin {
     public static PeakCraft instance;
@@ -26,18 +31,61 @@ public class PeakCraft extends JavaPlugin {
         return instance;
     }
 
+    public static io.github.mrriptide.peakcraft.recipes.ShapedNMSRecipe find(ArrayList<io.github.mrriptide.peakcraft.recipes.ShapedNMSRecipe> collection){
+        /*for (io.github.mrriptide.peakcraft.recipes.ShapedNMSRecipe recipe : collection){
+            if (recipe.getId() == null){
+                return recipe;
+            }
+        }*/
+        return null;
+    }
+
     @Override
     public void onEnable() {
         instance = this; // provides an instance of the plugin to the rest of the code !!MUST BE DONE BEFORE ANYTHING ELSE!!
+
+        // Config stuff
+
+        FileConfiguration config = this.getConfig();
+
+        config.addDefault("itemBukkitVersion", "none");
+        config.addDefault("pluginVersion", getDescription().getVersion());
+
+        config.options().copyDefaults(true);
+
+        saveConfig();
 
         // Register abilities, must be done before loading items
 
         getLogger().info("Registering abilities:");
         AbilityManager.registerAbility(new PotatoSwordAbility());
+        AbilityManager.registerAbility(new InspectAbility());
+        AbilityManager.registerAbility(new FlightFeatherAbility());
 
-        // Load items from items.tsv, must be done as one of the first things
+        // Load items from items.tsv, must be done as one of the first things (especially before recipes are loaded)
         getLogger().info("Loading items");
         ItemManager.loadItems();
+
+        // if there is a version mismatch check
+
+        if (!Objects.equals(getConfig().getString("itemBukkitVersion"), Bukkit.getBukkitVersion())){
+            getLogger().warning("The items are out of date, generating a list of new vanilla items and disabling the plugin" +
+                    "\nWhen the items are updated, update itemBukkitVersion with \"" + Bukkit.getBukkitVersion() + "\"");
+
+            var items = ItemManager.getItems();
+            var newItems = new ArrayList<Material>();
+
+            for (Material mat : Material.values()){
+                if (!items.containsKey(mat.name().toUpperCase())){
+                    newItems.add(mat);
+                }
+            }
+
+            ItemManager.writeMaterialsToFile(newItems, "newItems - " + Bukkit.getBukkitVersion() + ".json");
+
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Register event listeners
 
@@ -56,6 +104,8 @@ public class PeakCraft extends JavaPlugin {
         this.getCommand("kill").setExecutor(new CommandKill());
         this.getCommand("test").setExecutor(new CommandTest());
         this.getCommand("creativeinv").setExecutor(new CommandCreativeInventory());
+        this.getCommand("materiallist").setExecutor(new CommandMaterialList());
+        this.getCommand("vault").setExecutor(new CommandVault());
         // Register recipe commands
         CommandRecipe commandRecipe = new CommandRecipe();
         this.getCommand("recipe").setExecutor(commandRecipe);

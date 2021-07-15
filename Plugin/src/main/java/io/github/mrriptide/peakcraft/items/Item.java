@@ -1,13 +1,17 @@
 package io.github.mrriptide.peakcraft.items;
 
 import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.abilities.Ability;
 import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
+import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.util.CustomColors;
+import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -46,7 +50,12 @@ public class Item implements Serializable {
     }
 
     public Item(String id){
-        Item item = ItemManager.getItem(id);
+        Item item = null;
+        try {
+            item = ItemManager.getItem(id);
+        } catch (ItemException e) {
+            e.printStackTrace();
+        }
 
         assert item != null;
         this.id = item.id;
@@ -113,11 +122,18 @@ public class Item implements Serializable {
             return item;
         }
 
+        // Set the ID
+
+        PersistentDataManager.setValue(meta, "ITEM_ID", id);
+
         // Add the lore to the item
         meta.setLore(getLore());
 
         // Set the custom name
         meta.setDisplayName(getRarityColor() + displayName);
+
+        // Makes the item unbreakable
+        meta.setUnbreakable(true);
 
         // Hide things
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
@@ -212,10 +228,14 @@ public class Item implements Serializable {
         return ability != null;
     }
 
-    public void useAbility(PlayerWrapper player){
+    public void useAbility(PlayerWrapper player, AbilityTrigger trigger){
         if (ability != null){
-            AbilityManager.triggerAbility(ability, player);
+            AbilityManager.triggerAbility(ability, player, trigger);
         }
+    }
+
+    public Ability getAbility(){
+        return this.ability;
     }
 
     protected ChatColor getRarityColor(){

@@ -6,29 +6,82 @@ import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.HoloDisplay;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_16_R3.ChatComponentText;
-import net.minecraft.server.v1_16_R3.EntityCreature;
-import net.minecraft.server.v1_16_R3.EntityTypes;
-import net.minecraft.server.v1_16_R3.World;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.level.Level;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-public abstract class LivingEntity extends Entity {
+public abstract class LivingEntity extends PathfinderMob {
+    protected String name;
+    protected final String id;
     protected double health;
     protected double maxHealth;
+
+    public String getEntityName() {
+        return name;
+    }
+
+    public String getEntityId() {
+        return id;
+    }
+
+    public double getEntityHealth() {
+        return health;
+    }
+
+    public double getEntityMaxHealth() {
+        return maxHealth;
+    }
+
+    public double getEntityDefense() {
+        return defense;
+    }
+
     protected double defense;
 
-    protected LivingEntity(String id, EntityTypes<? extends EntityCreature> type, World world) {
-        super(id, type, world);
+    protected LivingEntity(String id, EntityType<? extends PathfinderMob> type, Level world) {
+        super(type, world);
+        setName("Unnamed Mob");
+        this.id = id;
+        updateName();
+        initPathfinder();
+    }
+
+    public abstract void initPathfinder() ;
+
+    public void updateName(){
+        this.setCustomName(new TextComponent(name + " " + CustomColors.HEALTH + ((int)health) + " ❤"));
+        this.setCustomNameVisible(true);
+    }
+
+    public void setName(String name){
+        this.name = name;
+
         updateName();
     }
 
-    @Override
-    public void updateName(){
-        this.setCustomName(new ChatComponentText(name + " " + CustomColors.HEALTH + ((int)health) + " ❤"));
-        this.setCustomNameVisible(true);
+    public void updateEntity(){
+        this.updateName();
+        this.health = Math.max(0, Math.min(health, maxHealth));
+
+        ((org.bukkit.entity.LivingEntity)this.getBukkitEntity()).setHealth(Math.min(this.health/this.maxHealth*20.0, 20.0));
+        PersistentDataManager.setValue(this.getBukkitEntity(), "health", this.health);
+        PersistentDataManager.setValue(this.getBukkitEntity(), "maxHealth", this.maxHealth);
+        PersistentDataManager.setValue(this.getBukkitEntity(), "defense", this.defense);
+    }
+
+    public void applyNBT(){
+        PersistentDataManager.setValue(this.getBukkitEntity(), "name", name);
+        PersistentDataManager.setValue(this.getBukkitEntity(), "id", id);
+        PersistentDataManager.setValue(this.getBukkitEntity(), "health", health);
+        PersistentDataManager.setValue(this.getBukkitEntity(), "maxHealth", maxHealth);
+        PersistentDataManager.setValue(this.getBukkitEntity(), "defense", defense);
     }
 
     public void processAttack(CombatEntity attacker){
@@ -86,23 +139,6 @@ public abstract class LivingEntity extends Entity {
         updateEntity();
     }
 
-    public void updateEntity(){
-        super.updateEntity();
-        this.health = Math.max(0, Math.min(health, maxHealth));
-
-        ((org.bukkit.entity.LivingEntity)this.getBukkitEntity()).setHealth(Math.min(this.health/this.maxHealth*20.0, 20.0));
-        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "health", this.health);
-        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "maxHealth", this.maxHealth);
-        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "defense", this.defense);
-    }
-
-    public void applyNBT(){
-        super.applyNBT();
-        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "health", health);
-        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "maxHealth", maxHealth);
-        PersistentDataManager.setValue(this.getBukkitEntity(), PersistentDataType.DOUBLE, "defense", defense);
-    }
-
     public void setMaxHealth(double maxHealth){
         this.maxHealth = maxHealth;
         this.health = maxHealth;
@@ -117,5 +153,16 @@ public abstract class LivingEntity extends Entity {
 
         health -= damage * (1 + strength * 0.05);
         updateName();
+    }
+
+    public ArrayList<String> getData(){
+        ArrayList<String> data = new ArrayList<String>();
+        data.add("health: " + health);
+        data.add("maxHealth: " + maxHealth);
+        data.add("id: " + id);
+        data.add("name: " + name);
+        data.add("defense: " + defense);
+        data.add("Target: " + (this.getTarget() != null ? this.getTarget().getScoreboardName() : CustomColors.ERROR + "null"));
+        return data;
     }
 }

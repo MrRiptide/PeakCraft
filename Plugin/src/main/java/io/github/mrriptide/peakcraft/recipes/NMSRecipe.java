@@ -1,24 +1,30 @@
 package io.github.mrriptide.peakcraft.recipes;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
-import net.minecraft.server.v1_16_R3.*;
-import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_16_R3.util.CraftNamespacedKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
+import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 
-public abstract class NMSRecipe implements RecipeCrafting {
+public abstract class NMSRecipe<C extends Container> implements Recipe<C> {
     private RecipeItem result;
     private String group;
-    private MinecraftKey key;
+    private ResourceLocation id;
 
     public void setResult(RecipeItem result) {this.result = result;}
 
+    public RecipeItem getResult() {
+        return result;
+    }
+
     @Override
-    public ItemStack getResult(){
+    public ItemStack getResultItem(){
         return CraftItemStack.asNMSCopy(result.getItemStack());
     }
 
-    public RecipeItem getResultItem(){return result;}
+    public RecipeItem getResultRecipeItem(){return result;}
 
     public void setGroup(String group){
         this.group = group;
@@ -29,13 +35,16 @@ public abstract class NMSRecipe implements RecipeCrafting {
     }
 
     @Override
-    public MinecraftKey getKey(){
-        return this.key;
+    public ResourceLocation getId(){
+        return this.id;
     }
 
-    public void setKey(MinecraftKey key){
-        this.key = key;
+    public void setId(ResourceLocation id){
+        this.id = id;
     }
 
-    //public abstract boolean test(NMSRecipe recipe);
+    @Override
+    public boolean canCraftInDimensions(int i, int i1) {
+        return false;
+    }
 }

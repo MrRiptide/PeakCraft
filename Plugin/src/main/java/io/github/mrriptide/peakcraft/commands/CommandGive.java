@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.commands;
 
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import org.bukkit.Bukkit;
@@ -25,7 +26,7 @@ public class CommandGive implements CommandExecutor {
 
         try{
             item_data = ItemManager.getItem(args[1]);
-        } catch (NullPointerException e){
+        } catch (NullPointerException|ItemException e){
             sender.sendMessage("Invalid item ID");
             return false;
         }

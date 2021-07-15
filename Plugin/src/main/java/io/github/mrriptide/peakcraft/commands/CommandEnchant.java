@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.commands;
 
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.*;
 import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
@@ -35,19 +36,23 @@ public class CommandEnchant implements CommandExecutor {
             sender.sendMessage("Cannot provide an enchantment level below 0");
             return false;
         } else{
-            Item newItem = ItemManager.convertItem(enchantPlayer.getInventory().getItemInMainHand());
-
-            if (newItem instanceof EnchantableItem){
-                if (enchantLevel == 0){
-                    sender.sendMessage("Removed enchantment");
-                    ((EnchantableItem)newItem).removeEnchantment(enchantName);
+            try{
+                Item newItem = ItemManager.convertItem(enchantPlayer.getInventory().getItemInMainHand());
+                if (newItem instanceof EnchantableItem){
+                    if (enchantLevel == 0){
+                        sender.sendMessage("Removed enchantment");
+                        ((EnchantableItem)newItem).removeEnchantment(enchantName);
+                    } else {
+                        ((EnchantableItem)newItem).addEnchantment(enchantName, enchantLevel);
+                    }
+                    enchantPlayer.getInventory().setItemInMainHand(newItem.getItemStack());
+                    return true;
                 } else {
-                    ((EnchantableItem)newItem).addEnchantment(enchantName, enchantLevel);
+                    sender.sendMessage("This item cannot be enchanted!");
+                    return false;
                 }
-                enchantPlayer.getInventory().setItemInMainHand(newItem.getItemStack());
-                return true;
-            } else {
-                sender.sendMessage("This item cannot be enchanted!");
+            } catch (ItemException e) {
+                sender.sendMessage("This item is unregistered");
                 return false;
             }
         }

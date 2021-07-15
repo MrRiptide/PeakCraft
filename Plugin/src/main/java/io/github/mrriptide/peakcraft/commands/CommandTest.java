@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.commands;
 
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
@@ -24,7 +25,12 @@ public class CommandTest implements CommandExecutor {
             enchantmentClasses.put("sharpness", EnchantmentSharpness.class);
             enchantmentClasses.put("health_boost", EnchantmentHealthBoost.class);
 
-            EnchantableItem item = (EnchantableItem) ItemManager.getItem("potato_sword");
+            EnchantableItem item = null;
+            try {
+                item = (EnchantableItem) ItemManager.getItem("potato_sword");
+            } catch (ItemException e) {
+                e.printStackTrace();
+            }
             item.bakeAttributes();
 
             int repeatTimes = Integer.parseInt(args[0]);

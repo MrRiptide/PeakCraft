@@ -1,13 +1,10 @@
 package io.github.mrriptide.peakcraft.recipes;
 
-import io.github.mrriptide.peakcraft.PeakCraft;
-import net.minecraft.server.v1_16_R3.*;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_16_R3.util.CraftNamespacedKey;
+import org.bukkit.craftbukkit.v1_17_R1.util.CraftNamespacedKey;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -122,7 +119,7 @@ public class ShapedRecipe extends Recipe {
      *
      * @param   recipe  the crafted recipe to compare to
      * @return          if the generic recipe matches the specific recipe
-     * */
+     */
     @Override
     public boolean test(Recipe recipe){
         ShapedRecipe shapedRecipe = (ShapedRecipe)recipe;
@@ -150,7 +147,7 @@ public class ShapedRecipe extends Recipe {
         }
     }
 
-    public IRecipe<?> toNMS(String recipeName){
+    public net.minecraft.world.item.crafting.Recipe<?> toNMS(String recipeName){
         if (getKey() == null){
             setKey(recipeName);
         }
@@ -160,12 +157,12 @@ public class ShapedRecipe extends Recipe {
         //https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/main/java/org/bukkit/inventory/RecipeChoice.java#16,66,169
         int width = shape[0].length();
         int height = shape.length;
-        NonNullList<RecipeItemChoice> ingredients = NonNullList.a(height * width, RecipeItemChoice.a);
+        NonNullList<RecipeItem> ingredients = NonNullList.withSize(height * width, new RecipeItem());
 
         for (int i = 0; i < shape.length * shape[0].length(); i++){
-            ingredients.set(i, new RecipeItemChoice(ingredientMap.get(shape[i / width].charAt(i % width))));
+            if (ingredientMap.get(shape[i / width].charAt(i % width)) != null)
+            ingredients.set(i, ingredientMap.get(shape[i / width].charAt(i % width)));
         }
-
-        return new ShapedNMSRecipe(CraftNamespacedKey.toMinecraft(getKey()), getGroup(), getShape()[0].length(), getShape().length, ingredients, CraftItemStack.asNMSCopy(getResult()));
+        return new ShapedNMSRecipe(CraftNamespacedKey.toMinecraft(this.getKey()), getGroup(), getShape()[0].length(), getShape().length, ingredients, getResultRecipeItem());
     }
 }

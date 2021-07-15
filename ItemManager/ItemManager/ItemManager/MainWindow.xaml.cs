@@ -160,7 +160,8 @@ namespace ItemManager
                     rarityComboBox.SelectedIndex + 1,
                     descriptionTextBox.Text,
                     new Material(materialTextBox.Text),
-                    types[typeComboBox.SelectedIndex]);
+                    types[typeComboBox.SelectedIndex],
+                    abilityTextBox.Text);
 
             if ((new string[] { "armor", "chestplate", "helmet", "leggings", "boots", "weapon", "sword" }).Contains(item.type))
             {
@@ -217,6 +218,7 @@ namespace ItemManager
                     1,
                     "",
                     new Material(""),
+                    "",
                     ""));
 
             loadItems();
@@ -233,16 +235,20 @@ namespace ItemManager
 
         private void addAttributeLabel(string name, string value = "0", bool limitTypes = true)
         {
+            RowDefinition rowDefinition = new RowDefinition();
+            rowDefinition.Height = new GridLength(1, GridUnitType.Star);
+            itemGrid.RowDefinitions.Add(rowDefinition);
+
             TextBox attributeTextBox = new TextBox();
             attributeTextBox.Text = value;
             attributeTextBox.Tag = name.ToLower();
-            Grid.SetRow(attributeTextBox, attributeBoxes.Count + 8);
+            Grid.SetRow(attributeTextBox, itemGrid.RowDefinitions.Count - 2);
             Grid.SetColumn(attributeTextBox, 2);
 
             Label attributeLabel = new Label();
             attributeLabel.Content = name + ": ";
             attributeLabel.Tag = name.ToLower();
-            Grid.SetRow(attributeLabel, attributeLabels.Count + 8);
+            Grid.SetRow(attributeLabel, itemGrid.RowDefinitions.Count - 2);
             Grid.SetColumn(attributeLabel, 1);
 
             itemGrid.Children.Add(attributeLabel);
@@ -259,6 +265,7 @@ namespace ItemManager
             displayNameTextBox.Text = item.displayName;
             rarityComboBox.SelectedIndex = item.rarity - 1;
             descriptionTextBox.Text = item.description;
+            abilityTextBox.Text = item.ability;
             materialTextBox.Text = item.material.id;
             typeComboBox.SelectedIndex = Math.Max(Array.IndexOf(types, item.type), 0);
 
@@ -272,6 +279,8 @@ namespace ItemManager
             attributeLabels.Clear();
             attributeBoxes.Clear();
 
+            itemGrid.RowDefinitions.RemoveRange(10, itemGrid.RowDefinitions.Count - 10);
+
             // armor
             if (typeComboBox.SelectedIndex >= 1 && typeComboBox.SelectedIndex <= 5)
             {
@@ -281,21 +290,23 @@ namespace ItemManager
             } // weapons
             else if (typeComboBox.SelectedIndex >= 6 && typeComboBox.SelectedIndex <= 7)
             {
-                addAttributeLabel("Ability", limitTypes:false, value: (item is AttributedItem ? ((AttributedItem)item).getAttributeOrDefault("ability", "") : ""));
                 addAttributeLabel("Damage", value: (item is AttributedItem ? ((AttributedItem)item).getAttributeOrDefault("damage", "0") : "0"));
             }
 
             itemGrid.Height = itemDataViewer.ActualHeight * (1 + 0.1 * attributeBoxes.Count);
 
-            itemGrid.RowDefinitions.RemoveRange(9, itemGrid.RowDefinitions.Count - 10);
-            for (int i = 0; i < attributeBoxes.Count; i++)
-            {
-                RowDefinition rowDefinition = new RowDefinition();
-                rowDefinition.Height = new GridLength(1, GridUnitType.Star);
-                itemGrid.RowDefinitions.Add(rowDefinition);
-            }
-
             Grid.SetRow(saveItemButton, itemGrid.RowDefinitions.Count - 1);
+        }
+
+        private void materialTextBox_Initialized(object sender, EventArgs e)
+        {
+            List<Dictionary<String, String>> data = JsonSerializer.Deserialize<List<Dictionary<String, String>>>(File.OpenText("materials.json").ReadToEnd());
+            List<String> materialNames = new List<string>();
+            foreach (Dictionary<String,String> material in data)
+            {
+                materialNames.Add(material["material_id"]);
+            }
+            materialTextBox.ItemsSource = materialNames;
         }
     }
 }

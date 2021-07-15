@@ -77,11 +77,11 @@ public class CraftingListener implements Listener {
                 }
             }
 
-            for (int r = 0; r < shapedRecipe.getShape().length; r++) {
+            /*for (int r = 0; r < shapedRecipe.getShape().length; r++) {
                 for (int c = 0; r < shapedRecipe.getShape()[0].length(); c++) {
                     ingredients[valid_rows.get(r) * 3 + valid_cols.get(c)].setAmount(ingredients[valid_rows.get(r) * 3 + valid_cols.get(c)].getAmount() - shapedRecipe.getIngredients().get(shapedRecipe.getShape()[r].charAt(c)).getCount());
                 }
-            }
+            }*/
         } else if (recipe instanceof ShapelessRecipe){
             ShapelessRecipe shapelessRecipe = (ShapelessRecipe) recipe;
             ArrayList<RecipeItem> recipeItems = shapelessRecipe.getIngredients();

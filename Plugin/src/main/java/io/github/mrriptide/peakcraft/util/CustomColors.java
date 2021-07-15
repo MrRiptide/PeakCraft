@@ -11,6 +11,7 @@ public abstract class CustomColors {
     public static final ChatColor HEALTH = ChatColor.RED;
     public static final ChatColor DEFENSE = ChatColor.GREEN;
     public static final ChatColor MANA = ChatColor.AQUA;
+    public static final ChatColor COOLDOWN = ChatColor.DARK_GRAY;
     public static final ChatColor ENCHANTMENT = ChatColor.LIGHT_PURPLE;
     public static final ChatColor ATTRIBUTE = ChatColor.LIGHT_PURPLE;
     public static final ChatColor ATTRIBUTE_VALUE = ChatColor.LIGHT_PURPLE;
@@ -29,6 +30,7 @@ public abstract class CustomColors {
     public static final ChatColor NO = ChatColor.RED;
 
     // Chat colors
+    public static final ChatColor DEFAULT_CHAT = ChatColor.WHITE;
     public static final ChatColor ERROR = ChatColor.RED;
 
     // Rarity colors
@@ -38,6 +40,6 @@ public abstract class CustomColors {
     public static final ChatColor EPIC = ChatColor.DARK_PURPLE;
     public static final ChatColor LEGENDARY = ChatColor.GOLD;
     public static final ChatColor MYTHIC = ChatColor.LIGHT_PURPLE;
-    public static final ChatColor RELIC = ChatColor.BLUE;
+    public static final ChatColor RELIC = ChatColor.AQUA;
 
 }

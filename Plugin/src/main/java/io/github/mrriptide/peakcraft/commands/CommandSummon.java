@@ -1,16 +1,15 @@
 package io.github.mrriptide.peakcraft.commands;
 
-import io.github.mrriptide.peakcraft.entity.BruteEntity;
-import io.github.mrriptide.peakcraft.entity.Entity;
 import io.github.mrriptide.peakcraft.entity.EntityManager;
-import io.github.mrriptide.peakcraft.entity.PotatoKingEntity;
+import io.github.mrriptide.peakcraft.entity.LivingEntity;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
-import net.minecraft.server.v1_16_R3.WorldServer;
+import net.minecraft.server.level.ServerLevel;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.util.Locale;
 
@@ -30,7 +29,7 @@ public class CommandSummon implements CommandExecutor {
 
         Player player = (Player)sender;
 
-        Entity entity = null;
+        LivingEntity entity = null;
 
         try {
             entity = EntityManager.getEntity(args[0].toLowerCase(Locale.ROOT), player.getLocation());
@@ -40,9 +39,9 @@ public class CommandSummon implements CommandExecutor {
             return false;
         }
 
-        WorldServer world = ((CraftWorld) player.getWorld()).getHandle();
+        ServerLevel world = ((CraftWorld) player.getWorld()).getHandle();
         entity.applyNBT();
-        world.addEntity(entity);
+        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CURED);
 
         return true;
     }

@@ -3,8 +3,8 @@ package io.github.mrriptide.peakcraft.recipes;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import io.github.mrriptide.peakcraft.PeakCraft;
-import net.minecraft.server.v1_16_R3.IRecipe;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 
@@ -13,6 +13,7 @@ public abstract class Recipe implements org.bukkit.inventory.Recipe{
     private String group;
     private NamespacedKey key;
 
+    @JsonSetter("result")
     public void setResult(RecipeItem result) {this.result = result;}
 
     @JsonIgnore
@@ -46,5 +47,5 @@ public abstract class Recipe implements org.bukkit.inventory.Recipe{
 
     public abstract boolean test(Recipe recipe);
 
-    public abstract IRecipe<?> toNMS(String recipe_name);
+    public abstract net.minecraft.world.item.crafting.Recipe<?> toNMS(String recipe_name);
 }

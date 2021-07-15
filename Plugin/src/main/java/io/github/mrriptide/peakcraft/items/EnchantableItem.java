@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.items;
 
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import org.bukkit.Material;
@@ -44,7 +45,12 @@ public class EnchantableItem extends Item {
 
     public EnchantableItem(String id){
         super(id);
-        EnchantableItem item = new EnchantableItem(ItemManager.getItem(id));
+        EnchantableItem item = null;
+        try {
+            item = new EnchantableItem(ItemManager.getItem(id));
+        } catch (ItemException e) {
+            e.printStackTrace();
+        }
 
         this.attributes = item.attributes;
         this.enchantments = new HashMap<>();
@@ -143,10 +149,10 @@ public class EnchantableItem extends Item {
         }
 
         // the item id
-        PersistentDataManager.setValue(meta, PersistentDataType.STRING, "ITEM_ID", id);
+        PersistentDataManager.setValue(meta, "ITEM_ID", id);
         // the enchantments
         for (Map.Entry<String, Integer> enchantment : enchantments.entrySet()){
-            PersistentDataManager.setValue(meta, PersistentDataType.INTEGER, "ENCHANT_" + enchantment.getKey().toUpperCase() + "_LEVEL", enchantment.getValue());
+            PersistentDataManager.setValue(meta, "ENCHANT_" + enchantment.getKey().toUpperCase() + "_LEVEL", enchantment.getValue());
         }
 
         stack.setItemMeta(meta);

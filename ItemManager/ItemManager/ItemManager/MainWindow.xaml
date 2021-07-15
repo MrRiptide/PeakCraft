@@ -39,6 +39,7 @@
                     <RowDefinition Height="2*"></RowDefinition>
                     <RowDefinition Height="1*"></RowDefinition>
                     <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="1" Grid.Column="1">ID:</Label>
                 <TextBox x:Name="itemIDTextBox" Grid.Row="1" Grid.Column="2"></TextBox>
@@ -57,12 +58,24 @@
                     <ComboBoxItem>Relic</ComboBoxItem>
                 </ComboBox>
                 <Label Grid.Row="5" Grid.Column="1">Material:</Label>
-                <TextBox x:Name="materialTextBox" Grid.Row="5" Grid.Column="2"></TextBox>
+                <local:FilterableComboBox x:Name="materialTextBox" Initialized="materialTextBox_Initialized" Grid.Row="5" Grid.Column="2"  ItemsSource="{Binding MyItemsSource}"
+    SelectedItem="{Binding MySelectedItem}"
+    IsEditable="True" 
+    IsTextSearchEnabled="False" 
+    StaysOpenOnEdit="True">
+                    <local:FilterableComboBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel VirtualizationMode="Recycling" />
+                        </ItemsPanelTemplate>
+                    </local:FilterableComboBox.ItemsPanel>
+                </local:FilterableComboBox>
                 <Label Grid.Row="6" Grid.Column="1">Type:</Label>
                 <ComboBox x:Name="typeComboBox" Grid.Row="6" Grid.Column="2" SelectionChanged="typeComboBox_SelectionChanged"/>
                 <Label Grid.Row="7" Grid.Column="1">Description:</Label>
                 <TextBox x:Name="descriptionTextBox" Grid.Row="7" Grid.Column="2"></TextBox>
-                <Button x:Name="saveItemButton" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" Click="saveItemButton_Click">Save Item</Button>
+                <Label Grid.Row="8" Grid.Column="1">Ability:</Label>
+                <TextBox x:Name="abilityTextBox" Grid.Row="8" Grid.Column="2"></TextBox>
+                <Button x:Name="saveItemButton" Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Click="saveItemButton_Click">Save Item</Button>
             </Grid>
         </ScrollViewer>
         <Button x:Name="addItemButton" Grid.Column="0" Grid.Row="10" Click="addItem_Click" IsEnabled="False">Add Item</Button>
