@@ -1,5 +1,7 @@
 package io.github.mrriptide.peakcraft;
 
+import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mrriptide.peakcraft.commands.*;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
@@ -20,6 +22,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
@@ -50,6 +55,11 @@ public class PeakCraft extends JavaPlugin {
 
         config.addDefault("itemBukkitVersion", "none");
         config.addDefault("pluginVersion", getDescription().getVersion());
+        config.addDefault("database.host", "localhost");
+        config.addDefault("database.port", 3306);
+        config.addDefault("database.name", "db");
+        config.addDefault("database.user", "username");
+        config.addDefault("database.password", "password");
 
         config.options().copyDefaults(true);
 
@@ -106,6 +116,7 @@ public class PeakCraft extends JavaPlugin {
         this.getCommand("creativeinv").setExecutor(new CommandCreativeInventory());
         this.getCommand("materiallist").setExecutor(new CommandMaterialList());
         this.getCommand("vault").setExecutor(new CommandVault());
+        this.getCommand("balance").setExecutor(new CommandBalance());
         // Register recipe commands
         CommandRecipe commandRecipe = new CommandRecipe();
         this.getCommand("recipe").setExecutor(commandRecipe);
@@ -230,5 +241,29 @@ public class PeakCraft extends JavaPlugin {
 
     public static void disable(){
         getPlugin().getServer().getPluginManager().disablePlugin(instance);
+    }
+
+    public static MysqlDataSource getDataSource() throws SQLException{
+        MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
+
+        FileConfiguration config = instance.getConfig();
+
+        dataSource.setServerName(config.getString("database.host"));
+        dataSource.setPortNumber(config.getInt("database.port"));
+        dataSource.setDatabaseName(config.getString("database.name"));
+        dataSource.setUser(config.getString("database.user"));
+        dataSource.setPassword(config.getString("database.password"));
+
+        testDataSource(dataSource);
+
+        return dataSource;
+    }
+
+    private static void testDataSource(DataSource dataSource) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            if (!conn.isValid(1000)) {
+                throw new SQLException("Could not establish database connection.");
+            }
+        }
     }
 }

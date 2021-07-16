@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.runnables;
 
-import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.abilities.Ability;
 import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
@@ -28,13 +29,13 @@ public class UpdatePlayer extends BukkitRunnable {
 
     @Override
     public void run() {
-        Player player = Bukkit.getServer().getPlayer(playerUUID);
-        if (player != null){
-            PlayerWrapper wrapper = new PlayerWrapper(player);
+        try{
+            PlayerWrapper wrapper = PlayerManager.getPlayer(playerUUID);
             if (playerTablist == null){
                 playerTablist = new Tablist(wrapper);
             }
 
+            wrapper.getStatus().init();
             wrapper.tryNaturalRegen();
             wrapper.regenMana();
 
@@ -51,7 +52,7 @@ public class UpdatePlayer extends BukkitRunnable {
             wrapper.getStatus().apply();
 
             wrapper.updateEntity();
-        } else {
+        } catch (IllegalArgumentException e) {
             this.cancel();
         }
     }

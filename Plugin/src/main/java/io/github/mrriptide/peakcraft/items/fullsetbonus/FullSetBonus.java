@@ -1,6 +1,6 @@
 package io.github.mrriptide.peakcraft.items.fullsetbonus;
 
-import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import org.apache.commons.lang.WordUtils;
 

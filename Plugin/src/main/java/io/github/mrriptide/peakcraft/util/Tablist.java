@@ -2,7 +2,7 @@ package io.github.mrriptide.peakcraft.util;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.server.MinecraftServer;

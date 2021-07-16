@@ -4,12 +4,10 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import io.github.mrriptide.peakcraft.PeakCraft;
-import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;

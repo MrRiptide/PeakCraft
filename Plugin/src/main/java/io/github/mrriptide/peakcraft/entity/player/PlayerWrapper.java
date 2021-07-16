@@ -1,5 +1,6 @@
-package io.github.mrriptide.peakcraft.entity;
+package io.github.mrriptide.peakcraft.entity.player;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.CombatEntity;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
@@ -23,22 +24,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class PlayerWrapper extends CombatEntity {
-    public double getCritChance() {
-        return critChance;
-    }
-
-    public double getCritDamage() {
-        return critDamage;
-    }
-
-    public Player getSource() {
-        return source;
-    }
-
     protected Player source;
     protected double mana;
     protected double maxMana;
@@ -47,6 +40,7 @@ public class PlayerWrapper extends CombatEntity {
     protected long lastDamageTime;
     protected double hunger;
     protected final double maxHunger = 500;
+    protected long coins;
     protected PlayerStatus status;
 
     public PlayerWrapper(Player player){
@@ -90,6 +84,25 @@ public class PlayerWrapper extends CombatEntity {
             this.weapon = null;
         }
         this.status = new PlayerStatus(player);
+
+        try (Connection conn = PeakCraft.getDataSource().getConnection()){
+            PreparedStatement statement = conn.prepareStatement("select coins from player_coins where uuid = ?;");
+            statement.setString(1, player.getUniqueId().toString());
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                coins = resultSet.getLong("coins");
+            } else {
+                coins = 0;
+            }
+
+            resultSet.close();
+            statement.close();
+
+        } catch (SQLException throwables) {
+            PeakCraft.getPlugin().getLogger().warning("Failed to connect to the mysql database");
+            throwables.printStackTrace();
+        }
 
     }
 
@@ -169,6 +182,9 @@ public class PlayerWrapper extends CombatEntity {
     }
 
     public boolean reduceMana(int amount){
+        if (source.getGameMode() == GameMode.CREATIVE){
+            return true;
+        }
         if (mana >= amount){
             mana -= amount;
             updateEntity();
@@ -228,6 +244,23 @@ public class PlayerWrapper extends CombatEntity {
         }
     }
 
+    public double getCritChance() {
+        return critChance;
+    }
+
+    public double getCritDamage() {
+        return critDamage;
+    }
+
+    public Player getSource() {
+        return source;
+    }
+
+    public long getCoins() {
+        return coins;
+    }
+
+
     public void giveItem(Item item){
         this.source.getInventory().addItem(item.getItemStack());
     }
@@ -246,13 +279,18 @@ public class PlayerWrapper extends CombatEntity {
             flying = player.isFlying();
         }
 
+        public void init(){
+            flightAllowed = source.getGameMode() == GameMode.CREATIVE || source.getGameMode() == GameMode.SPECTATOR;
+            flying = source.isFlying();
+        }
+
         public void apply(){
             source.setAllowFlight(flightAllowed);
             source.setFlying(flightAllowed && flying);
         }
 
         public void setFlightAllowed(boolean flightAllowed){
-            this.flightAllowed = flightAllowed;
+            this.flightAllowed = source.getGameMode() == GameMode.CREATIVE || source.getGameMode() == GameMode.SPECTATOR || flightAllowed;
         }
 
         public void setFlying(boolean flying){

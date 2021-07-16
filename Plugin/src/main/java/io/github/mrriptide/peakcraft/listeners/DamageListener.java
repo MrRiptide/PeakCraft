@@ -4,7 +4,8 @@ import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.HostileEntity;
 import io.github.mrriptide.peakcraft.entity.LivingEntity;
 import io.github.mrriptide.peakcraft.entity.CombatEntity;
-import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
 import org.bukkit.entity.Player;
@@ -27,7 +28,7 @@ public class DamageListener implements Listener {
         LivingEntity entity;
 
         if (event.getEntity() instanceof Player){
-            entity = new PlayerWrapper((Player)event.getEntity());
+            entity = PlayerManager.getPlayer((Player)event.getEntity());
         } else if (((CraftCreature)event.getEntity()).getHandle() instanceof LivingEntity){
             entity = (LivingEntity) ((CraftCreature)event.getEntity()).getHandle();
         } else {
@@ -45,7 +46,7 @@ public class DamageListener implements Listener {
 
         CombatEntity damagingEntity;
         if (event.getDamager() instanceof Player){
-            damagingEntity = new PlayerWrapper((Player) event.getDamager());
+            damagingEntity = PlayerManager.getPlayer((Player) event.getDamager());
         }
         else if (((CraftCreature)event.getDamager()).getHandle() instanceof LivingEntity) {
             Bukkit.broadcastMessage("Is custom hostile entity");
@@ -57,7 +58,7 @@ public class DamageListener implements Listener {
 
         LivingEntity damagedEntity;
         if (event.getEntity() instanceof Player)
-            damagedEntity = new PlayerWrapper((Player) event.getEntity());
+            damagedEntity = PlayerManager.getPlayer((Player) event.getEntity());
         else if (((CraftCreature)event.getEntity()).getHandle() instanceof LivingEntity) {
             damagedEntity = (LivingEntity) ((CraftCreature)event.getEntity()).getHandle();
         } else {

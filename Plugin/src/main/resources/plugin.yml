@@ -36,3 +36,7 @@ commands:
   vault:
     decription: Opens your private vault, a place to store items
     permission: peakcraft.vault
+  balance:
+    description: Displays your current amount of coins
+    aliases: [bal]
+    permissions: peakcraft.balance

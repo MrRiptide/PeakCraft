@@ -1,14 +1,11 @@
 package io.github.mrriptide.peakcraft.entity;
 
-import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 

@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.entity;
 
 import io.github.mrriptide.peakcraft.entity.pathfinding.PathfinderGoalAngeredTarget;
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.FloatGoal;

@@ -1,6 +1,6 @@
 package io.github.mrriptide.peakcraft.listeners;
 
-import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.PeakCraft;

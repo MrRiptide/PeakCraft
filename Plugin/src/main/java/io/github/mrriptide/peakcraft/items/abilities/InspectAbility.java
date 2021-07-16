@@ -1,17 +1,12 @@
 package io.github.mrriptide.peakcraft.items.abilities;
 
 import io.github.mrriptide.peakcraft.entity.LivingEntity;
-import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.RightClickAbilityTrigger;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-
-import java.util.HashMap;
 
 public class InspectAbility extends Ability {
     public InspectAbility() {

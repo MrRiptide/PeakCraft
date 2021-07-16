@@ -1,15 +1,14 @@
 package io.github.mrriptide.peakcraft.listeners;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
-import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.RightClickAbilityTrigger;
 import io.github.mrriptide.peakcraft.runnables.UpdatePlayer;
-import io.github.mrriptide.peakcraft.util.Tablist;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -39,6 +38,7 @@ public class PlayerListener implements Listener {
             Tablist.fillBoard(e.getPlayer());
         }, 10);*/
 
+        PlayerManager.logInPlayer(e.getPlayer());
         BukkitTask task = new UpdatePlayer(e.getPlayer()).runTaskTimer(PeakCraft.instance, 0, UpdatePlayer.ticksPerUpdate);
     }
 

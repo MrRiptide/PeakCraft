@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.entity;
 
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.util.CustomColors;

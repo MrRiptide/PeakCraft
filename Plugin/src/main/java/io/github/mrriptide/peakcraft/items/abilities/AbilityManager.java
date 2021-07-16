@@ -1,10 +1,8 @@
 package io.github.mrriptide.peakcraft.items.abilities;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
-import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
-import org.bukkit.Bukkit;
-import org.bukkit.event.player.PlayerEvent;
 
 import java.util.HashMap;
 

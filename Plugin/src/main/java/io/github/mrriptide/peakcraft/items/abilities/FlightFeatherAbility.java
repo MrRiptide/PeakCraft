@@ -1,6 +1,6 @@
 package io.github.mrriptide.peakcraft.items.abilities;
 
-import io.github.mrriptide.peakcraft.entity.PlayerWrapper;
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.TickAbilityTrigger;
 

@@ -1,5 +1,7 @@
 package io.github.mrriptide.peakcraft.guis;
 
+import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.items.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,11 +15,11 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
 public class VaultGUI implements InventoryGui{
-    Player player;
+    PlayerWrapper player;
     Item[][] items;
 
     public VaultGUI(Player player){
-        this.player = player;
+        this.player = PlayerManager.getPlayer(player);
     }
 
     @Override
