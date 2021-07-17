@@ -12,6 +12,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,8 +50,8 @@ public class CommandTest implements CommandExecutor {
                 for (Map.Entry<String, Class<? extends Enchantment>> enchantment : enchantmentClasses.entrySet()){
 
                     try {
-                        enchantment.getValue().newInstance().bakeItemAttributes(item, 3);
-                    } catch (IllegalAccessException | InstantiationException e) {
+                        enchantment.getValue().getDeclaredConstructor().newInstance().bakeItemAttributes(item, 3);
+                    } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 }

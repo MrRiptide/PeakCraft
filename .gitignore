@@ -317,3 +317,4 @@ _Pvt_Extensions
 *.binlog
 /.dotnet
 
+Plugin/.idea/dataSources.xml

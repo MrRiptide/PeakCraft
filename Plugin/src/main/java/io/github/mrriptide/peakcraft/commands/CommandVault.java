@@ -12,8 +12,13 @@ public class CommandVault implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (commandSender instanceof Player){
-            ((Player)commandSender).openInventory((new VaultGUI((Player)commandSender)).getInventory());
-            return true;
+            VaultGUI vaultGUI = new VaultGUI((Player)commandSender);
+            if (!vaultGUI.failedLoading()){
+                ((Player)commandSender).openInventory(vaultGUI.getInventory());
+                return true;
+            } else {
+                return false;
+            }
         } else {
             commandSender.sendMessage("This command can only be run by a player!");
             return false;

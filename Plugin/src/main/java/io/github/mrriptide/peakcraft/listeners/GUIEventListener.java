@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryEvent;
 
 public class GUIEventListener  implements Listener {
     @EventHandler
@@ -12,6 +14,14 @@ public class GUIEventListener  implements Listener {
         if (e.getInventory().getHolder() instanceof InventoryGui) {
             InventoryGui gui = (InventoryGui) e.getInventory().getHolder();
             e.setCancelled(gui.onGUIClick((Player)e.getWhoClicked(), e.getRawSlot(), e));
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent e){
+        if (e.getInventory().getHolder() instanceof InventoryGui) {
+            InventoryGui gui = (InventoryGui) e.getInventory().getHolder();
+            gui.onClose((Player)e.getPlayer(), e);
         }
     }
 

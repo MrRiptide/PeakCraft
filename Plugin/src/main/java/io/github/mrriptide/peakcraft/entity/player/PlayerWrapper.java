@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 public class PlayerWrapper extends CombatEntity {
     protected Player source;
@@ -267,6 +268,50 @@ public class PlayerWrapper extends CombatEntity {
 
     public void giveItem(String name){
         giveItem(new Item(name));
+    }
+
+    public void saveInventory() {
+        try (Connection conn = PeakCraft.getDataSource().getConnection()) {
+            PreparedStatement statement = conn.prepareStatement("DELETE FROM player_inventories WHERE uuid = ?");
+            statement.setString(1, getSource().getUniqueId().toString());
+
+            statement.execute();
+
+            statement = conn.prepareStatement("INSERT INTO player_inventories(uuid, item_id, item_index, item_count, nbt) VALUES(?, ?, ?, ?, ?)");
+            statement.setString(1, getSource().getUniqueId().toString());
+
+            ArrayList<Object[]> values = new ArrayList<>();
+
+            for (int i = 0; i < getSource().getInventory().getSize(); i++){
+                if (getSource() != null && getSource().getInventory().getItem(i) != null && getSource().getInventory().getItem(i).getType() != Material.AIR){
+                    try {
+                        io.github.mrriptide.peakcraft.items.ItemStack itemStack = new io.github.mrriptide.peakcraft.items.ItemStack(getSource().getInventory().getItem(i));
+                        Object[] objectSet = new Object[5];
+
+                        // item index
+                        objectSet[2] = i;
+                        statement.setInt(3, i);
+                        // item id
+                        statement.setString(2, itemStack.getItem().getId());
+                        // item count
+                        statement.setInt(4, itemStack.getAmount());
+                        // item nbt
+                        statement.setString(5, "");
+
+                        statement.addBatch();
+                        statement.setob
+                        statement.executeBatch();
+                    } catch (ItemException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+            statement.close();
+        } catch (SQLException e){
+            PeakCraft.getPlugin().getLogger().warning("Something went wrong while saving player " + getSource().getUniqueId().toString() + "'s inventory to the mysql database");
+            e.printStackTrace();
+        }
     }
 
     public class PlayerStatus{
