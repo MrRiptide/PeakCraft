@@ -7,6 +7,7 @@ import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.ItemStack;
 import io.github.mrriptide.peakcraft.util.CustomColors;
+import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -133,21 +134,31 @@ public class VaultGUI implements InventoryGui{
             statement.setString(1, player.getSource().getUniqueId().toString());
 
             statement.execute();
+            statement.close();
 
-            statement = conn.prepareStatement("INSERT INTO player_vaults(uuid, item_id, vault_index, item_index, item_count, nbt) VALUES(?, ?, ?, ?, ?, ?)");
-            statement.setString(1, player.getSource().getUniqueId().toString());
+            ArrayList<Object[]> values = new ArrayList<>();
+
             for (int i = 0; i < vaults.size(); i++){
-                statement.setInt(3, i);
                 for (Map.Entry<Integer, ItemStack> entry : vaults.get(i).entrySet()){
-                    statement.setInt(4, entry.getKey());
-                    statement.setString(2, entry.getValue().getItem().getId());
-                    statement.setInt(5, entry.getValue().getAmount());
-                    statement.setString(6, "");
+                    Object[] valueSet = new Object[6];
+                    // uuid
+                    valueSet[0] = player.getSource().getUniqueId().toString();
+                    // item_id
+                    valueSet[1] = entry.getValue().getItem().getId();
+                    // vault_index
+                    valueSet[2] = i;
+                    // item_index
+                    valueSet[3] = entry.getKey();
+                    // item_count
+                    valueSet[4] = entry.getValue().getAmount();
+                    // nbt
+                    valueSet[5] = "";
 
-                    statement.execute();
+                    values.add(valueSet);
                 }
             }
-            statement.close();
+            MySQLHelper.bulkInsert(conn, "INSERT INTO player_vaults(uuid, item_id, vault_index, item_index, item_count, nbt) VALUES ", values);
+            Bukkit.broadcastMessage("saved vaults");
         } catch (SQLException e){
             PeakCraft.getPlugin().getLogger().warning("Something went wrong while saving player " + player.getSource().getUniqueId().toString() + "'s vault to the mysql database");
             e.printStackTrace();

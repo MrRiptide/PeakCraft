@@ -23,6 +23,11 @@ public abstract class LivingEntity extends PathfinderMob {
     protected final String id;
     protected double health;
     protected double maxHealth;
+    protected boolean showHealth = true;
+
+    public void setShowHealth(boolean showHealth){
+        this.showHealth = showHealth;
+    }
 
     public String getEntityName() {
         return name;

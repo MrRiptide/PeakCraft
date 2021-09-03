@@ -2,6 +2,8 @@ package io.github.mrriptide.peakcraft.util;
 
 import net.md_5.bungee.api.ChatColor;
 
+import java.awt.*;
+
 public abstract class CustomColors {
     // Item data colors
     public static final ChatColor DESCRIPTION = ChatColor.GRAY;
@@ -18,6 +20,7 @@ public abstract class CustomColors {
 
     // Entity colors
     public static final ChatColor BASIC_ENTITY = ChatColor.GREEN;
+    public static final ChatColor NPC = ChatColor.of(Color.ORANGE);
     public static final ChatColor BOSS_ENTITY = ChatColor.DARK_PURPLE;
 
     // Attack colors

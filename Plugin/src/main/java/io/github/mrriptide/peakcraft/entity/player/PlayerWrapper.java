@@ -3,6 +3,7 @@ package io.github.mrriptide.peakcraft.entity.player;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.CombatEntity;
+import io.github.mrriptide.peakcraft.entity.npcs.NPC;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
@@ -12,10 +13,12 @@ import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonus;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonusManager;
 import io.github.mrriptide.peakcraft.runnables.UpdatePlayer;
 import io.github.mrriptide.peakcraft.util.CustomColors;
+import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.world.entity.EntityType;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
@@ -167,6 +170,14 @@ public class PlayerWrapper extends CombatEntity {
         return (CraftEntity) source;
     }
 
+    @Override
+    public void processAttack(CombatEntity attacker){
+        // if attacked by an NPC or player, ignore
+        if (!(attacker instanceof NPC || attacker instanceof PlayerWrapper)){
+            super.processAttack(attacker);
+        }
+    }
+
     public void resetStats(){
         this.health = maxHealth;
         this.mana = maxMana;
@@ -276,9 +287,7 @@ public class PlayerWrapper extends CombatEntity {
             statement.setString(1, getSource().getUniqueId().toString());
 
             statement.execute();
-
-            statement = conn.prepareStatement("INSERT INTO player_inventories(uuid, item_id, item_index, item_count, nbt) VALUES(?, ?, ?, ?, ?)");
-            statement.setString(1, getSource().getUniqueId().toString());
+            statement.close();
 
             ArrayList<Object[]> values = new ArrayList<>();
 
@@ -288,26 +297,25 @@ public class PlayerWrapper extends CombatEntity {
                         io.github.mrriptide.peakcraft.items.ItemStack itemStack = new io.github.mrriptide.peakcraft.items.ItemStack(getSource().getInventory().getItem(i));
                         Object[] objectSet = new Object[5];
 
+                        // uuid
+                        objectSet[0] = getSource().getUniqueId().toString();
                         // item index
                         objectSet[2] = i;
-                        statement.setInt(3, i);
                         // item id
-                        statement.setString(2, itemStack.getItem().getId());
+                        objectSet[1] = itemStack.getItem().getId();
                         // item count
-                        statement.setInt(4, itemStack.getAmount());
+                        objectSet[3] = itemStack.getAmount();
                         // item nbt
-                        statement.setString(5, "");
+                        objectSet[4] = "";
 
-                        statement.addBatch();
-                        statement.setob
-                        statement.executeBatch();
+                        values.add(objectSet);
                     } catch (ItemException e) {
                         e.printStackTrace();
                     }
                 }
-
             }
-            statement.close();
+            MySQLHelper.bulkInsert(conn, "INSERT INTO player_inventories(uuid, item_id, item_index, item_count, nbt) VALUES", values);
+            Bukkit.broadcastMessage("saved inventory");
         } catch (SQLException e){
             PeakCraft.getPlugin().getLogger().warning("Something went wrong while saving player " + getSource().getUniqueId().toString() + "'s inventory to the mysql database");
             e.printStackTrace();
