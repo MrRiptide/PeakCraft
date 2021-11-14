@@ -5,6 +5,7 @@ import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.util.CustomColors;
+import io.github.mrriptide.peakcraft.util.EntityUtil;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
 import io.github.mrriptide.peakcraft.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -55,5 +57,14 @@ public class EntityEventListener implements Listener {
             return;
         }
         e.setAmount(0);
+    }
+
+    @EventHandler
+    public void onEntitySpawn(EntitySpawnEvent e){
+        if (EntityUtil.isCustomMob(e.getEntity())){
+            return;
+        }
+
+        if (e.getEntity().getType())
     }
 }
