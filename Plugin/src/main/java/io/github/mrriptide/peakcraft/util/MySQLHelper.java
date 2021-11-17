@@ -30,13 +30,53 @@ public abstract class MySQLHelper {
 
         testDataSource(dataSource);
 
+        confirmConfigured(dataSource);
+
         return dataSource;
+    }
+
+    private static void confirmConfigured(DataSource dataSource) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            createTableIfNotExist(conn, "new_items", """
+id varchar(255) primary key,
+display_name varchar(255),
+description varchar(255),
+rarity int,
+material_id varchar(255),
+type varchar(255)""");
+
+            createTableIfNotExist(conn, "items", """
+id varchar(255) primary key,
+display_name varchar(255),
+description varchar(255),
+rarity int,
+material_id varchar(255),
+type varchar(255)""");
+
+            createTableIfNotExist(conn, "item_oredicts", """
+item_id varchar(255) primary key,
+oredict_id varchar(255)""");
+
+            createTableIfNotExist(conn, "item_abilities", """
+item_id varchar(255) primary key,
+ability_id varchar(255)""");
+        }
     }
 
     private static void testDataSource(DataSource dataSource) throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
             if (!conn.isValid(1000)) {
                 throw new SQLException("Could not establish database connection.");
+            }
+        }
+    }
+
+    public static void createTableIfNotExist(Connection connection, String tableName, String columns) throws SQLException {
+        if (!MySQLHelper.tableExists(connection, tableName)){
+            try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE ? ( ? )")) {
+                statement.setString(1, tableName);
+                statement.setString(2, columns);
+                statement.execute();
             }
         }
     }

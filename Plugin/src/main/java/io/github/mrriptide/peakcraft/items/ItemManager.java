@@ -2,6 +2,7 @@ package io.github.mrriptide.peakcraft.items;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.cj.protocol.Resultset;
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
@@ -28,6 +29,7 @@ import java.beans.XMLEncoder;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
@@ -51,17 +53,41 @@ public class ItemManager {
         // check if the items table exists
 
         try {
-            if (!MySQLHelper.tableExists("items")){
-                Connection conn = MySQLHelper.getConnection();
-                PreparedStatement statement = conn.prepareStatement("""CREATE TABLE items (
-oredict varchar(255),
-)""");
-            }
-
             // load through all spigot items to confirm that they all exist in the database
 
-            // I should load saved items on request time not on start to save on memory, shouldn't I?
+            Connection conn = MySQLHelper.getConnection();
 
+            int newItems = 0;
+
+            for (Material material : Arrays.asList(Material.values())){
+                PreparedStatement statement = conn.prepareStatement("""
+SELECT TOP 1 id FROM (items JOIN new_items) WHERE id = '?'
+""");
+                statement.setString(1, material.name());
+                final ResultSet resultSet = statement.executeQuery();
+
+                if(!resultSet.next()) {
+                    PreparedStatement newStatement = conn.prepareStatement("""
+INSERT INTO new_items (id, display_name, description, rarity, material_id, type) VALUES (?,?,?,?,?,?)
+""");
+                    newItems += 1;
+                    newStatement.setString(1, material.name());
+                    newStatement.setString(2, material.name());
+                    newStatement.setString(3, "Empty Description");
+                    newStatement.setInt(4, 0);
+                    newStatement.setString(5, material.name());
+                    newStatement.setString(6, "Item");
+
+                    newStatement.execute();
+                    newStatement.close();
+                }
+                resultSet.close();
+                statement.close();
+            }
+            conn.close();
+
+            if (newItems > 0)
+                PeakCraft.getPlugin().getLogger().warning(newItems + " new items found. Please update these");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -93,10 +119,27 @@ oredict varchar(255),
     }
 
     public static Item getItem(String id) throws ItemException {
-        if (!items.containsKey(id.toUpperCase())){
-            throw new ItemException("An item was requested that doesn't exist in the item database: \"" + id.toUpperCase() + "\"");
+        try {
+            Connection conn = MySQLHelper.getConnection();
+            PreparedStatement statement = conn.prepareStatement("""
+SELECT * FROM items WHERE id = ?
+""");
+
+            statement.setString(1, id);
+
+            final ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()){
+                String type = resultSet.getString("type");
+
+            } else {
+                throw new ItemException("Item does not exist");
+            }
+
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
-        return items.get(id.toUpperCase()).clone();
     }
 
     public static Item convertItem(org.bukkit.inventory.ItemStack itemSource) throws ItemException {

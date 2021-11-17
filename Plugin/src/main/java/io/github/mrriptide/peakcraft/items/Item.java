@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.items;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.abilities.Ability;
@@ -7,6 +8,7 @@ import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.util.CustomColors;
+import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
@@ -16,6 +18,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -270,17 +276,49 @@ public class Item implements Serializable {
         return clonedItem;
     }
 
-    public static Item loadFromHashMap(HashMap<String, String> itemData){
-        Item item = new Item();
-        item.id = itemData.get("id");
-        item.oreDict = itemData.get("oreDict");
-        item.displayName = itemData.get("displayName");
-        item.rarity = Integer.parseInt(itemData.get("rarity"));
-        item.description = itemData.get("description");
-        item.material = Material.getMaterial(itemData.get("materialID").toUpperCase());
-        item.type = itemData.get("type");
-        if (itemData.containsKey("ability") && AbilityManager.validateAbility(itemData.get("ability"))){
-            item.ability = AbilityManager.getAbility(itemData.get("ability"));
+    public static Item loadFromResultSet(ResultSet resultSet) throws SQLException {
+        return loadFromResultSet(resultSet, new Item());
+    }
+
+    public static Item loadFromResultSet(ResultSet resultSet, Item item) throws SQLException {
+        item.id = resultSet.getString("id");
+        //item.oreDict = resultSet.getString("oreDict");
+        item.displayName = resultSet.getString("displayName");
+        item.rarity = resultSet.getInt("rarity");
+        item.description = resultSet.getString("description");
+        item.material = Material.getMaterial(resultSet.getString("materialID").toUpperCase());
+        item.type = resultSet.getString("type");
+        Connection conn = MySQLHelper.getConnection();
+        PreparedStatement statement = conn.prepareStatement("""
+SELECT oredict_id from item_oreDicts where item_id = ?;
+""");
+        statement.setString(1, item.id);
+
+        ResultSet oredictResultSet = statement.executeQuery();
+
+        if (oredictResultSet.next()){
+            item.oreDict = oredictResultSet.getString("oredict_id");
+        } else {
+            item.oreDict = "";
+        }
+
+        oredictResultSet.close();
+        statement.close();
+
+        statement = conn.prepareStatement("""
+SELECT ability_id from item_abilities where item_id = ?;
+""");
+        statement.setString(1, item.id);
+
+        ResultSet abilityResultSet = statement.executeQuery();
+
+        if (oredictResultSet.next()){
+            String ability_id = abilityResultSet.getString("ability_id");
+            if (AbilityManager.validateAbility(ability_id)){
+                item.ability = AbilityManager.getAbility(ability_id);
+            } else {
+                item.ability = null;
+            }
         } else {
             item.ability = null;
         }
