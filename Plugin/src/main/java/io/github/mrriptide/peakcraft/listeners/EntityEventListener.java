@@ -1,11 +1,12 @@
 package io.github.mrriptide.peakcraft.listeners;
 
+import io.github.mrriptide.peakcraft.entity.EntityManager;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
+import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.util.CustomColors;
-import io.github.mrriptide.peakcraft.util.EntityUtil;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
 import io.github.mrriptide.peakcraft.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -61,10 +62,16 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent e){
-        if (EntityUtil.isCustomMob(e.getEntity())){
+        if (EntityManager.isCustomMob(e.getEntity())){
             return;
         }
 
-        if (e.getEntity().getType())
+        e.setCancelled(true);
+
+        try {
+            EntityManager.convertEntity(e.getEntity(), e.getLocation(), true);
+        } catch (EntityException ex) {
+            ex.printStackTrace();
+        }
     }
 }

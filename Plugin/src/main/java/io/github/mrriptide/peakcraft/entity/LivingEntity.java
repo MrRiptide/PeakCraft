@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.entity;
 
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
+import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.util.CustomColors;
@@ -8,9 +9,13 @@ import io.github.mrriptide.peakcraft.util.HoloDisplay;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -70,6 +75,14 @@ public abstract class LivingEntity extends PathfinderMob {
         this.name = name;
 
         updateName();
+    }
+
+    public void spawn(Location location, CreatureSpawnEvent.SpawnReason reason) throws EntityException {
+        ServerLevel world = ((CraftWorld) location.getWorld()).getHandle();
+        updateEntity();
+        applyNBT();
+        if (!world.addEntity(this, reason))
+            throw new EntityException("Entity failed to summon");
     }
 
     public void updateEntity(){
@@ -163,6 +176,7 @@ public abstract class LivingEntity extends PathfinderMob {
 
     public ArrayList<String> getData(){
         ArrayList<String> data = new ArrayList<String>();
+        data.add("wrapped: false");
         data.add("health: " + health);
         data.add("maxHealth: " + maxHealth);
         data.add("id: " + id);

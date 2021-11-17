@@ -20,28 +20,27 @@ public class CommandSummon implements CommandExecutor {
             sender.sendMessage("This command can only be run by a player");
             return false;
         }
-        if (args.length == 0 || args.length > 2){
+        if (args.length == 0 || args.length > 3){
             sender.sendMessage("This command requires only one or two arguments");
             return false;
         }
 
         int count = (args.length == 2) ? Integer.parseInt(args[1]) : 1;
+        boolean dynamicSelect = (args.length == 3) ? Boolean.parseBoolean(args[2]) : false;
 
         Player player = (Player)sender;
 
         LivingEntity entity = null;
 
         try {
-            entity = EntityManager.getEntity(args[0].toLowerCase(Locale.ROOT), player.getLocation());
+            entity = EntityManager.spawnEntity(args[0].toLowerCase(Locale.ROOT), player.getLocation(), CreatureSpawnEvent.SpawnReason.COMMAND, dynamicSelect);
         } catch (EntityException e) {
             e.printStackTrace();
             sender.sendMessage("I'm sorry but that entity does not exist.");
             return false;
         }
 
-        ServerLevel world = ((CraftWorld) player.getWorld()).getHandle();
         entity.applyNBT();
-        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CURED);
 
         return true;
     }
