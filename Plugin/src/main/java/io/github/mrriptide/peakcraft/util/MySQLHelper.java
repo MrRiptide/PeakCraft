@@ -73,9 +73,7 @@ ability_id varchar(255)""");
 
     public static void createTableIfNotExist(Connection connection, String tableName, String columns) throws SQLException {
         if (!MySQLHelper.tableExists(connection, tableName)){
-            try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE ? ( ? )")) {
-                statement.setString(1, tableName);
-                statement.setString(2, columns);
+            try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE " + tableName + " (" + columns + ")")) {
                 statement.execute();
             }
         }

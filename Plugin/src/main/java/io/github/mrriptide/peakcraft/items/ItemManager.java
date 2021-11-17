@@ -37,7 +37,7 @@ import java.util.logging.Level;
 public class ItemManager {
 
     private static String itemFilePath = "items.json";
-    private static HashMap<String, Item> items;
+    private static HashMap<String, Item> items = new HashMap<>();
 
     public static void getItemFromItemStack(ItemStack itemStack){
         Item item;
@@ -47,9 +47,28 @@ public class ItemManager {
 
     public static HashMap<String, Item> getItems(){
         return items;
-    };
+    }
 
-    public static void loadItems() {
+    public static void saveMaterial(Material material) throws SQLException {
+        saveMaterial(MySQLHelper.getConnection(), material);
+    }
+
+    public static void saveMaterial(Connection conn, Material material) throws SQLException {
+        PreparedStatement newStatement = conn.prepareStatement("""
+INSERT INTO new_items (id, display_name, description, rarity, material_id, type) VALUES (?,?,?,?,?,?)
+""");
+        newStatement.setString(1, material.name().toUpperCase(Locale.ROOT));
+        newStatement.setString(2, material.name());
+        newStatement.setString(3, "");
+        newStatement.setInt(4, 0);
+        newStatement.setString(5, material.name());
+        newStatement.setString(6, "Item");
+
+        newStatement.execute();
+        newStatement.close();
+    }
+
+    public static void loadNewItems(){
         // check if the items table exists
 
         try {
@@ -61,25 +80,16 @@ public class ItemManager {
 
             for (Material material : Arrays.asList(Material.values())){
                 PreparedStatement statement = conn.prepareStatement("""
-SELECT TOP 1 id FROM (items JOIN new_items) WHERE id = '?'
+SELECT id FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_items WHERE id = ? LIMIT 1;
 """);
-                statement.setString(1, material.name());
+                statement.setString(1, material.name().toUpperCase(Locale.ROOT));
                 final ResultSet resultSet = statement.executeQuery();
 
                 if(!resultSet.next()) {
-                    PreparedStatement newStatement = conn.prepareStatement("""
-INSERT INTO new_items (id, display_name, description, rarity, material_id, type) VALUES (?,?,?,?,?,?)
-""");
                     newItems += 1;
-                    newStatement.setString(1, material.name());
-                    newStatement.setString(2, material.name());
-                    newStatement.setString(3, "Empty Description");
-                    newStatement.setInt(4, 0);
-                    newStatement.setString(5, material.name());
-                    newStatement.setString(6, "Item");
-
-                    newStatement.execute();
-                    newStatement.close();
+                    saveMaterial(conn, material);
+                } else {
+                    PeakCraft.getPlugin().getLogger().info(resultSet.getString(1));
                 }
                 resultSet.close();
                 statement.close();
@@ -87,58 +97,81 @@ INSERT INTO new_items (id, display_name, description, rarity, material_id, type)
             conn.close();
 
             if (newItems > 0)
-                PeakCraft.getPlugin().getLogger().warning(newItems + " new items found. Please update these");
+                PeakCraft.getPlugin().getLogger().warning(newItems + " new items found. Please update the data in the database and then run /onloaditems");
+            else {
+                PeakCraft.getPlugin().getLogger().info("No new items found");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        try {
-            HashMap<String, HashMap<String, String>> itemsSource = objectMapper.readValue(file, new TypeReference<HashMap<String, HashMap<String, String>>>(){});
-
-            for (HashMap<String, String> itemData : itemsSource.values()){
-
-                Item item;
-
-                String type = itemData.get("type").toLowerCase(Locale.ROOT);
-                if (ArmorItem.validateType(type)) {
-                    item = ArmorItem.loadFromHashMap(itemData);
-                } else if (WeaponItem.validateType(type)) {
-                    item = WeaponItem.loadFromHashMap(itemData);
-                } else {
-                    item = Item.loadFromHashMap(itemData);
-                }
-
-                items.put(item.getId().toUpperCase(), item);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        PeakCraft.getPlugin().getLogger().info("Successfully loaded " + items.size() + " items.");
     }
 
-    public static Item getItem(String id) throws ItemException {
+    public static void loadItem(String id) throws SQLException {
+        Connection conn = MySQLHelper.getConnection();
+        PreparedStatement statement = conn.prepareStatement("""
+SELECT * FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_items WHERE id = ?;
+""");
+        statement.setString(1, id.toUpperCase());
+        ResultSet resultSet = statement.executeQuery();
+        if (resultSet.next()){
+            loadItem(resultSet);
+        }
+    }
+
+    public static void loadItem(ResultSet resultSet) throws SQLException {
+        String type = resultSet.getString("type");
+
+        if (ArmorItem.validateType(type)){
+            // load as armor item
+            items.put(resultSet.getString("id").toUpperCase(), ArmorItem.loadFromResultSet(resultSet));
+        } else if (WeaponItem.validateType(type)){
+            // load as weapon item
+            items.put(resultSet.getString("id").toUpperCase(), WeaponItem.loadFromResultSet(resultSet));
+        } else {
+            // load as normal item
+            items.put(resultSet.getString("id").toUpperCase(), Item.loadFromResultSet(resultSet));
+        }
+    }
+
+    public static void loadItems() {
         try {
+            items.clear();
+
             Connection conn = MySQLHelper.getConnection();
             PreparedStatement statement = conn.prepareStatement("""
-SELECT * FROM items WHERE id = ?
+SELECT * FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_items;
 """);
-
-            statement.setString(1, id);
 
             final ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.next()){
-                String type = resultSet.getString("type");
-
-            } else {
-                throw new ItemException("Item does not exist");
+            while (resultSet.next()){
+                loadItem(resultSet);
             }
 
-
+            PeakCraft.getPlugin().getLogger().info("Loaded " + items.size() + " items");
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+        }
+    }
+
+    public static Item getItem(String id) throws ItemException {
+        if (items.containsKey(id.toUpperCase())){
+            return items.get(id.toUpperCase()).clone();
+        } else {
+            PeakCraft.getPlugin().getLogger().info(items.keySet().toString());
+            if (Material.matchMaterial(id) != null){
+                try {
+                    saveMaterial(Material.matchMaterial(id));
+                    loadItem(id);
+                    return items.get(id.toUpperCase()).clone();
+                } catch (SQLException e) {
+                    PeakCraft.getPlugin().getLogger().warning(e.getMessage());
+                    return null;
+                }
+            } else {
+                throw new ItemException("An item was requested that doesn't exist in the item database: \"" + id.toUpperCase() + "\"");
+            }
         }
     }
 
@@ -147,7 +180,7 @@ SELECT * FROM items WHERE id = ?
             try {
                 return getItem("air");
             } catch (ItemException e) {
-                e.printStackTrace();
+                PeakCraft.getPlugin().getLogger().warning(e.getMessage());
             }
         }
         String id = PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());

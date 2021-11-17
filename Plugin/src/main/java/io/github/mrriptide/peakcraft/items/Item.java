@@ -283,10 +283,10 @@ public class Item implements Serializable {
     public static Item loadFromResultSet(ResultSet resultSet, Item item) throws SQLException {
         item.id = resultSet.getString("id");
         //item.oreDict = resultSet.getString("oreDict");
-        item.displayName = resultSet.getString("displayName");
+        item.displayName = resultSet.getString("display_name");
         item.rarity = resultSet.getInt("rarity");
         item.description = resultSet.getString("description");
-        item.material = Material.getMaterial(resultSet.getString("materialID").toUpperCase());
+        item.material = Material.getMaterial(resultSet.getString("material_id").toUpperCase());
         item.type = resultSet.getString("type");
         Connection conn = MySQLHelper.getConnection();
         PreparedStatement statement = conn.prepareStatement("""
@@ -312,7 +312,7 @@ SELECT ability_id from item_abilities where item_id = ?;
 
         ResultSet abilityResultSet = statement.executeQuery();
 
-        if (oredictResultSet.next()){
+        if (abilityResultSet.next()){
             String ability_id = abilityResultSet.getString("ability_id");
             if (AbilityManager.validateAbility(ability_id)){
                 item.ability = AbilityManager.getAbility(ability_id);

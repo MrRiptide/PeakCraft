@@ -74,11 +74,12 @@ public class PeakCraft extends JavaPlugin {
 
         // Load items from items.tsv, must be done as one of the first things (especially before recipes are loaded)
         getLogger().info("Loading items");
+        ItemManager.loadNewItems();
         ItemManager.loadItems();
 
         // if there is a version mismatch check
 
-        if (!Objects.equals(getConfig().getString("itemBukkitVersion"), Bukkit.getBukkitVersion())){
+        /*if (!Objects.equals(getConfig().getString("itemBukkitVersion"), Bukkit.getBukkitVersion())){
             getLogger().warning("The items are out of date, generating a list of new vanilla items and disabling the plugin" +
                     "\nWhen the items are updated, update itemBukkitVersion with \"" + Bukkit.getBukkitVersion() + "\"");
 
@@ -95,7 +96,7 @@ public class PeakCraft extends JavaPlugin {
 
             Bukkit.getPluginManager().disablePlugin(this);
             return;
-        }
+        }*/
 
         // Register event listeners
 
