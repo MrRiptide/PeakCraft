@@ -242,28 +242,4 @@ public class PeakCraft extends JavaPlugin {
     public static void disable(){
         getPlugin().getServer().getPluginManager().disablePlugin(instance);
     }
-
-    public static MysqlDataSource getDataSource() throws SQLException{
-        MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
-
-        FileConfiguration config = instance.getConfig();
-
-        dataSource.setServerName(config.getString("database.host"));
-        dataSource.setPortNumber(config.getInt("database.port"));
-        dataSource.setDatabaseName(config.getString("database.name"));
-        dataSource.setUser(config.getString("database.user"));
-        dataSource.setPassword(config.getString("database.password"));
-
-        testDataSource(dataSource);
-
-        return dataSource;
-    }
-
-    private static void testDataSource(DataSource dataSource) throws SQLException {
-        try (Connection conn = dataSource.getConnection()) {
-            if (!conn.isValid(1000)) {
-                throw new SQLException("Could not establish database connection.");
-            }
-        }
-    }
 }

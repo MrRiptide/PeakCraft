@@ -35,7 +35,7 @@ public class VaultGUI implements InventoryGui{
 
         // load items from the player's vault
 
-        try(Connection conn = PeakCraft.getDataSource().getConnection()){
+        try(Connection conn = MySQLHelper.getConnection()){
             PreparedStatement stmt = conn.prepareStatement("select vaults from player_upgrades WHERE uuid = ?");
             stmt.setString(1, player.getUniqueId().toString());
 
@@ -129,7 +129,7 @@ public class VaultGUI implements InventoryGui{
     }
 
     public void saveData() {
-        try (Connection conn = PeakCraft.getDataSource().getConnection()) {
+        try (Connection conn = MySQLHelper.getConnection()) {
             PreparedStatement statement = conn.prepareStatement("DELETE FROM player_vaults WHERE uuid = ?");
             statement.setString(1, player.getSource().getUniqueId().toString());
 

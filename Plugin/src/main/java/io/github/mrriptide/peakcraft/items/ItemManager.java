@@ -10,6 +10,7 @@ import com.univocity.parsers.tsv.TsvWriterSettings;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.recipes.ShapedRecipe;
+import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -25,6 +26,9 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.XMLEncoder;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -44,29 +48,24 @@ public class ItemManager {
     };
 
     public static void loadItems() {
-        items = new HashMap<String, Item>();
+        // check if the items table exists
 
-        TsvParserSettings settings = new TsvParserSettings();
-        settings.getFormat().setLineSeparator("\n");
-        settings.setHeaderExtractionEnabled(true);
-
-        TsvParser parser = new TsvParser(settings);
-
-        FileInputStream file = null;
         try {
-            file = new FileInputStream(new File(PeakCraft.getPlugin().getDataFolder() + File.separator + itemFilePath));
-        } catch (FileNotFoundException e) {
-            PeakCraft.getPlugin().getLogger().log(Level.SEVERE, "File \"" + itemFilePath + "\" not found, generating one now");
-            createItemList();
-
-            try {
-                file = new FileInputStream(new File(PeakCraft.getPlugin().getDataFolder() + File.separator + itemFilePath));
-            } catch (FileNotFoundException fileNotFoundException) {
-                fileNotFoundException.printStackTrace();
+            if (!MySQLHelper.tableExists("items")){
+                Connection conn = MySQLHelper.getConnection();
+                PreparedStatement statement = conn.prepareStatement("""CREATE TABLE items (
+oredict varchar(255),
+)""");
             }
-        }
 
-        ObjectMapper objectMapper = new ObjectMapper();
+            // load through all spigot items to confirm that they all exist in the database
+
+            // I should load saved items on request time not on start to save on memory, shouldn't I?
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         try {
             HashMap<String, HashMap<String, String>> itemsSource = objectMapper.readValue(file, new TypeReference<HashMap<String, HashMap<String, String>>>(){});

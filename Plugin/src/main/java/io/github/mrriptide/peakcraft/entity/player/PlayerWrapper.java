@@ -89,7 +89,7 @@ public class PlayerWrapper extends CombatEntity {
         }
         this.status = new PlayerStatus(player);
 
-        try (Connection conn = PeakCraft.getDataSource().getConnection()){
+        try (Connection conn = MySQLHelper.getConnection()){
             PreparedStatement statement = conn.prepareStatement("select coins from player_coins where uuid = ?;");
             statement.setString(1, player.getUniqueId().toString());
 
@@ -282,7 +282,7 @@ public class PlayerWrapper extends CombatEntity {
     }
 
     public void saveInventory() {
-        try (Connection conn = PeakCraft.getDataSource().getConnection()) {
+        try (Connection conn = MySQLHelper.getConnection()) {
             PreparedStatement statement = conn.prepareStatement("DELETE FROM player_inventories WHERE uuid = ?");
             statement.setString(1, getSource().getUniqueId().toString());
 
