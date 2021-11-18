@@ -26,32 +26,6 @@ public abstract class EntityManager {
     }
 
     // okay so i want to let the code spawn an entity from id, which may be very difficult tbh
-
-    public static boolean convertSpawn(Entity entity) throws EntityException{
-        return convertSpawn(entity, entity.getLocation(), true);
-    }
-
-    public static boolean convertSpawn(Entity entity, boolean dynamicSelect) throws EntityException{
-        return convertSpawn(entity, entity.getLocation(), dynamicSelect);
-    }
-
-    public static boolean convertSpawn(Entity entity, Location location) throws EntityException{
-        return convertSpawn(entity, location, true);
-    }
-
-    public static boolean convertSpawn(Entity entity, Location location, boolean dynamicSelect) throws EntityException {
-        LivingEntity newEntity = getEntity(entity, location, dynamicSelect);
-
-        if (newEntity instanceof WrapperEntity){
-            newEntity.applyNBT();
-        } else {
-            entity.remove();
-            newEntity.spawn(location);
-        }
-        return !(newEntity instanceof WrapperEntity);
-    }
-
-    // okay so i want to let the code spawn an entity from id, which may be very difficult tbh
     public static LivingEntity spawnEntity(String id, Location location, CreatureSpawnEvent.SpawnReason reason) throws EntityException {
         return spawnEntity(id, location, reason, false);
     }
@@ -65,25 +39,26 @@ public abstract class EntityManager {
         return entity;
     }
 
-    public static LivingEntity getEntity(String id, Location location) throws EntityException {
+    // this should probably only be used internally, right?
+    private static LivingEntity getEntity(String id, Location location) throws EntityException {
         return getEntity(id, location, false);
     }
 
-    public static LivingEntity getEntity(String id, Location location, boolean dynamicSelect) throws EntityException {
+    private static LivingEntity getEntity(String id, Location location, boolean dynamicSelect) throws EntityException {
         if (entities == null){
             registerEntities();
         }
         if (entities.containsKey(id.toUpperCase())){
-            return getEntity(entities.get(id.toUpperCase()), location);
+            return getLivingEntity(entities.get(id.toUpperCase()), location);
         } else if (EnumUtils.isValidEnum(EntityType.class, id.toUpperCase())) {
-            return null; //getEntity(EntityType.valueOf(id.toUpperCase()), location, dynamicSelect);
+            return getEntity(EntityType.valueOf(id.toUpperCase()), location, dynamicSelect);
         } else {
             throw new NoSuchEntityException("No valid entity called \"" + id + "\" exists");
         }
     }
 
     // spawns custom entities
-    public static LivingEntity getEntity(Class<? extends LivingEntity> entityClass, Location location) throws EntityException {
+    public static LivingEntity getLivingEntity(Class<? extends LivingEntity> entityClass, Location location) throws EntityException {
         try {
             Constructor<? extends LivingEntity> constructor = entityClass.getConstructor(Location.class);
             return constructor.newInstance(location);
@@ -105,11 +80,32 @@ public abstract class EntityManager {
 
     public static LivingEntity getEntity(Entity entity, Location location, boolean dynamicSelect){
         if (dynamicSelect){
-            if (entity instanceof Zombie){
-                return new BruteEntity(location);
+            LivingEntity createdEntity = getEntity(entity.getClass(), location);
+            if (createdEntity != null){
+                return createdEntity;
             }
         }
+
         return new WrapperEntity(entity);
+    }
+
+    public static LivingEntity getEntity(EntityType entityType, Location location, boolean dynamicSelect){
+        if (dynamicSelect){
+            LivingEntity createdEntity = getEntity(entityType.getEntityClass(), location);
+            if (createdEntity != null){
+                return createdEntity;
+            }
+        }
+
+        return new WrapperEntity(entityType, location);
+    }
+
+    public static LivingEntity getEntity(Class<? extends Entity> entityClass, Location location){
+        if (entityClass.equals(Zombie.class)){
+            return new BruteEntity(location);
+        }
+
+        return null;
     }
 
     public static boolean isCustomMob(Entity entity){

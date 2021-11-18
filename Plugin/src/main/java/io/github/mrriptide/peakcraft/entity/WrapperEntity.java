@@ -20,6 +20,7 @@ import java.util.Optional;
 public class WrapperEntity extends LivingEntity {
     Entity entity;
     CraftEntity bukkitEntity;
+    EntityType entityType;
 
     public WrapperEntity(Entity entity) {
         super(entity.getName(),
@@ -28,11 +29,22 @@ public class WrapperEntity extends LivingEntity {
         this.entity = entity;
     }
 
+    public WrapperEntity(EntityType type, Location location) {
+        super(type.name(),
+                net.minecraft.world.entity.EntityType.ZOMBIE,
+                ((CraftWorld) location.getWorld()).getHandle());
+        this.entityType = type;
+    }
+
     @Override
     public void spawn(Location location, CreatureSpawnEvent.SpawnReason reason){
+        if (entity == null && entityType != null){
+            entity = location.getWorld().spawnEntity(location, entityType);
+        }
+
         updateEntity();
         applyNBT();
-        // it should already be spawned???????
+        // it is already spawned by nature of its existence so \shrug
     }
 
     @Override

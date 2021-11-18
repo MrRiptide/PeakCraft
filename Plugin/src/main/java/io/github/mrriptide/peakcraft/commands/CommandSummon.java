@@ -26,7 +26,7 @@ public class CommandSummon implements CommandExecutor {
         }
 
         int count = (args.length == 2) ? Integer.parseInt(args[1]) : 1;
-        boolean dynamicSelect = (args.length == 3) ? Boolean.parseBoolean(args[2]) : false;
+        boolean dynamicSelect = args.length == 3 && Boolean.parseBoolean(args[2]);
 
         Player player = (Player)sender;
 
