@@ -21,34 +21,34 @@ public abstract class EntityManager {
 
     public static void registerEntities(){
         entities = new HashMap<>();
-        entities.put("brute", BruteEntity.class);
-        entities.put("potato_king", PotatoKingEntity.class);
+        entities.put("BRUTE", BruteEntity.class);
+        entities.put("POTATO_KING", PotatoKingEntity.class);
     }
 
     // okay so i want to let the code spawn an entity from id, which may be very difficult tbh
 
-    public static LivingEntity convertEntity(Entity entity) throws EntityException{
-        return convertEntity(entity, entity.getLocation(), true);
+    public static boolean convertSpawn(Entity entity) throws EntityException{
+        return convertSpawn(entity, entity.getLocation(), true);
     }
 
-    public static LivingEntity convertEntity(Entity entity, boolean dynamicSelect) throws EntityException{
-        return convertEntity(entity, entity.getLocation(), dynamicSelect);
+    public static boolean convertSpawn(Entity entity, boolean dynamicSelect) throws EntityException{
+        return convertSpawn(entity, entity.getLocation(), dynamicSelect);
     }
 
-    public static LivingEntity convertEntity(Entity entity, Location location) throws EntityException{
-        return convertEntity(entity, location, true);
+    public static boolean convertSpawn(Entity entity, Location location) throws EntityException{
+        return convertSpawn(entity, location, true);
     }
 
-    public static LivingEntity convertEntity(Entity entity, Location location, boolean dynamicSelect) throws EntityException {
-        LivingEntity newEntity = getEntity(entity.getType(), location, dynamicSelect);
+    public static boolean convertSpawn(Entity entity, Location location, boolean dynamicSelect) throws EntityException {
+        LivingEntity newEntity = getEntity(entity, location, dynamicSelect);
 
         if (newEntity instanceof WrapperEntity){
             newEntity.applyNBT();
         } else {
-            ((CraftEntity) entity).setHandle(newEntity);
+            entity.remove();
+            newEntity.spawn(location);
         }
-
-        return newEntity;
+        return !(newEntity instanceof WrapperEntity);
     }
 
     // okay so i want to let the code spawn an entity from id, which may be very difficult tbh
@@ -73,10 +73,10 @@ public abstract class EntityManager {
         if (entities == null){
             registerEntities();
         }
-        if (entities.containsKey(id)){
-            return getEntity(entities.get(id), location);
-        } else if (EnumUtils.isValidEnum(EntityType.class, id)) {
-            return getEntity(EntityType.valueOf(id), location, dynamicSelect);
+        if (entities.containsKey(id.toUpperCase())){
+            return getEntity(entities.get(id.toUpperCase()), location);
+        } else if (EnumUtils.isValidEnum(EntityType.class, id.toUpperCase())) {
+            return null; //getEntity(EntityType.valueOf(id.toUpperCase()), location, dynamicSelect);
         } else {
             throw new NoSuchEntityException("No valid entity called \"" + id + "\" exists");
         }
@@ -93,7 +93,7 @@ public abstract class EntityManager {
         }
     }
 
-    public static LivingEntity getEntity(Entity entity) throws EntityException {
+    public static LivingEntity getCustomEntityFromEntity(Entity entity) throws EntityException {
         if (PersistentDataManager.getValueOrDefault(entity, PersistentDataType.STRING, "wrappedEntity", "no").equals("yes")){
             return new WrapperEntity(entity);
         } else if (((CraftEntity)entity).getHandle() instanceof LivingEntity){
@@ -103,14 +103,13 @@ public abstract class EntityManager {
         }
     }
 
-    public static LivingEntity getEntity(EntityType entityType, Location location, boolean dynamicSelect){
-        assert entityType.getEntityClass() != null;
+    public static LivingEntity getEntity(Entity entity, Location location, boolean dynamicSelect){
         if (dynamicSelect){
-            if (entityType.getEntityClass().equals(Zombie.class)){
+            if (entity instanceof Zombie){
                 return new BruteEntity(location);
             }
         }
-        return new WrapperEntity(entityType, location);
+        return new WrapperEntity(entity);
     }
 
     public static boolean isCustomMob(Entity entity){

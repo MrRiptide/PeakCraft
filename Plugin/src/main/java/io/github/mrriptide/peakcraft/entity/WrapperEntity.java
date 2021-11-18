@@ -1,6 +1,11 @@
 package io.github.mrriptide.peakcraft.entity;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
+import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.level.Level;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
@@ -8,12 +13,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
 
 public class WrapperEntity extends LivingEntity {
     Entity entity;
     CraftEntity bukkitEntity;
-    EntityType entityType;
 
     public WrapperEntity(Entity entity) {
         super(entity.getName(),
@@ -22,20 +28,17 @@ public class WrapperEntity extends LivingEntity {
         this.entity = entity;
     }
 
-    public WrapperEntity(EntityType entityType, Location location){
-        super(entityType.name(),
-                (net.minecraft.world.entity.EntityType<? extends PathfinderMob>)
-                        net.minecraft.world.entity.EntityType.byString(entityType.name()).get(),
-                ((CraftWorld) location.getWorld()).getHandle());
-        this.entityType = entityType;
+    @Override
+    public void spawn(Location location, CreatureSpawnEvent.SpawnReason reason){
+        updateEntity();
+        applyNBT();
+        // it should already be spawned???????
     }
 
     @Override
-    public void spawn(Location location, CreatureSpawnEvent.SpawnReason reason){
-        ((CraftWorld)location.getWorld()).addEntity(getBukkitEntity().getHandle(), reason);
-
-        updateEntity();
-        applyNBT();
+    public void applyNBT(){
+        super.applyNBT();
+        PersistentDataManager.setValue(this.getBukkitEntity(), "wrappedEntity", "yes");
     }
 
     @Override
@@ -43,16 +46,6 @@ public class WrapperEntity extends LivingEntity {
         if (bukkitEntity == null){
             if (entity != null)
                 bukkitEntity = (CraftEntity) entity;
-            else if (entityType != null){
-                net.minecraft.world.entity.EntityType type =
-                        net.minecraft.world.entity.EntityType.byString(entityType.name()).get();
-                try {
-                    bukkitEntity =
-                            (CraftEntity) type.getBaseClass().getDeclaredConstructor().newInstance();
-                } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return bukkitEntity;
     }

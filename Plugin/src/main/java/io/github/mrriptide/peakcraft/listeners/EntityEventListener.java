@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.listeners;
 
 import io.github.mrriptide.peakcraft.entity.EntityManager;
+import io.github.mrriptide.peakcraft.entity.WrapperEntity;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
@@ -12,11 +13,15 @@ import io.github.mrriptide.peakcraft.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class EntityEventListener implements Listener {
 
@@ -61,15 +66,33 @@ public class EntityEventListener implements Listener {
     }
 
     @EventHandler
-    public void onEntitySpawn(EntitySpawnEvent e){
+    public void onEntitySpawn(CreatureSpawnEvent e){
+        //checks if its already a custom mob, ignore if it is
         if (EntityManager.isCustomMob(e.getEntity())){
             return;
         }
 
-        e.setCancelled(true);
+        List<CreatureSpawnEvent.SpawnReason> ignoredReasons = Arrays.asList(
+                CreatureSpawnEvent.SpawnReason.COMMAND,
+                CreatureSpawnEvent.SpawnReason.CUSTOM,
+                CreatureSpawnEvent.SpawnReason.EGG,
+                CreatureSpawnEvent.SpawnReason.SHEARED,
+                CreatureSpawnEvent.SpawnReason.SHOULDER_ENTITY
+                );
+
+        if (ignoredReasons.contains(e.getSpawnReason())){
+            return;
+        }
 
         try {
-            EntityManager.convertEntity(e.getEntity(), e.getLocation(), true);
+            LivingEntity newEntity = EntityManager.getEntity(e.getEntity(), e.getLocation(), true);
+
+            if (newEntity instanceof WrapperEntity){
+                newEntity.applyNBT();
+            } else {
+                e.setCancelled(true);
+                newEntity.spawn(e.getLocation(), e.getSpawnReason());
+            }
         } catch (EntityException ex) {
             ex.printStackTrace();
         }
