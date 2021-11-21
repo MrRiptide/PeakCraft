@@ -1,5 +1,7 @@
-package io.github.mrriptide.peakcraft.entity;
+package io.github.mrriptide.peakcraft.entity.wrappers;
 
+import io.github.mrriptide.peakcraft.entity.EntityManager;
+import io.github.mrriptide.peakcraft.entity.data.LivingEntityData;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
@@ -8,26 +10,23 @@ import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.HoloDisplay;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.level.Level;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
-import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public abstract class LivingEntity extends PathfinderMob {
+public class LivingEntityWrapper {
+    protected Entity entity;
+    protected String entityMode;
     protected String name;
     protected final String id;
     protected double health;
     protected double maxHealth;
+    protected double defense;
     protected boolean showHealth = true;
 
     public void setShowHealth(boolean showHealth){
@@ -54,21 +53,27 @@ public abstract class LivingEntity extends PathfinderMob {
         return defense;
     }
 
-    protected double defense;
-
-    protected LivingEntity(String id, EntityType<? extends PathfinderMob> type, Level world) {
-        super(type, world);
-        setName("Unnamed Mob");
-        this.id = id;
+    public LivingEntityWrapper(LivingEntity entity) throws EntityException {
+        this.entity = entity;
+        this.entityMode = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.STRING, "mode", "none");
+        this.id = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.STRING, "id", entity.getName());
+        if (this.entityMode.equals("none")){
+            LivingEntityData entityData = EntityManager.getEntity(this.id);
+            this.name = entityData.getName();
+            this.health = entity.getHealth();
+            this.maxHealth = entityData.getMaxHealth();
+            this.defense = entityData.getDefense();
+        }
+        this.name = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.STRING, "name", entity.getName());
+        this.health = entity.getHealth();
+        this.maxHealth = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.DOUBLE, "maxHealth", 0.0);
+        this.defense = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.DOUBLE, "defense", 0.0);
         updateName();
-        initPathfinder();
     }
 
-    public abstract void initPathfinder() ;
-
     public void updateName(){
-        this.setCustomName(new TextComponent(name + " " + CustomColors.HEALTH + ((int)health) + " ❤"));
-        this.setCustomNameVisible(true);
+        entity.setCustomName(name + " " + CustomColors.HEALTH + ((int)health) + " ❤");
+        entity.setCustomNameVisible(true);
     }
 
     public void setName(String name){
@@ -77,33 +82,41 @@ public abstract class LivingEntity extends PathfinderMob {
         updateName();
     }
 
-    public void spawn(Location location, CreatureSpawnEvent.SpawnReason reason) throws EntityException {
-        ServerLevel world = ((CraftWorld) location.getWorld()).getHandle();
-        updateEntity();
-        applyNBT();
-        if (!world.addEntity(this, reason))
-            throw new EntityException("Entity failed to summon");
-    }
-
     public void updateEntity(){
         this.updateName();
         this.health = Math.max(0, Math.min(health, maxHealth));
 
-        ((org.bukkit.entity.LivingEntity)this.getBukkitEntity()).setHealth(Math.min(this.health/this.maxHealth*20.0, 20.0));
-        PersistentDataManager.setValue(this.getBukkitEntity(), "health", this.health);
-        PersistentDataManager.setValue(this.getBukkitEntity(), "maxHealth", this.maxHealth);
-        PersistentDataManager.setValue(this.getBukkitEntity(), "defense", this.defense);
+        PersistentDataManager.setValue(entity, "health", this.health);
+        if (!(this instanceof PlayerWrapper)){
+            ((org.bukkit.entity.LivingEntity)entity).getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(this.maxHealth);
+            ((org.bukkit.entity.LivingEntity)entity).setHealth(this.health);
+        }
+        else {
+            ((org.bukkit.entity.LivingEntity)entity).setHealth(Math.min(this.health / this.maxHealth * 20.0, 20.0));
+        }
+        PersistentDataManager.setValue(entity, "maxHealth", this.maxHealth);
+        PersistentDataManager.setValue(entity, "defense", this.defense);
     }
 
     public void applyNBT(){
-        PersistentDataManager.setValue(this.getBukkitEntity(), "name", name);
-        PersistentDataManager.setValue(this.getBukkitEntity(), "id", id);
-        PersistentDataManager.setValue(this.getBukkitEntity(), "health", health);
-        PersistentDataManager.setValue(this.getBukkitEntity(), "maxHealth", maxHealth);
-        PersistentDataManager.setValue(this.getBukkitEntity(), "defense", defense);
+        PersistentDataManager.setValue(entity, "name", name);
+        PersistentDataManager.setValue(entity, "id", id);
+        PersistentDataManager.setValue(entity, "health", health);
+        PersistentDataManager.setValue(entity, "maxHealth", maxHealth);
+        PersistentDataManager.setValue(entity, "defense", defense);
     }
 
-    public void processAttack(CombatEntity attacker){
+    public void processAttack(EnchantableItem weapon, double strength){
+        double damage = 1;
+        if (weapon != null){
+            damage = weapon.getBakedAttribute("damage");
+        }
+
+        health -= damage * (1 + strength * 0.05);
+        updateName();
+    }
+
+    public void processAttack(CombatEntityWrapper attacker){
         double damage;
 
         Item weapon = attacker.getWeapon();
@@ -125,7 +138,7 @@ public abstract class LivingEntity extends PathfinderMob {
 
         double damagePotential = damage*(1+0.05*attacker.strength)/(1+defense*0.05) * multiplier;
 
-        HoloDisplay damageDisplay = new HoloDisplay(this.getBukkitEntity().getLocation().add(Math.random()*1-0.5, Math.random()*1-1.5, Math.random()*1 -0.5));
+        HoloDisplay damageDisplay = new HoloDisplay(entity.getLocation().add(Math.random()*1-0.5, Math.random()*1-1.5, Math.random()*1 -0.5));
         ChatColor damageColor;
         if (multiplier < 1){
             damageColor = CustomColors.WEAK_ATTACK;
@@ -164,16 +177,6 @@ public abstract class LivingEntity extends PathfinderMob {
         updateName();
     }
 
-    public void processAttack(EnchantableItem weapon, double strength){
-        double damage = 1;
-        if (weapon != null){
-            damage = weapon.getBakedAttribute("damage");
-        }
-
-        health -= damage * (1 + strength * 0.05);
-        updateName();
-    }
-
     public ArrayList<String> getData(){
         ArrayList<String> data = new ArrayList<String>();
         data.add("wrapped: false");
@@ -182,7 +185,6 @@ public abstract class LivingEntity extends PathfinderMob {
         data.add("id: " + id);
         data.add("name: " + name);
         data.add("defense: " + defense);
-        data.add("Target: " + (this.getTarget() != null ? this.getTarget().getScoreboardName() : CustomColors.ERROR + "null"));
         return data;
     }
 }

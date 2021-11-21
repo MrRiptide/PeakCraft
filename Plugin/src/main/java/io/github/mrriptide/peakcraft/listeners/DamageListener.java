@@ -1,13 +1,15 @@
 package io.github.mrriptide.peakcraft.listeners;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
-import io.github.mrriptide.peakcraft.entity.HostileEntity;
-import io.github.mrriptide.peakcraft.entity.LivingEntity;
-import io.github.mrriptide.peakcraft.entity.CombatEntity;
+import io.github.mrriptide.peakcraft.entity.EntityManager;
 import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
-import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
+import io.github.mrriptide.peakcraft.entity.wrappers.CombatEntityWrapper;
+import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
+import io.github.mrriptide.peakcraft.exceptions.EntityException;
+import net.citizensnpcs.api.CitizensAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,12 +27,18 @@ public class DamageListener implements Listener {
             //event.setDamage(0);
             return;
         }
-        LivingEntity entity;
+        LivingEntityWrapper entity;
 
-        if (event.getEntity() instanceof Player){
+        if (event.getEntity() instanceof Player && !CitizensAPI.getNPCRegistry().isNPC(event.getEntity())){
             entity = PlayerManager.getPlayer((Player)event.getEntity());
-        } else if (((CraftCreature)event.getEntity()).getHandle() instanceof LivingEntity){
-            entity = (LivingEntity) ((CraftCreature)event.getEntity()).getHandle();
+        } else if (EntityManager.isCustomMob(event.getEntity())){
+            try {
+                entity = new LivingEntityWrapper((LivingEntity) event.getEntity());
+            } catch (EntityException e) {
+                PeakCraft.getPlugin().getLogger().warning("An entity was recognized as a custom mob but something failed in wrapping! Please report this to the developers");
+                e.printStackTrace();
+                return;
+            }
         } else {
             return;
         }
@@ -44,24 +52,35 @@ public class DamageListener implements Listener {
             return;
         }
 
-        CombatEntity damagingEntity;
+        CombatEntityWrapper damagingEntity;
         if (event.getDamager() instanceof Player){
             damagingEntity = PlayerManager.getPlayer((Player) event.getDamager());
         }
         else if (((CraftCreature)event.getDamager()).getHandle() instanceof LivingEntity) {
             Bukkit.broadcastMessage("Is custom hostile entity");
-            damagingEntity = ((HostileEntity)((CraftCreature)event.getDamager()).getHandle());
+            try {
+                damagingEntity = new CombatEntityWrapper((LivingEntity) event.getEntity());
+            } catch (EntityException e) {
+                PeakCraft.getPlugin().getLogger().warning("An entity was recognized as a custom mob but something failed in wrapping! Please report this to the developers");
+                e.printStackTrace();
+                return;
+            }
         } else {
             PeakCraft.getPlugin().getLogger().warning("Some unregistered entity tried dealing damage");
             return;
         }
 
-        LivingEntity damagedEntity;
+        LivingEntityWrapper damagedEntity;
         if (event.getEntity() instanceof Player)
             damagedEntity = PlayerManager.getPlayer((Player) event.getEntity());
-        else if (((CraftCreature)event.getEntity()).getHandle() instanceof LivingEntity) {
-            damagedEntity = (LivingEntity) ((CraftCreature)event.getEntity()).getHandle();
-        } else {
+        else if (EntityManager.isCustomMob(event.getEntity())) {
+            try {
+                damagedEntity = new LivingEntityWrapper((LivingEntity) event.getEntity());
+            } catch (EntityException e) {
+                PeakCraft.getPlugin().getLogger().warning("An entity was recognized as a custom mob but something failed in wrapping! Please report this to the developers");
+                e.printStackTrace();
+                return;
+            }        } else {
             PeakCraft.getPlugin().getLogger().warning("Some entity tried damaging an unregistered entity");
             return;
         }

@@ -1,9 +1,8 @@
 package io.github.mrriptide.peakcraft.entity.player;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mrriptide.peakcraft.PeakCraft;
-import io.github.mrriptide.peakcraft.entity.CombatEntity;
-import io.github.mrriptide.peakcraft.entity.npcs.NPC;
+import io.github.mrriptide.peakcraft.entity.wrappers.CombatEntityWrapper;
+import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
@@ -17,12 +16,9 @@ import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.world.entity.EntityType;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -33,9 +29,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
 
-public class PlayerWrapper extends CombatEntity {
+public class PlayerWrapper extends CombatEntityWrapper {
     protected Player source;
     protected double mana;
     protected double maxMana;
@@ -47,8 +42,8 @@ public class PlayerWrapper extends CombatEntity {
     protected long coins;
     protected PlayerStatus status;
 
-    public PlayerWrapper(Player player){
-        super("player", EntityType.SHEEP, ((CraftWorld) player.getWorld()).getHandle());
+    public PlayerWrapper(Player player) throws EntityException {
+        super(player);
         this.source = player;
         this.maxHealth = 100;
 
@@ -146,34 +141,24 @@ public class PlayerWrapper extends CombatEntity {
     }
 
     @Override
-    public void initPathfinder() {
-        // no need?
-    }
-
-    @Override
     public void updateEntity(){
         super.updateEntity();
 
-        ((org.bukkit.entity.Player)this.getBukkitEntity()).setSaturation((float) Math.min(this.hunger/this.maxHunger*20.0, 20.0));
-        PersistentDataManager.setValue(this.getBukkitEntity(), "mana", this.mana);
-        PersistentDataManager.setValue(this.getBukkitEntity(), "hunger", this.mana);
-        PersistentDataManager.setValue(this.getBukkitEntity(), "critChance", this.critChance);
-        PersistentDataManager.setValue(this.getBukkitEntity(), "critDamage", this.critDamage);
-        PersistentDataManager.setValue(this.getBukkitEntity(), "lastDamageTime", this.lastDamageTime);
+        ((org.bukkit.entity.Player)entity).setSaturation((float) Math.min(this.hunger/this.maxHunger*20.0, 20.0));
+        PersistentDataManager.setValue(entity, "mana", this.mana);
+        PersistentDataManager.setValue(entity, "hunger", this.mana);
+        PersistentDataManager.setValue(entity, "critChance", this.critChance);
+        PersistentDataManager.setValue(entity, "critDamage", this.critDamage);
+        PersistentDataManager.setValue(entity, "lastDamageTime", this.lastDamageTime);
         source.setLevel((int)mana);
         source.setExp((float) (mana / maxMana));
         sendActionBar();
     }
 
     @Override
-    public CraftEntity getBukkitEntity() {
-        return (CraftEntity) source;
-    }
-
-    @Override
-    public void processAttack(CombatEntity attacker){
+    public void processAttack(CombatEntityWrapper attacker){
         // if attacked by an NPC or player, ignore
-        if (!(attacker instanceof NPC || attacker instanceof PlayerWrapper)){
+        if (!(attacker instanceof PlayerWrapper)){
             super.processAttack(attacker);
         }
     }

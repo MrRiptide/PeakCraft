@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.logging.Level;
 
 public class PeakCraft extends JavaPlugin {
     public static PeakCraft instance;
@@ -48,6 +49,12 @@ public class PeakCraft extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this; // provides an instance of the plugin to the rest of the code !!MUST BE DONE BEFORE ANYTHING ELSE!!
+
+        if(getServer().getPluginManager().getPlugin("Citizens") == null || !getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
+            getLogger().log(Level.SEVERE, "Citizens 2.0 not found or not enabled");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Config stuff
 
@@ -118,6 +125,7 @@ public class PeakCraft extends JavaPlugin {
         this.getCommand("materiallist").setExecutor(new CommandMaterialList());
         this.getCommand("vault").setExecutor(new CommandVault());
         this.getCommand("balance").setExecutor(new CommandBalance());
+        this.getCommand("entitydatabase").setExecutor(new CommandEntityDatabase());
         // Register recipe commands
         CommandRecipe commandRecipe = new CommandRecipe();
         this.getCommand("recipe").setExecutor(commandRecipe);

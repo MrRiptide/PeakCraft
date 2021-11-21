@@ -3,6 +3,7 @@ package io.github.mrriptide.peakcraft.listeners;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
+import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.Item;
@@ -61,7 +62,14 @@ public class PlayerListener implements Listener {
             try{
                 Item item = ItemManager.convertItem(e.getItem());
                 if (item.hasAbility()){
-                    PlayerWrapper player = new PlayerWrapper(e.getPlayer());
+                    PlayerWrapper player = null;
+                    try {
+                        player = new PlayerWrapper(e.getPlayer());
+                    } catch (EntityException ex) {
+                        PeakCraft.getPlugin().getLogger().warning("Player interacted but could not be wrapped");
+                        ex.printStackTrace();
+                        return;
+                    }
                     if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK){
                         item.useAbility(player, new RightClickAbilityTrigger(e));
                     }
@@ -128,6 +136,9 @@ public class PlayerListener implements Listener {
             } catch (ItemException error){
                 e.getPlayer().sendMessage("That item has an invalid id, please report this!");
                 PeakCraft.getPlugin().getLogger().warning("Player " + e.getPlayer().getName() + " interacted with an invalid item!");
+            } catch (EntityException entityException) {
+                PeakCraft.getPlugin().getLogger().warning("A player interacted but could not be wrapped");
+                entityException.printStackTrace();
             }
         }
     }

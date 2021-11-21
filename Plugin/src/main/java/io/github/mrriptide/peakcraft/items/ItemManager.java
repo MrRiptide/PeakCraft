@@ -11,6 +11,7 @@ import com.univocity.parsers.tsv.TsvWriterSettings;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.recipes.ShapedRecipe;
+import io.github.mrriptide.peakcraft.util.Formatter;
 import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import org.apache.commons.lang.WordUtils;
@@ -224,7 +225,7 @@ SELECT * FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_item
                     map.put("id", mat.name());
                     map.put("oreDict", "");
                     map.put("description", "");
-                    map.put("displayName", WordUtils.capitalizeFully(mat.toString().toLowerCase().replace("_", " ")));
+                    map.put("displayName", Formatter.humanize(mat.toString()));
                     map.put("rarity", "1");
                     map.put("materialID", mat.name());
                     map.put("type", "Item");

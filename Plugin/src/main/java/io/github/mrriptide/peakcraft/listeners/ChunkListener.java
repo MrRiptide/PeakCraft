@@ -18,7 +18,8 @@ import org.bukkit.persistence.PersistentDataType;
 public class ChunkListener implements Listener {
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event){
-        for (int i = 0; i < event.getChunk().getEntities().length; i++){
+        return;
+        /*for (int i = 0; i < event.getChunk().getEntities().length; i++){
             Entity entity = event.getChunk().getEntities()[i];
             if (entity instanceof Creature){
                 Sheep test = (Sheep)event.getChunk().getWorld().spawnEntity(event.getChunk().getWorld().getSpawnLocation(), EntityType.SHEEP);
@@ -39,6 +40,6 @@ public class ChunkListener implements Listener {
                     }
                 }
             }
-        }
+        }*/
     }
 }

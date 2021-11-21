@@ -1,22 +1,20 @@
 package io.github.mrriptide.peakcraft.listeners;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.EntityManager;
-import io.github.mrriptide.peakcraft.entity.WrapperEntity;
+import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ItemManager;
-import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.util.CustomColors;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
-import io.github.mrriptide.peakcraft.entity.LivingEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -45,19 +43,35 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e){
-        PlayerWrapper playerWrapper = new PlayerWrapper(e.getPlayer());
-        playerWrapper.resetStats();
+        try {
+            PlayerWrapper playerWrapper = new PlayerWrapper(e.getPlayer());
+            playerWrapper.resetStats();
+        } catch (EntityException ex) {
+            PeakCraft.getPlugin().getLogger().warning("Player respawned but could not be wrapped!");
+            ex.printStackTrace();
+        }
     }
 
     @EventHandler
     public void onRegainHealth(EntityRegainHealthEvent e){
         if (e.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED){
             e.setCancelled(true);
-        } else if (e.getEntity() instanceof Player){
-            PlayerWrapper wrapper = new PlayerWrapper((Player)e.getEntity());
-            wrapper.regenHealth(e.getAmount());
-        } else if (((CraftCreature)e.getEntity()).getHandle() instanceof LivingEntity){
-            LivingEntity entity = (LivingEntity) ((CraftCreature)e.getEntity()).getHandle();
+        } else if (e.getEntity() instanceof Player && !(e.getEntity().hasMetadata("NPC"))){
+            try {
+                PlayerWrapper playerWrapper = new PlayerWrapper((Player) e.getEntity());
+                playerWrapper.regenHealth(e.getAmount());
+            } catch (EntityException ex) {
+                PeakCraft.getPlugin().getLogger().warning("Player regained health but could not be wrapped!");
+                ex.printStackTrace();
+            }
+        } else if (EntityManager.isCustomMob(e.getEntity())){
+            LivingEntityWrapper entity = null;
+            try {
+                entity = new LivingEntityWrapper((LivingEntity) e.getEntity());
+            } catch (EntityException ex) {
+                ex.printStackTrace();
+                return;
+            }
             entity.regenHealth(e.getAmount());
         } else {
             return;
@@ -67,12 +81,13 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void onEntitySpawn(CreatureSpawnEvent e){
-        //checks if its already a custom mob, ignore if it is
-        if (EntityManager.isCustomMob(e.getEntity())){
+        return;
+        /*// checks if it is an NPC, if so ignore because it should already be a custom one
+        if (e.getEntity().hasMetadata("NPC")){
             return;
         }
 
-        List<CreatureSpawnEvent.SpawnReason> ignoredReasons = Arrays.asList(
+        List<CreatureSpawnEvent.SpawnReason> staticSpawnReasons = Arrays.asList(
                 CreatureSpawnEvent.SpawnReason.COMMAND,
                 CreatureSpawnEvent.SpawnReason.CUSTOM,
                 CreatureSpawnEvent.SpawnReason.EGG,
@@ -80,21 +95,12 @@ public class EntityEventListener implements Listener {
                 CreatureSpawnEvent.SpawnReason.SHOULDER_ENTITY
                 );
 
-        if (ignoredReasons.contains(e.getSpawnReason())){
-            return;
-        }
-
         try {
-            LivingEntity newEntity = EntityManager.getEntity(e.getEntity(), e.getLocation(), true);
-
-            if (newEntity instanceof WrapperEntity){
-                newEntity.applyNBT();
-            } else {
-                e.setCancelled(true);
-                newEntity.spawn(e.getLocation(), e.getSpawnReason());
-            }
+            // if it isn't a custom npc, pass it off to the spawn converter
+            e.setCancelled(EntityManager.convertSpawn(e.getEntity(), e.getLocation(),
+                    !staticSpawnReasons.contains(e.getSpawnReason()), e.getSpawnReason()));
         } catch (EntityException ex) {
             ex.printStackTrace();
-        }
+        }*/
     }
 }

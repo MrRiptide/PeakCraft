@@ -1,11 +1,15 @@
 package io.github.mrriptide.peakcraft.items.abilities;
 
-import io.github.mrriptide.peakcraft.entity.LivingEntity;
+import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.entity.EntityManager;
+import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
+import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.RightClickAbilityTrigger;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.block.Action;
 
 public class InspectAbility extends Ability {
@@ -42,8 +46,15 @@ public class InspectAbility extends Ability {
     public void useAbility(PlayerWrapper player, AbilityTrigger trigger) {
         if (((RightClickAbilityTrigger)trigger).hasEntity()){
             // send entity info
-            if (((CraftCreature)((RightClickAbilityTrigger)trigger).getEntity()).getHandle() instanceof LivingEntity){
-                LivingEntity entity = (LivingEntity) ((CraftCreature)((RightClickAbilityTrigger)trigger).getEntity()).getHandle();
+            if (EntityManager.isCustomMob(((RightClickAbilityTrigger) trigger).getEntity())){
+                LivingEntityWrapper entity = null;
+                try {
+                    entity = new LivingEntityWrapper((LivingEntity) ((RightClickAbilityTrigger) trigger).getEntity());
+                } catch (EntityException e) {
+                    PeakCraft.getPlugin().getLogger().warning("An entity was recognized as a custom mob but something failed in wrapping! Please report this to the developers");
+                    e.printStackTrace();
+                    return;
+                }
                 var entityData = entity.getData();
                 StringBuilder message = new StringBuilder();
                 message.append("\nEntity Data:");
