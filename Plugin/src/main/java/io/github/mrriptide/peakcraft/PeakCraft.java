@@ -3,6 +3,7 @@ package io.github.mrriptide.peakcraft;
 import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mrriptide.peakcraft.commands.*;
+import io.github.mrriptide.peakcraft.entity.EntityManager;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
 import io.github.mrriptide.peakcraft.items.abilities.FlightFeatherAbility;
@@ -81,29 +82,13 @@ public class PeakCraft extends JavaPlugin {
 
         // Load items from items.tsv, must be done as one of the first things (especially before recipes are loaded)
         getLogger().info("Loading items");
+        // checks for new items and saves them to the new items table
         ItemManager.loadNewItems();
+        // loads the items from the database
         ItemManager.loadItems();
 
-        // if there is a version mismatch check
-
-        /*if (!Objects.equals(getConfig().getString("itemBukkitVersion"), Bukkit.getBukkitVersion())){
-            getLogger().warning("The items are out of date, generating a list of new vanilla items and disabling the plugin" +
-                    "\nWhen the items are updated, update itemBukkitVersion with \"" + Bukkit.getBukkitVersion() + "\"");
-
-            var items = ItemManager.getItems();
-            var newItems = new ArrayList<Material>();
-
-            for (Material mat : Material.values()){
-                if (!items.containsKey(mat.name().toUpperCase())){
-                    newItems.add(mat);
-                }
-            }
-
-            ItemManager.writeMaterialsToFile(newItems, "newItems - " + Bukkit.getBukkitVersion() + ".json");
-
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
-        }*/
+        getLogger().info("Registering entities");
+        EntityManager.registerEntities();
 
         // Register event listeners
 
@@ -126,6 +111,7 @@ public class PeakCraft extends JavaPlugin {
         this.getCommand("vault").setExecutor(new CommandVault());
         this.getCommand("balance").setExecutor(new CommandBalance());
         this.getCommand("entitydatabase").setExecutor(new CommandEntityDatabase());
+        this.getCommand("reloadentities").setExecutor(new CommandReloadEntities());
         // Register recipe commands
         CommandRecipe commandRecipe = new CommandRecipe();
         this.getCommand("recipe").setExecutor(commandRecipe);

@@ -14,6 +14,10 @@ public class CombatEntityWrapper extends LivingEntityWrapper {
     protected double strength;
     protected Item weapon;
 
+    protected CombatEntityWrapper(){
+        super();
+    }
+
     public CombatEntityWrapper(LivingEntity entity) throws EntityException {
         super(entity);
         this.strength = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.DOUBLE, "strength", 0.0);

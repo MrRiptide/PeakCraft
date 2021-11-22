@@ -19,13 +19,12 @@ public class WeaponItem extends EnchantableItem {
         super(item);
     }
 
-    public static Item loadFromResultSet(ResultSet resultSet) throws SQLException {
-        return loadFromResultSet(resultSet, new WeaponItem());
+    public static Item loadFromResultSet(Connection conn, ResultSet resultSet) throws SQLException {
+        return loadFromResultSet(conn, resultSet, new WeaponItem());
     }
-    public static Item loadFromResultSet(ResultSet resultSet, Item item) throws SQLException {
-        WeaponItem newItem = (WeaponItem) Item.loadFromResultSet(resultSet, item);
+    public static Item loadFromResultSet(Connection conn, ResultSet resultSet, Item item) throws SQLException {
+        WeaponItem newItem = (WeaponItem) Item.loadFromResultSet(conn, resultSet, item);
 
-        Connection conn = MySQLHelper.getConnection();
         PreparedStatement statement = conn.prepareStatement("""
 SELECT * FROM item_attributes WHERE item_id = ? AND attribute = 'damage';
 """);
@@ -38,6 +37,8 @@ SELECT * FROM item_attributes WHERE item_id = ? AND attribute = 'damage';
         } else {
             newItem.setAttribute("damage", 0.0);
         }
+        attributeResultSet.close();
+        statement.close();
 
         return item;
     }

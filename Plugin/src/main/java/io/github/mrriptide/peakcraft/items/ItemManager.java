@@ -51,7 +51,9 @@ public class ItemManager {
     }
 
     public static void saveMaterial(Material material) throws SQLException {
-        saveMaterial(MySQLHelper.getConnection(), material);
+        Connection conn = MySQLHelper.getConnection();
+        saveMaterial(conn, material);
+        conn.close();
     }
 
     public static void saveMaterial(Connection conn, Material material) throws SQLException {
@@ -59,7 +61,7 @@ public class ItemManager {
 INSERT INTO new_items (id, display_name, description, rarity, material_id, type) VALUES (?,?,?,?,?,?)
 """);
         newStatement.setString(1, material.name().toUpperCase(Locale.ROOT));
-        newStatement.setString(2, material.name());
+        newStatement.setString(2, Formatter.humanize(material.name()));
         newStatement.setString(3, "");
         newStatement.setInt(4, 0);
         newStatement.setString(5, material.name());
@@ -116,22 +118,25 @@ SELECT * FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_item
         statement.setString(1, id.toUpperCase());
         ResultSet resultSet = statement.executeQuery();
         if (resultSet.next()){
-            loadItem(resultSet);
+            loadItem(conn, resultSet);
         }
+        resultSet.close();
+        statement.close();
+        conn.close();
     }
 
-    public static void loadItem(ResultSet resultSet) throws SQLException {
+    public static void loadItem(Connection conn, ResultSet resultSet) throws SQLException {
         String type = resultSet.getString("type");
 
         if (ArmorItem.validateType(type)){
             // load as armor item
-            items.put(resultSet.getString("id").toUpperCase(), ArmorItem.loadFromResultSet(resultSet));
+            items.put(resultSet.getString("id").toUpperCase(), ArmorItem.loadFromResultSet(conn, resultSet));
         } else if (WeaponItem.validateType(type)){
             // load as weapon item
-            items.put(resultSet.getString("id").toUpperCase(), WeaponItem.loadFromResultSet(resultSet));
+            items.put(resultSet.getString("id").toUpperCase(), WeaponItem.loadFromResultSet(conn, resultSet));
         } else {
             // load as normal item
-            items.put(resultSet.getString("id").toUpperCase(), Item.loadFromResultSet(resultSet));
+            items.put(resultSet.getString("id").toUpperCase(), Item.loadFromResultSet(conn, resultSet));
         }
     }
 
@@ -147,7 +152,7 @@ SELECT * FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_item
             final ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()){
-                loadItem(resultSet);
+                loadItem(conn, resultSet);
             }
 
             PeakCraft.getPlugin().getLogger().info("Loaded " + items.size() + " items");

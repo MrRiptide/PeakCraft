@@ -1,6 +1,5 @@
 package io.github.mrriptide.peakcraft.items;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.abilities.Ability;
@@ -8,7 +7,6 @@ import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.util.CustomColors;
-import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
@@ -276,11 +274,11 @@ public class Item implements Serializable {
         return clonedItem;
     }
 
-    public static Item loadFromResultSet(ResultSet resultSet) throws SQLException {
-        return loadFromResultSet(resultSet, new Item());
+    public static Item loadFromResultSet(Connection conn, ResultSet resultSet) throws SQLException {
+        return loadFromResultSet(conn, resultSet, new Item());
     }
 
-    public static Item loadFromResultSet(ResultSet resultSet, Item item) throws SQLException {
+    public static Item loadFromResultSet(Connection conn, ResultSet resultSet, Item item) throws SQLException {
         item.id = resultSet.getString("id");
         //item.oreDict = resultSet.getString("oreDict");
         item.displayName = resultSet.getString("display_name");
@@ -288,7 +286,7 @@ public class Item implements Serializable {
         item.description = resultSet.getString("description");
         item.material = Material.getMaterial(resultSet.getString("material_id").toUpperCase());
         item.type = resultSet.getString("type");
-        Connection conn = MySQLHelper.getConnection();
+
         PreparedStatement statement = conn.prepareStatement("""
 SELECT oredict_id from item_oreDicts where item_id = ?;
 """);
@@ -322,6 +320,9 @@ SELECT ability_id from item_abilities where item_id = ?;
         } else {
             item.ability = null;
         }
+
+        abilityResultSet.close();
+        statement.close();
 
         return item;
     }

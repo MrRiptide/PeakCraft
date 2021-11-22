@@ -21,36 +21,16 @@ import java.util.ArrayList;
 
 public class LivingEntityWrapper {
     protected Entity entity;
+    protected String entityType;
     protected String entityMode;
     protected String name;
-    protected final String id;
+    protected String id;
     protected double health;
     protected double maxHealth;
     protected double defense;
     protected boolean showHealth = true;
 
-    public void setShowHealth(boolean showHealth){
-        this.showHealth = showHealth;
-    }
-
-    public String getEntityName() {
-        return name;
-    }
-
-    public String getEntityId() {
-        return id;
-    }
-
-    public double getEntityHealth() {
-        return health;
-    }
-
-    public double getEntityMaxHealth() {
-        return maxHealth;
-    }
-
-    public double getEntityDefense() {
-        return defense;
+    protected LivingEntityWrapper(){
     }
 
     public LivingEntityWrapper(LivingEntity entity) throws EntityException {
@@ -59,11 +39,16 @@ public class LivingEntityWrapper {
         this.id = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.STRING, "id", entity.getName());
         if (this.entityMode.equals("none")){
             LivingEntityData entityData = EntityManager.getEntity(this.id);
+            this.entityType = entityData.getType();
             this.name = entityData.getName();
-            this.health = entity.getHealth();
+            this.health = entityData.getMaxHealth();
             this.maxHealth = entityData.getMaxHealth();
             this.defense = entityData.getDefense();
+            applyNBT();
+            updateEntity();
         }
+        this.entityType = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.STRING, "type",
+                this instanceof CombatEntityWrapper ? "normal_hostile" : "passive");
         this.name = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.STRING, "name", entity.getName());
         this.health = entity.getHealth();
         this.maxHealth = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.DOUBLE, "maxHealth", 0.0);
@@ -72,7 +57,12 @@ public class LivingEntityWrapper {
     }
 
     public void updateName(){
-        entity.setCustomName(name + " " + CustomColors.HEALTH + ((int)health) + " ❤");
+        ChatColor name_color = switch (entityType) {
+            case ("boss") -> CustomColors.BOSS_ENTITY;
+            case ("npc") -> CustomColors.NPC;
+            default -> CustomColors.BASIC_ENTITY;
+        };
+        entity.setCustomName(name_color + name + " " + CustomColors.HEALTH + ((int)health) + " ❤");
         entity.setCustomNameVisible(true);
     }
 
@@ -83,7 +73,8 @@ public class LivingEntityWrapper {
     }
 
     public void updateEntity(){
-        this.updateName();
+        if (!(this instanceof PlayerWrapper))
+            this.updateName();
         this.health = Math.max(0, Math.min(health, maxHealth));
 
         PersistentDataManager.setValue(entity, "health", this.health);
@@ -99,6 +90,7 @@ public class LivingEntityWrapper {
     }
 
     public void applyNBT(){
+        PersistentDataManager.setValue(entity, "type", entityType);
         PersistentDataManager.setValue(entity, "name", name);
         PersistentDataManager.setValue(entity, "id", id);
         PersistentDataManager.setValue(entity, "health", health);
@@ -186,5 +178,33 @@ public class LivingEntityWrapper {
         data.add("name: " + name);
         data.add("defense: " + defense);
         return data;
+    }
+
+    public Entity getEntity() {
+        return entity;
+    }
+
+    public void setShowHealth(boolean showHealth){
+        this.showHealth = showHealth;
+    }
+
+    public String getEntityName() {
+        return name;
+    }
+
+    public String getEntityId() {
+        return id;
+    }
+
+    public double getEntityHealth() {
+        return health;
+    }
+
+    public double getEntityMaxHealth() {
+        return maxHealth;
+    }
+
+    public double getEntityDefense() {
+        return defense;
     }
 }

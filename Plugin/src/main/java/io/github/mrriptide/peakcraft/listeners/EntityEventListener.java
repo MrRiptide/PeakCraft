@@ -2,12 +2,15 @@ package io.github.mrriptide.peakcraft.listeners;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.EntityManager;
+import io.github.mrriptide.peakcraft.entity.HoloDisplayEntity;
 import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.util.CustomColors;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -81,9 +84,11 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void onEntitySpawn(CreatureSpawnEvent e){
-        return;
-        /*// checks if it is an NPC, if so ignore because it should already be a custom one
+        // checks if it is an NPC, if so ignore because it should already be a custom one
         if (e.getEntity().hasMetadata("NPC")){
+            return;
+        }
+        if (((CraftEntity)e.getEntity()).getHandle() instanceof ArmorStand){
             return;
         }
 
@@ -101,6 +106,6 @@ public class EntityEventListener implements Listener {
                     !staticSpawnReasons.contains(e.getSpawnReason()), e.getSpawnReason()));
         } catch (EntityException ex) {
             ex.printStackTrace();
-        }*/
+        }
     }
 }

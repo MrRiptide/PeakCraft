@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.commands;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.util.Formatter;
 import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import org.bukkit.Location;
@@ -30,12 +31,13 @@ public class CommandEntityDatabase implements CommandExecutor {
             Connection connection = MySQLHelper.getConnection();
 
             for (EntityType entityType : EntityType.values()){
-                Entity spawnedEntity = world.spawnEntity(location, entityType);
-                if (!(spawnedEntity instanceof LivingEntity entity)){
-                    spawnedEntity.remove();
-                    continue;
-                }
-                PreparedStatement statement = connection.prepareStatement("""
+                try{
+                    Entity spawnedEntity = world.spawnEntity(location, entityType);
+                    if (!(spawnedEntity instanceof LivingEntity entity)){
+                        spawnedEntity.remove();
+                        continue;
+                    }
+                    PreparedStatement statement = connection.prepareStatement("""
 INSERT INTO entity_data VALUES (?, ?, ?, ?, ?, ?)
 """);
                 /*id varchar(255) NOT NULL,
@@ -45,39 +47,36 @@ display_name varchar(255) NOT NULL,
 entity_type varchar(255) NOT NULL,
 
                 * */
-                String type = "living";
-                if (entity instanceof Monster){
-                    type = "combat";
-                    PreparedStatement combat_statement = connection.prepareStatement("""
+                    String type = "living";
+                    if (entity instanceof Monster){
+                        type = "combat";
+                    }
+                    statement.setString(1, type);
+                    statement.setString(2, entityType.name());
+                    statement.setDouble(3, entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+                    statement.setDouble(4, entity.getAttribute(Attribute.GENERIC_ARMOR).getValue());
+                    statement.setString(5, Formatter.humanize(entityType.name()));
+                    statement.setString(6, entityType.name());
+
+                    statement.execute();
+                    statement.close();
+                    if (type.equals("combat")){
+                        PreparedStatement combat_statement = connection.prepareStatement("""
 INSERT INTO combat_entity_data values (?, ?, ?);
 """);
-                    combat_statement.setString(1, entityType.name());
-                    combat_statement.setDouble(2, entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getValue());
-                    combat_statement.setDouble(3, entity.getAttribute(Attribute.GENERIC_ATTACK_KNOCKBACK).getValue());
-                    combat_statement.execute();
-                    combat_statement.close();
-                }
-                statement.setString(1, type);
-                statement.setString(2, entityType.name());
-                statement.setDouble(3, entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-                statement.setDouble(4, entity.getAttribute(Attribute.GENERIC_ARMOR).getValue());
-                statement.setString(5, Formatter.humanize(entityType.name()));
-                statement.setString(6, entityType.name());
+                        combat_statement.setString(1, entityType.name());
+                        combat_statement.setDouble(2, entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getValue());
+                        combat_statement.setDouble(3, entity.getAttribute(Attribute.GENERIC_ATTACK_KNOCKBACK).getValue());
+                        combat_statement.execute();
+                        combat_statement.close();
+                    }
 
-                statement.execute();
-                statement.close();
-                if (type.equals("combat")){
-                    PreparedStatement combat_statement = connection.prepareStatement("""
-INSERT INTO combat_entity_data values (?, ?, ?);
-""");
-                    combat_statement.setString(1, entityType.name());
-                    combat_statement.setDouble(2, entity.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getValue());
-                    combat_statement.setDouble(3, entity.getAttribute(Attribute.GENERIC_ATTACK_KNOCKBACK).getValue());
-                    combat_statement.execute();
-                    combat_statement.close();
+                    spawnedEntity.remove();
+                } catch (IllegalArgumentException e){
+                    PeakCraft.getPlugin().getLogger().warning("Entity " + entityType.name() + " had an error in database entry:");
+                    e.printStackTrace();
                 }
 
-                spawnedEntity.remove();
             }
         } catch (SQLException e) {
             e.printStackTrace();

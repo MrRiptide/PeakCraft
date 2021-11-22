@@ -82,6 +82,8 @@ SELECT * FROM entity_conversion_choices WHERE entity_type = ?;
 
         if (entityData == null){
             LivingEntityWrapper entityWrapper = new LivingEntityWrapper((LivingEntity) entity);
+            entityWrapper.applyNBT();
+            PersistentDataManager.setValue(entityWrapper.getEntity(), "mode", "wrapped");
             return false;
         } else {
             entityData.spawn(location, reason);

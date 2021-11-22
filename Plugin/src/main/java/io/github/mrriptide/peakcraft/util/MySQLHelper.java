@@ -65,20 +65,25 @@ item_id varchar(255) NOT NULL,
 ability_id varchar(255) NOT NULL,
 FOREIGN KEY (item_id) REFERENCES items(id)""");
 
+            createTableIfNotExist(conn, "item_attributes", """
+item_id varchar(255) NOT NULL,
+attribute_id varchar(255) NOT NULL,
+value double NOT NULL,
+FOREIGN KEY (item_id) REFERENCES items(id)""");
+
             createTableIfNotExist(conn, "entity_data", """
-type varchar(16) NOT NULL,
-id varchar(255) NOT NULL,
-max_health double NOT NULL,
-defense double NOT NULL,
-display_name varchar(255) NOT NULL,
-entity_type varchar(255) NOT NULL,
-PRIMARY KEY (id)
-""");
+`type` varchar(16) NOT NULL,
+`id` varchar(255) NOT NULL,
+`max_health` double NOT NULL,
+`defense` double NOT NULL,
+`display_name` varchar(255) NOT NULL,
+`entity_model` varchar(25) NOT NULL,
+PRIMARY KEY (`id`)""");
             createTableIfNotExist(conn, "combat_entity_data", """
 entity_id varchar(225) NOT NULL,
 strength double NOT NULL,
 knockback double NOT NULL,
-FOREIGN KEY (entity_id) REFERENCES Entities(id)
+FOREIGN KEY (entity_id) REFERENCES entity_data(id)
 """);
             createTableIfNotExist(conn, "entity_conversion_choices", """
 entity_type varchar(255) NOT NULL,
@@ -97,10 +102,8 @@ weight varchar(255) NOT NULL
     }
 
     public static void createTableIfNotExist(Connection connection, String tableName, String columns) throws SQLException {
-        if (!MySQLHelper.tableExists(connection, tableName)){
-            try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE " + tableName + " (" + columns + ")")) {
-                statement.execute();
-            }
+        try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columns + ")")) {
+            statement.execute();
         }
     }
 

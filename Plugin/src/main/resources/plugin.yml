@@ -43,4 +43,7 @@ commands:
     permissions: peakcraft.balance
   entitydatabase:
     description: Creates entries in the entity database for all Spigot entities
-    permission: peakcraft.entitydatabase
+    permission: peakcraft.entity.database
+  reloadentities:
+    description: Reloads the entity registry from the database
+    permission: peakcraft.entity.reload

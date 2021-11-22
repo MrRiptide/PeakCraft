@@ -53,11 +53,10 @@ public class DamageListener implements Listener {
         }
 
         CombatEntityWrapper damagingEntity;
-        if (event.getDamager() instanceof Player){
+        if (event.getDamager() instanceof Player && !CitizensAPI.getNPCRegistry().isNPC(event.getDamager())){
             damagingEntity = PlayerManager.getPlayer((Player) event.getDamager());
         }
-        else if (((CraftCreature)event.getDamager()).getHandle() instanceof LivingEntity) {
-            Bukkit.broadcastMessage("Is custom hostile entity");
+        else if (EntityManager.isCustomMob(event.getDamager())) {
             try {
                 damagingEntity = new CombatEntityWrapper((LivingEntity) event.getEntity());
             } catch (EntityException e) {
@@ -73,14 +72,16 @@ public class DamageListener implements Listener {
         LivingEntityWrapper damagedEntity;
         if (event.getEntity() instanceof Player)
             damagedEntity = PlayerManager.getPlayer((Player) event.getEntity());
-        else if (EntityManager.isCustomMob(event.getEntity())) {
+        else if (EntityManager.isCustomMob(event.getEntity()))
+        {
             try {
                 damagedEntity = new LivingEntityWrapper((LivingEntity) event.getEntity());
             } catch (EntityException e) {
                 PeakCraft.getPlugin().getLogger().warning("An entity was recognized as a custom mob but something failed in wrapping! Please report this to the developers");
                 e.printStackTrace();
                 return;
-            }        } else {
+            }
+        } else {
             PeakCraft.getPlugin().getLogger().warning("Some entity tried damaging an unregistered entity");
             return;
         }
