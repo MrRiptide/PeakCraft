@@ -91,8 +91,6 @@ SELECT id FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_ite
                 if(!resultSet.next()) {
                     newItems += 1;
                     saveMaterial(conn, material);
-                } else {
-                    PeakCraft.getPlugin().getLogger().info(resultSet.getString(1));
                 }
                 resultSet.close();
                 statement.close();

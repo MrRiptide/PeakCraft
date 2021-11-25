@@ -45,17 +45,6 @@ public class EntityEventListener implements Listener {
     }
 
     @EventHandler
-    public void onRespawn(PlayerRespawnEvent e){
-        try {
-            PlayerWrapper playerWrapper = new PlayerWrapper(e.getPlayer());
-            playerWrapper.resetStats();
-        } catch (EntityException ex) {
-            PeakCraft.getPlugin().getLogger().warning("Player respawned but could not be wrapped!");
-            ex.printStackTrace();
-        }
-    }
-
-    @EventHandler
     public void onRegainHealth(EntityRegainHealthEvent e){
         if (e.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED){
             e.setCancelled(true);
@@ -84,6 +73,8 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void onEntitySpawn(CreatureSpawnEvent e){
+        if (PeakCraft.generatingEntityDatabase)
+            return;
         // checks if it is an NPC, if so ignore because it should already be a custom one
         if (e.getEntity().hasMetadata("NPC")){
             return;

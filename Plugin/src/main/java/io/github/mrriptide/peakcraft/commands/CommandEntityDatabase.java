@@ -24,6 +24,7 @@ public class CommandEntityDatabase implements CommandExecutor {
             commandSender.sendMessage("This command can only be run by a player");
             return false;
         }
+        PeakCraft.generatingEntityDatabase = true;
         World world = ((Player) commandSender).getWorld();
         Location location = ((Player) commandSender).getLocation();
         commandSender.sendMessage("Starting the entries of entities");
@@ -38,7 +39,7 @@ public class CommandEntityDatabase implements CommandExecutor {
                         continue;
                     }
                     PreparedStatement statement = connection.prepareStatement("""
-INSERT INTO entity_data VALUES (?, ?, ?, ?, ?, ?)
+INSERT INTO entity_data VALUES (?, ?, ?, ?, ?, ?, ?)
 """);
                 /*id varchar(255) NOT NULL,
 max_health double NOT NULL,
@@ -57,6 +58,7 @@ entity_type varchar(255) NOT NULL,
                     statement.setDouble(4, entity.getAttribute(Attribute.GENERIC_ARMOR).getValue());
                     statement.setString(5, Formatter.humanize(entityType.name()));
                     statement.setString(6, entityType.name());
+                    statement.setString(7, entity instanceof Monster ? "normal_hostile" : "passive");
 
                     statement.execute();
                     statement.close();
@@ -80,9 +82,11 @@ INSERT INTO combat_entity_data values (?, ?, ?);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            PeakCraft.generatingEntityDatabase = false;
             return false;
         }
         commandSender.sendMessage("Successfully created entries for all of the entities");
+        PeakCraft.generatingEntityDatabase = false;
         return true;
     }
 }

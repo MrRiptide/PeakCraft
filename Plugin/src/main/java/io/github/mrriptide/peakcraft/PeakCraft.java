@@ -33,6 +33,7 @@ import java.util.logging.Level;
 
 public class PeakCraft extends JavaPlugin {
     public static PeakCraft instance;
+    public static boolean generatingEntityDatabase = false;
 
     public static PeakCraft getPlugin(){
         return instance;

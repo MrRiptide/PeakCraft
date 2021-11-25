@@ -31,8 +31,15 @@ public class UpdatePlayer extends BukkitRunnable {
     public void run() {
         try{
             PlayerWrapper wrapper = PlayerManager.getPlayer(playerUUID);
+            /*
+            Tab list not being used for now because i dont want to have to deal with it
+
             if (playerTablist == null){
                 playerTablist = new Tablist(wrapper);
+            }*/
+
+            if (wrapper.getEntityHealth() <= 0){
+                return;
             }
 
             wrapper.getStatus().init();

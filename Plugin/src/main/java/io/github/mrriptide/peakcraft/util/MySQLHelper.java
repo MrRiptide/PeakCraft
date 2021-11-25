@@ -78,6 +78,7 @@ FOREIGN KEY (item_id) REFERENCES items(id)""");
 `defense` double NOT NULL,
 `display_name` varchar(255) NOT NULL,
 `entity_model` varchar(25) NOT NULL,
+`entity_type` varchar(25) NOT NULL,
 PRIMARY KEY (`id`)""");
             createTableIfNotExist(conn, "combat_entity_data", """
 entity_id varchar(225) NOT NULL,
@@ -89,6 +90,11 @@ FOREIGN KEY (entity_id) REFERENCES entity_data(id)
 entity_type varchar(255) NOT NULL,
 entity_id varchar(255),
 weight varchar(255) NOT NULL
+""");
+            createTableIfNotExist(conn, "player_coins", """
+uuid varchar(255) NOT NULL,
+coins long,
+PRIMARY KEY (uuid)
 """);
         }
     }

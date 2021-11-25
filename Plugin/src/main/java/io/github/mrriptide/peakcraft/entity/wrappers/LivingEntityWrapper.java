@@ -154,6 +154,7 @@ public class LivingEntityWrapper {
 
     public void processDamage(double amount){
         this.health = Math.max(health - amount, 0);
+        ((LivingEntity)entity).damage(0.001);
         updateEntity();
 
     }

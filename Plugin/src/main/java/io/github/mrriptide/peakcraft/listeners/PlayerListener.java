@@ -14,10 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -50,6 +47,17 @@ public class PlayerListener implements Listener {
         } else {
             lastInteractTime.put(e.getPlayer().getUniqueId(), System.nanoTime());
             return true;
+        }
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent e){
+        try {
+            PlayerWrapper playerWrapper = new PlayerWrapper(e.getPlayer());
+            playerWrapper.resetStats();
+        } catch (EntityException ex) {
+            PeakCraft.getPlugin().getLogger().warning("Player respawned but could not be wrapped!");
+            ex.printStackTrace();
         }
     }
 

@@ -16,6 +16,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import java.util.Arrays;
+
 public class DamageListener implements Listener {
 
     @EventHandler
@@ -23,8 +25,8 @@ public class DamageListener implements Listener {
         if (event.getEntity().isInvulnerable()){
             return;
         }
-        if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK || event.getCause() == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK){
-            //event.setDamage(0);
+        if (Arrays.asList(EntityDamageEvent.DamageCause.ENTITY_ATTACK, EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK, EntityDamageEvent.DamageCause.CUSTOM).contains(event.getCause()) ){
+            event.setDamage(0);
             return;
         }
         LivingEntityWrapper entity;
@@ -42,6 +44,7 @@ public class DamageListener implements Listener {
         } else {
             return;
         }
+        event.setCancelled(true);
         entity.processDamage(event.getDamage() * 5, event.getCause());
         event.setDamage(0);
     }
