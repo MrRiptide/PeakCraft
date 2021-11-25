@@ -16,6 +16,6 @@ public class EnchantmentHealthBoost extends Enchantment{
 
     @Override
     public void bakeItemAttributes(EnchantableItem item, int level) {
-        item.setBakedAttribute("health", item.getBakedAttribute("health") + 50 * level);
+        item.getAttribute("health").addAdditive(50 * level);
     }
 }

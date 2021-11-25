@@ -181,7 +181,7 @@ public class Item implements Serializable {
             attributeColor.put("health", CustomColors.HEALTH);
             if (((EnchantableItem)this).attributes.size() > 0){
                 for (String attribute : ((EnchantableItem)this).attributes.keySet()){
-                    lore.add(attributeColor.getOrDefault(attribute, CustomColors.ATTRIBUTE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + CustomColors.ATTRIBUTE_VALUE + ": " + (int)((EnchantableItem)this).getAttribute(attribute));
+                    lore.add(attributeColor.getOrDefault(attribute, CustomColors.ATTRIBUTE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + CustomColors.ATTRIBUTE_VALUE + ": " + (int)((EnchantableItem)this).getAttribute(attribute).getFinal());
                 }
 
                 lore.add("");

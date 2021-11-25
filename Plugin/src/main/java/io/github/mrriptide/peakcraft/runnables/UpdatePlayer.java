@@ -7,7 +7,6 @@ import io.github.mrriptide.peakcraft.items.abilities.Ability;
 import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.TickAbilityTrigger;
 import io.github.mrriptide.peakcraft.util.Tablist;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -31,6 +30,7 @@ public class UpdatePlayer extends BukkitRunnable {
     public void run() {
         try{
             PlayerWrapper wrapper = PlayerManager.getPlayer(playerUUID);
+            wrapper.updateAttributes();
             /*
             Tab list not being used for now because i dont want to have to deal with it
 

@@ -7,8 +7,6 @@ import io.github.mrriptide.peakcraft.entity.wrappers.CombatEntityWrapper;
 import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import net.citizensnpcs.api.CitizensAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,18 +48,18 @@ public class DamageListener implements Listener {
     }
 
     @EventHandler
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event){
-        if (event.getEntity().isInvulnerable()){
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.getEntity().isInvulnerable()) {
             return;
         }
 
         CombatEntityWrapper damagingEntity;
-        if (event.getDamager() instanceof Player && !CitizensAPI.getNPCRegistry().isNPC(event.getDamager())){
+        // check if the damaging entity is a player
+        if (EntityManager.isPlayer(event.getDamager())) {
             damagingEntity = PlayerManager.getPlayer((Player) event.getDamager());
-        }
-        else if (EntityManager.isCustomMob(event.getDamager())) {
+        } else if (EntityManager.isCustomMob(event.getDamager())) {
             try {
-                damagingEntity = new CombatEntityWrapper((LivingEntity) event.getEntity());
+                damagingEntity = new CombatEntityWrapper((LivingEntity) event.getDamager());
             } catch (EntityException e) {
                 PeakCraft.getPlugin().getLogger().warning("An entity was recognized as a custom mob but something failed in wrapping! Please report this to the developers");
                 e.printStackTrace();
@@ -72,11 +70,11 @@ public class DamageListener implements Listener {
             return;
         }
 
+        // check if the damaged entity is a player
         LivingEntityWrapper damagedEntity;
-        if (event.getEntity() instanceof Player)
+        if (EntityManager.isPlayer(event.getEntity())){
             damagedEntity = PlayerManager.getPlayer((Player) event.getEntity());
-        else if (EntityManager.isCustomMob(event.getEntity()))
-        {
+        } else if (EntityManager.isCustomMob(event.getEntity())) {
             try {
                 damagedEntity = new LivingEntityWrapper((LivingEntity) event.getEntity());
             } catch (EntityException e) {
@@ -88,8 +86,10 @@ public class DamageListener implements Listener {
             PeakCraft.getPlugin().getLogger().warning("Some entity tried damaging an unregistered entity");
             return;
         }
+        event.setCancelled(true);
+        damagingEntity.updateAttributes();
+        damagedEntity.updateAttributes();
         damagedEntity.processAttack(damagingEntity);
-
         event.setDamage(0);
     }
 }

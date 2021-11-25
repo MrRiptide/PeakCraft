@@ -39,6 +39,28 @@ public class PersistentDataManager {
         return getValueOrDefault(entity.getPersistentDataContainer(), type, key, defaultValue);
     }
 
+    public static Attribute getAttribute(Entity entity, String baseKey, double defaultBase){
+        return getAttribute(entity.getPersistentDataContainer(), baseKey, defaultBase);
+    }
+
+    public static Attribute getAttribute(PersistentDataContainer container, String baseKey, double defaultBase){
+        return new Attribute(
+                getValueOrDefault(container, PersistentDataType.DOUBLE, baseKey, defaultBase),
+                getValueOrDefault(container, PersistentDataType.DOUBLE, baseKey + "Additive", 0.0),
+                getValueOrDefault(container, PersistentDataType.DOUBLE, baseKey + "Multi", 0.0)
+        );
+    }
+
+    public static void setAttribute(Entity entity, String baseKey, Attribute attribute){
+        setAttribute(entity.getPersistentDataContainer(), baseKey, attribute);
+    }
+
+    public static void setAttribute(PersistentDataContainer container, String baseKey, Attribute attribute){
+        setValue(container, baseKey, attribute.getBase());
+        setValue(container, baseKey + "Additive", attribute.getAdditive());
+        setValue(container, baseKey + "Multi", attribute.getMulti());
+    }
+
     public static <T> void setValue(PersistentDataContainer container, String key, T value){
         NamespacedKey namespacedKey = new NamespacedKey(PeakCraft.getPlugin(), key);
         PersistentDataType<T,T> type;

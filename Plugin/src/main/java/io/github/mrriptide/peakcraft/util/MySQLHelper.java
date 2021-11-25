@@ -71,6 +71,11 @@ attribute_id varchar(255) NOT NULL,
 value double NOT NULL,
 FOREIGN KEY (item_id) REFERENCES items(id)""");
 
+            createTableIfNotExist(conn, "armor_sets", """
+item_id varchar(255) NOT NULL,
+set_id varchar(255) NOT NULL,
+FOREIGN KEY (item_id) REFERENCES items(id)""");
+
             createTableIfNotExist(conn, "entity_data", """
 `type` varchar(16) NOT NULL,
 `id` varchar(255) NOT NULL,

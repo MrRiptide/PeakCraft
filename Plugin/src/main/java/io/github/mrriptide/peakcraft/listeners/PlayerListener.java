@@ -52,13 +52,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent e){
-        try {
-            PlayerWrapper playerWrapper = new PlayerWrapper(e.getPlayer());
-            playerWrapper.resetStats();
-        } catch (EntityException ex) {
-            PeakCraft.getPlugin().getLogger().warning("Player respawned but could not be wrapped!");
-            ex.printStackTrace();
-        }
+        PlayerWrapper playerWrapper = PlayerManager.getPlayer(e.getPlayer());
+        playerWrapper.resetStats();
     }
 
     @EventHandler
@@ -70,14 +65,7 @@ public class PlayerListener implements Listener {
             try{
                 Item item = ItemManager.convertItem(e.getItem());
                 if (item.hasAbility()){
-                    PlayerWrapper player = null;
-                    try {
-                        player = new PlayerWrapper(e.getPlayer());
-                    } catch (EntityException ex) {
-                        PeakCraft.getPlugin().getLogger().warning("Player interacted but could not be wrapped");
-                        ex.printStackTrace();
-                        return;
-                    }
+                    PlayerWrapper player = PlayerManager.getPlayer(e.getPlayer());
                     if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK){
                         item.useAbility(player, new RightClickAbilityTrigger(e));
                     }
@@ -137,16 +125,13 @@ public class PlayerListener implements Listener {
                 Item item = ItemManager.convertItem(e.getPlayer().getEquipment().getItem(e.getHand()));
 
                 if (item.hasAbility()) {
-                    PlayerWrapper player = new PlayerWrapper(e.getPlayer());
+                    PlayerWrapper player = PlayerManager.getPlayer(e.getPlayer());
                     item.useAbility(player, new RightClickAbilityTrigger(e));
                     e.setCancelled(true);
                 }
             } catch (ItemException error){
                 e.getPlayer().sendMessage("That item has an invalid id, please report this!");
                 PeakCraft.getPlugin().getLogger().warning("Player " + e.getPlayer().getName() + " interacted with an invalid item!");
-            } catch (EntityException entityException) {
-                PeakCraft.getPlugin().getLogger().warning("A player interacted but could not be wrapped");
-                entityException.printStackTrace();
             }
         }
     }

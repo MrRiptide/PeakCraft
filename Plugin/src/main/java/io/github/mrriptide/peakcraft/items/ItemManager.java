@@ -1,39 +1,25 @@
 package io.github.mrriptide.peakcraft.items;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.cj.protocol.Resultset;
-import com.univocity.parsers.common.record.Record;
-import com.univocity.parsers.tsv.TsvParser;
-import com.univocity.parsers.tsv.TsvParserSettings;
-import com.univocity.parsers.tsv.TsvWriter;
-import com.univocity.parsers.tsv.TsvWriterSettings;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
-import io.github.mrriptide.peakcraft.recipes.ShapedRecipe;
 import io.github.mrriptide.peakcraft.util.Formatter;
 import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
-import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.XMLEncoder;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Level;
 
 public class ItemManager {
 
@@ -131,6 +117,7 @@ SELECT * FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_item
             items.put(resultSet.getString("id").toUpperCase(), ArmorItem.loadFromResultSet(conn, resultSet));
         } else if (WeaponItem.validateType(type)){
             // load as weapon item
+            PeakCraft.getPlugin().getLogger().info("Loading " + resultSet.getString("id").toUpperCase() + " as a weapon");
             items.put(resultSet.getString("id").toUpperCase(), WeaponItem.loadFromResultSet(conn, resultSet));
         } else {
             // load as normal item
@@ -163,7 +150,6 @@ SELECT * FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_item
         if (items.containsKey(id.toUpperCase())){
             return items.get(id.toUpperCase()).clone();
         } else {
-            PeakCraft.getPlugin().getLogger().info(items.keySet().toString());
             if (Material.matchMaterial(id) != null){
                 try {
                     saveMaterial(Material.matchMaterial(id));

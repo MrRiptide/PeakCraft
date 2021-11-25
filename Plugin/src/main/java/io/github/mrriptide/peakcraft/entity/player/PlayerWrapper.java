@@ -11,6 +11,7 @@ import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonus;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonusManager;
 import io.github.mrriptide.peakcraft.runnables.UpdatePlayer;
+import io.github.mrriptide.peakcraft.util.Attribute;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
@@ -32,9 +33,9 @@ import java.util.Date;
 
 public class PlayerWrapper extends CombatEntityWrapper {
     protected double mana;
-    protected double maxMana;
-    protected double critChance;
-    protected double critDamage;
+    protected Attribute maxMana;
+    protected Attribute critChance;
+    protected Attribute critDamage;
     protected long lastDamageTime;
     protected double hunger;
     protected final double maxHunger = 500;
@@ -45,43 +46,20 @@ public class PlayerWrapper extends CombatEntityWrapper {
         super();
         this.entity = player;
         this.id = "player";
-        this.maxHealth = 100;
+        this.maxHealth = new Attribute(100);
+        this.defense = new Attribute(0);
+        this.strength = new Attribute(0);
 
-        double intelligence = 0;
-
-        for (ItemStack itemStack : player.getInventory().getArmorContents()){
-            // IntelliJ will say that itemStack != null is always true, this is wrong.
-            if (itemStack != null && itemStack.getType() != Material.AIR){
-                try{
-                    Item item = ItemManager.convertItem(itemStack);
-                    if (item instanceof EnchantableItem){
-                        ((EnchantableItem)item).bakeAttributes();
-                        this.maxHealth += ((EnchantableItem)item).getBakedAttribute("health");
-                        intelligence += ((EnchantableItem)item).getBakedAttribute("intelligence");
-                    }
-                } catch (ItemException e){
-                    PeakCraft.getPlugin().getLogger().warning("Player " + player.getName() + " has an invalid armor item!");
-                }
-
-            }
-        }
-
-        this.maxMana = 100 + intelligence;
-
-        this.health = Math.min(PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "health", maxHealth), maxHealth);
+        this.health = Math.min(PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "health", maxHealth.getFinal()), maxHealth.getFinal());
         this.mana = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "mana", 0.0);
         this.hunger = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "hunger", 0.0);
-        this.maxMana = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "maxMana", 100.0);
+        this.maxMana = PersistentDataManager.getAttribute(player, "maxMana", 100.0);
         this.lastDamageTime = PersistentDataManager.getValueOrDefault(player, PersistentDataType.LONG, "lastDamageTime", Long.valueOf(0));
-        this.critChance = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "critChance", 0.5);
-        this.critDamage = PersistentDataManager.getValueOrDefault(player, PersistentDataType.DOUBLE, "critDamage", 0.5);
+        this.critChance = PersistentDataManager.getAttribute(player, "critChance", 0.5);
+        this.critDamage = PersistentDataManager.getAttribute(player, "critDamage", 0.5);
         this.name = player.getName();
-        try{
-            this.weapon = (!player.getInventory().getItemInMainHand().getType().equals(Material.AIR)) ? ItemManager.convertItem(player.getInventory().getItemInMainHand()) : null;
-        } catch (ItemException e) {
-            PeakCraft.getPlugin().getLogger().warning("Player " + player.getName() + " has an invalid item in their hand!");
-            this.weapon = null;
-        }
+        updateAttributes();
+
         this.status = new PlayerStatus(player);
 
         try (Connection conn = MySQLHelper.getConnection()){
@@ -105,6 +83,20 @@ public class PlayerWrapper extends CombatEntityWrapper {
 
     }
 
+    @Override
+    public void resetAttributes(){
+        super.resetAttributes();
+        this.maxMana.reset();
+        this.critChance.reset();
+        this.critDamage.reset();
+    }
+
+    @Override
+    public void processItem(EnchantableItem item){
+        super.processItem(item);
+        this.maxMana.addAdditive(item.getAttribute("intelligence").getFinal());
+    }
+
     public void processDamage(double amount){
         lastDamageTime = (new Date()).getTime();
         super.processDamage(amount);
@@ -112,12 +104,12 @@ public class PlayerWrapper extends CombatEntityWrapper {
 
     public void tryNaturalRegen(){
         if ((new Date()).getTime() - lastDamageTime > 5000){
-            regenHealth(maxHealth / 100 * 5 / (20.0/UpdatePlayer.ticksPerUpdate));
+            regenHealth(maxHealth.getFinal() / 100 * 5 / (20.0/UpdatePlayer.ticksPerUpdate));
         }
     }
 
     public void regenHealth(double amount){
-        this.hunger -= Math.min(amount, maxHealth-health);
+        this.hunger -= Math.min(amount, maxHealth.getFinal()-health);
 
         super.regenHealth(amount);
     }
@@ -147,8 +139,8 @@ public class PlayerWrapper extends CombatEntityWrapper {
         ((org.bukkit.entity.Player)entity).setSaturation((float) Math.min(this.hunger/this.maxHunger*20.0, 20.0));
         PersistentDataManager.setValue(entity, "mana", this.mana);
         PersistentDataManager.setValue(entity, "hunger", this.mana);
-        PersistentDataManager.setValue(entity, "critChance", this.critChance);
-        PersistentDataManager.setValue(entity, "critDamage", this.critDamage);
+        PersistentDataManager.setAttribute(entity, "critChance", this.critChance);
+        PersistentDataManager.setAttribute(entity, "critDamage", this.critDamage);
         PersistentDataManager.setValue(entity, "lastDamageTime", this.lastDamageTime);
         /*
         temporary removal of using experience bar to show mana, I want to let people have experience racked up now
@@ -166,17 +158,17 @@ public class PlayerWrapper extends CombatEntityWrapper {
     }
 
     public void resetStats(){
-        this.health = maxHealth;
-        this.mana = maxMana;
+        this.health = maxHealth.getFinal();
+        this.mana = maxMana.getFinal();
         updateEntity();
     }
 
     public void sendActionBar(){
-        ((Player)this.entity).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(CustomColors.HEALTH + "" + (int)this.health + "/" + (int)this.maxHealth + "❤            " + CustomColors.MANA + (int)mana +  "/" + (int)maxMana + "MP"));
+        ((Player)this.entity).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(CustomColors.HEALTH + "" + (int)this.health + "/" + (int)this.maxHealth.getFinal() + "❤            " + CustomColors.MANA + (int)mana +  "/" + (int)maxMana.getFinal() + "MP"));
     }
 
     public void regenMana(){
-        mana = Math.min(mana + maxMana*0.05/(20.0/UpdatePlayer.ticksPerUpdate), maxMana);
+        mana = Math.min(mana + maxMana.getFinal()*0.05/(20.0/UpdatePlayer.ticksPerUpdate), maxMana.getFinal());
         updateEntity();
     }
 
@@ -244,11 +236,11 @@ public class PlayerWrapper extends CombatEntityWrapper {
     }
 
     public double getCritChance() {
-        return critChance;
+        return critChance.getFinal();
     }
 
     public double getCritDamage() {
-        return critDamage;
+        return critDamage.getFinal();
     }
 
     public Player getSource() {

@@ -1,13 +1,10 @@
 package io.github.mrriptide.peakcraft.items;
 
-import io.github.mrriptide.peakcraft.util.MySQLHelper;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class WeaponItem extends EnchantableItem {
 
@@ -26,7 +23,7 @@ public class WeaponItem extends EnchantableItem {
         WeaponItem newItem = (WeaponItem) Item.loadFromResultSet(conn, resultSet, item);
 
         PreparedStatement statement = conn.prepareStatement("""
-SELECT * FROM item_attributes WHERE item_id = ? AND attribute = 'damage';
+SELECT * FROM item_attributes WHERE item_id = ? AND attribute_id = 'damage';
 """);
         statement.setString(1, newItem.id);
 
@@ -44,7 +41,7 @@ SELECT * FROM item_attributes WHERE item_id = ? AND attribute = 'damage';
     }
 
     public static boolean validateType(String type){
-        return Arrays.asList("weapon", "sword").contains(type);
+        return Arrays.asList("weapon", "sword").contains(type.toLowerCase());
     }
 
     @Override

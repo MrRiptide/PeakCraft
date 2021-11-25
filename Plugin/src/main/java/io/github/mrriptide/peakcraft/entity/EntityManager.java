@@ -9,13 +9,11 @@ import io.github.mrriptide.peakcraft.exceptions.NoSuchEntityException;
 import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import io.github.mrriptide.peakcraft.util.WeightedRandom;
+import net.citizensnpcs.api.CitizensAPI;
 import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Zombie;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -128,6 +126,10 @@ SELECT * FROM entity_conversion_choices WHERE entity_type = ?;
 
     public static boolean isCustomMob(Entity entity){
         return isWrapped(entity) || isNPC(entity);
+    }
+
+    public static boolean isPlayer(Entity entity){
+        return entity instanceof Player && !CitizensAPI.getNPCRegistry().isNPC(entity);
     }
 
     public static boolean isNPC(Entity entity){

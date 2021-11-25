@@ -3,6 +3,7 @@ package io.github.mrriptide.peakcraft.listeners;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.EntityManager;
 import io.github.mrriptide.peakcraft.entity.HoloDisplayEntity;
+import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
 import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
@@ -49,13 +50,8 @@ public class EntityEventListener implements Listener {
         if (e.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED){
             e.setCancelled(true);
         } else if (e.getEntity() instanceof Player && !(e.getEntity().hasMetadata("NPC"))){
-            try {
-                PlayerWrapper playerWrapper = new PlayerWrapper((Player) e.getEntity());
-                playerWrapper.regenHealth(e.getAmount());
-            } catch (EntityException ex) {
-                PeakCraft.getPlugin().getLogger().warning("Player regained health but could not be wrapped!");
-                ex.printStackTrace();
-            }
+            PlayerWrapper playerWrapper = PlayerManager.getPlayer((Player) e.getEntity());
+            playerWrapper.regenHealth(e.getAmount());
         } else if (EntityManager.isCustomMob(e.getEntity())){
             LivingEntityWrapper entity = null;
             try {

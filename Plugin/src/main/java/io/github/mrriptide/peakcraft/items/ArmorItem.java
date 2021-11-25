@@ -4,6 +4,7 @@ import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonus;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonusManager;
 import io.github.mrriptide.peakcraft.util.MySQLHelper;
 
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,19 +39,31 @@ SELECT * FROM item_attributes WHERE item_id = ?;
         ResultSet attributeResultSet = statement.executeQuery();
 
         while (attributeResultSet.next()){
-            if (accepted_attributes.contains(attributeResultSet.getString("attribute"))){
-                newItem.setAttribute(attributeResultSet.getString("attribute"), attributeResultSet.getDouble("value"));
+            if (accepted_attributes.contains(attributeResultSet.getString("attribute_id"))){
+                newItem.setAttribute(attributeResultSet.getString("attribute_id"), attributeResultSet.getDouble("value"));
             }
         }
 
         attributeResultSet.close();
         statement.close();
 
+        statement = conn.prepareStatement("""
+SELECT * FROM armor_sets WHERE item_id = ?
+""");
+        statement.setString(1, newItem.id);
+
+        ResultSet setResultSet = statement.executeQuery();
+        if (setResultSet.next()){
+            newItem.set = setResultSet.getString("set");
+        } else {
+            newItem.set = "";
+        }
+
         return item;
     }
 
     public static boolean validateType(String type){
-        return Arrays.asList("armor", "chestplate", "helmet", "leggings", "boots").contains(type);
+        return Arrays.asList("armor", "chestplate", "helmet", "leggings", "boots").contains(type.toLowerCase());
     }
 
     @Override
