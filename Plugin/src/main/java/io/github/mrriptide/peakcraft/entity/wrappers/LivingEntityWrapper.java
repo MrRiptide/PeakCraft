@@ -163,13 +163,6 @@ public class LivingEntityWrapper {
             }
         }
 
-        // use the armor to increase an entity's defense
-
-        // god there's so much im gonna have to do with processing damage events im scared
-
-
-
-
         double damagePotential = damage*(1+0.05*attacker.strength.getFinal())/(1+defense.getFinal()*0.05) * multiplier;
 
         HoloDisplay damageDisplay = new HoloDisplay(entity.getLocation().add(Math.random()*1-0.5, Math.random()*1-1.5, Math.random()*1 -0.5));
@@ -196,7 +189,6 @@ public class LivingEntityWrapper {
 
     public void processDamage(double amount){
         this.health = Math.max(health - amount, 0);
-        ((LivingEntity)entity).damage(0.001);
         updateEntity();
 
     }

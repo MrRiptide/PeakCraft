@@ -41,6 +41,7 @@ public class PlayerWrapper extends CombatEntityWrapper {
     protected final double maxHunger = 500;
     protected long coins;
     protected PlayerStatus status;
+    private boolean isDead;
 
     public PlayerWrapper(Player player) throws EntityException {
         super();
@@ -58,6 +59,7 @@ public class PlayerWrapper extends CombatEntityWrapper {
         this.critChance = PersistentDataManager.getAttribute(player, "critChance", 0.5);
         this.critDamage = PersistentDataManager.getAttribute(player, "critDamage", 0.5);
         this.name = player.getName();
+        this.isDead = health == 0;
         updateAttributes();
 
         this.status = new PlayerStatus(player);
@@ -299,6 +301,14 @@ public class PlayerWrapper extends CombatEntityWrapper {
             PeakCraft.getPlugin().getLogger().warning("Something went wrong while saving player " + getSource().getUniqueId().toString() + "'s inventory to the mysql database");
             e.printStackTrace();
         }
+    }
+
+    public boolean isDead(){
+        return isDead;
+    }
+
+    public void setDead(boolean isDead){
+        this.isDead = isDead;
     }
 
     public class PlayerStatus{

@@ -10,13 +10,16 @@ import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.RightClickAbilityTrigger;
 import io.github.mrriptide.peakcraft.runnables.UpdatePlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
@@ -133,6 +136,23 @@ public class PlayerListener implements Listener {
                 e.getPlayer().sendMessage("That item has an invalid id, please report this!");
                 PeakCraft.getPlugin().getLogger().warning("Player " + e.getPlayer().getName() + " interacted with an invalid item!");
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent e){
+        RecipeChoice.ExactChoice
+        PlayerWrapper player = PlayerManager.getPlayer(e.getEntity().getPlayer());
+        if (player.isDead()){
+            e.setDeathMessage("");
+        } else {
+            String message;
+            switch (e.getEntity().getPlayer().getLastDamageCause().getCause()){
+                case FALL -> message = "<player> fell from a high place";
+                case PROJECTILE -> message = "<player> was shot by <killer>";
+                case BLOCK_EXPLOSION -> message = "<player> blew up"
+            }
+            player.setDead(true);
         }
     }
 

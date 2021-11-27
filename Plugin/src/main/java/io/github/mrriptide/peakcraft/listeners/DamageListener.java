@@ -42,7 +42,8 @@ public class DamageListener implements Listener {
         } else {
             return;
         }
-        event.setCancelled(true);
+        //event.setCancelled(true);
+        entity.updateAttributes();
         entity.processDamage(event.getDamage() * 5, event.getCause());
         event.setDamage(0);
     }
@@ -86,7 +87,7 @@ public class DamageListener implements Listener {
             PeakCraft.getPlugin().getLogger().warning("Some entity tried damaging an unregistered entity");
             return;
         }
-        event.setCancelled(true);
+        //event.setCancelled(true);
         damagingEntity.updateAttributes();
         damagedEntity.updateAttributes();
         damagedEntity.processAttack(damagingEntity);
