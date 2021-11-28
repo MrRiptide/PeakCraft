@@ -1,5 +1,7 @@
 package io.github.mrriptide.peakcraft.entity.player;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -21,6 +23,11 @@ public abstract class PlayerManager {
     }
 
     public static void logInPlayer(Player player) {
-        playerAccounts.put(player.getUniqueId(), new PlayerWrapper(player));
+        try {
+            playerAccounts.put(player.getUniqueId(), new PlayerWrapper(player));
+        } catch (EntityException e) {
+            PeakCraft.getPlugin().getLogger().warning("Attempted to log in a player but something failed in wrapping! Please report this to the developers");
+            e.printStackTrace();
+        }
     }
 }

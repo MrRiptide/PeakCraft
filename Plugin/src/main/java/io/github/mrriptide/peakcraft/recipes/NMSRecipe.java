@@ -21,7 +21,7 @@ public abstract class NMSRecipe<C extends Container> implements Recipe<C> {
 
     @Override
     public ItemStack getResultItem(){
-        return CraftItemStack.asNMSCopy(result.getItemStack());
+        return null;//CraftItemStack.asNMSCopy(result.getItemStack());
     }
 
     public RecipeItem getResultRecipeItem(){return result;}

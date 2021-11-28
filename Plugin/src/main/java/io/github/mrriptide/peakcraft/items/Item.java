@@ -1,14 +1,13 @@
 package io.github.mrriptide.peakcraft.items;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.abilities.Ability;
 import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.CustomColors;
-import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
@@ -86,24 +85,6 @@ public class Item implements Serializable {
         this.amount = item.amount;
     }
 
-    /*public Item(ItemStack itemSource){
-        // Get ID of the item from the ItemStack
-
-        // Default option
-        this.id = PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
-
-        assert this.id != null;
-        Item default_item = ItemManager.getItem(this.id);
-
-        this.oreDict = default_item.oreDict;
-        this.rarity = default_item.rarity;
-        this.displayName = default_item.displayName;
-        this.description = default_item.description;
-        this.type = default_item.type;
-        this.material = default_item.material;
-        this.ability = default_item.ability;
-    }*/
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -117,14 +98,14 @@ public class Item implements Serializable {
         return Objects.hash(id);
     }
 
-    public ItemStack getItemStack(){
-        ItemStack item = new ItemStack(material);
+    public void updateItemStack(CustomItemStack itemStack){
+        itemStack.setType(material);
 
         //PeakCraft.getPlugin().getLogger().info("Item: " + item);
 
-        ItemMeta meta = item.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         if (meta == null){
-            return item;
+            return;
         }
 
         // Set the ID
@@ -138,16 +119,14 @@ public class Item implements Serializable {
         meta.setDisplayName(getRarityColor() + displayName);
 
         // Makes the item unbreakable
-        meta.setUnbreakable(true);
+        //meta.setUnbreakable(true);
 
         // Hide things
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
 
         // put metadata on item
 
-        item.setItemMeta(meta);
-
-        return item;
+        itemStack.setItemMeta(meta);
     }
 
     public ItemStack convertItem(ItemStack item){
@@ -183,7 +162,7 @@ public class Item implements Serializable {
             attributeColor.put("health", CustomColors.HEALTH);
             if (((EnchantableItem)this).attributes.size() > 0){
                 for (String attribute : ((EnchantableItem)this).attributes.keySet()){
-                    lore.add(attributeColor.getOrDefault(attribute, CustomColors.ATTRIBUTE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + CustomColors.ATTRIBUTE_VALUE + ": " + (int)((EnchantableItem)this).getAttribute(attribute));
+                    lore.add(attributeColor.getOrDefault(attribute, CustomColors.ATTRIBUTE) + "" + ChatColor.BOLD + WordUtils.capitalizeFully(attribute) + ChatColor.RESET + CustomColors.ATTRIBUTE_VALUE + ": " + (int)((EnchantableItem)this).getAttribute(attribute).getFinal());
                 }
 
                 lore.add("");
@@ -276,11 +255,11 @@ public class Item implements Serializable {
         return clonedItem;
     }
 
-    public static Item loadFromResultSet(ResultSet resultSet) throws SQLException {
-        return loadFromResultSet(resultSet, new Item());
+    public static Item loadFromResultSet(Connection conn, ResultSet resultSet) throws SQLException {
+        return loadFromResultSet(conn, resultSet, new Item());
     }
 
-    public static Item loadFromResultSet(ResultSet resultSet, Item item) throws SQLException {
+    public static Item loadFromResultSet(Connection conn, ResultSet resultSet, Item item) throws SQLException {
         item.id = resultSet.getString("id");
         //item.oreDict = resultSet.getString("oreDict");
         item.displayName = resultSet.getString("display_name");
@@ -288,7 +267,7 @@ public class Item implements Serializable {
         item.description = resultSet.getString("description");
         item.material = Material.getMaterial(resultSet.getString("material_id").toUpperCase());
         item.type = resultSet.getString("type");
-        Connection conn = MySQLHelper.getConnection();
+
         PreparedStatement statement = conn.prepareStatement("""
 SELECT oredict_id from item_oreDicts where item_id = ?;
 """);
@@ -322,6 +301,9 @@ SELECT ability_id from item_abilities where item_id = ?;
         } else {
             item.ability = null;
         }
+
+        abilityResultSet.close();
+        statement.close();
 
         return item;
     }

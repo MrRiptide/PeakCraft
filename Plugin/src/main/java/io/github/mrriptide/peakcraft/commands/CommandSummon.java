@@ -1,13 +1,10 @@
 package io.github.mrriptide.peakcraft.commands;
 
 import io.github.mrriptide.peakcraft.entity.EntityManager;
-import io.github.mrriptide.peakcraft.entity.LivingEntity;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
-import net.minecraft.server.level.ServerLevel;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
@@ -30,17 +27,13 @@ public class CommandSummon implements CommandExecutor {
 
         Player player = (Player)sender;
 
-        LivingEntity entity = null;
-
         try {
-            entity = EntityManager.spawnEntity(args[0].toLowerCase(Locale.ROOT), player.getLocation(), CreatureSpawnEvent.SpawnReason.COMMAND, dynamicSelect);
+            EntityManager.spawnEntity(args[0].toLowerCase(Locale.ROOT), player.getLocation(), CreatureSpawnEvent.SpawnReason.COMMAND, dynamicSelect);
         } catch (EntityException e) {
             e.printStackTrace();
             sender.sendMessage("I'm sorry but that entity does not exist.");
             return false;
         }
-
-        entity.applyNBT();
 
         return true;
     }

@@ -18,7 +18,7 @@ public abstract class Recipe implements org.bukkit.inventory.Recipe{
 
     @JsonIgnore
     public ItemStack getResult(){
-        return (result != null) ? result.getItemStack() : (new RecipeItem("air")).getItemStack();
+        return null;//(result != null) ? result.getItemStack() : (new RecipeItem("air")).getItemStack();
     }
 
     @JsonGetter("result")

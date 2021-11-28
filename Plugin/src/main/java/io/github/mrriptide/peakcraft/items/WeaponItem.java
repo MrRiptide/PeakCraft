@@ -1,13 +1,10 @@
 package io.github.mrriptide.peakcraft.items;
 
-import io.github.mrriptide.peakcraft.util.MySQLHelper;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class WeaponItem extends EnchantableItem {
 
@@ -19,15 +16,14 @@ public class WeaponItem extends EnchantableItem {
         super(item);
     }
 
-    public static Item loadFromResultSet(ResultSet resultSet) throws SQLException {
-        return loadFromResultSet(resultSet, new WeaponItem());
+    public static Item loadFromResultSet(Connection conn, ResultSet resultSet) throws SQLException {
+        return loadFromResultSet(conn, resultSet, new WeaponItem());
     }
-    public static Item loadFromResultSet(ResultSet resultSet, Item item) throws SQLException {
-        WeaponItem newItem = (WeaponItem) Item.loadFromResultSet(resultSet, item);
+    public static Item loadFromResultSet(Connection conn, ResultSet resultSet, Item item) throws SQLException {
+        WeaponItem newItem = (WeaponItem) Item.loadFromResultSet(conn, resultSet, item);
 
-        Connection conn = MySQLHelper.getConnection();
         PreparedStatement statement = conn.prepareStatement("""
-SELECT * FROM item_attributes WHERE item_id = ? AND attribute = 'damage';
+SELECT * FROM item_attributes WHERE item_id = ? AND attribute_id = 'damage';
 """);
         statement.setString(1, newItem.id);
 
@@ -38,12 +34,14 @@ SELECT * FROM item_attributes WHERE item_id = ? AND attribute = 'damage';
         } else {
             newItem.setAttribute("damage", 0.0);
         }
+        attributeResultSet.close();
+        statement.close();
 
         return item;
     }
 
     public static boolean validateType(String type){
-        return Arrays.asList("weapon", "sword").contains(type);
+        return Arrays.asList("weapon", "sword").contains(type.toLowerCase());
     }
 
     @Override

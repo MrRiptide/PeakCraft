@@ -3,22 +3,24 @@ package io.github.mrriptide.peakcraft.listeners;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
+import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.RightClickAbilityTrigger;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.runnables.UpdatePlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
@@ -53,15 +55,21 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
+    public void onRespawn(PlayerRespawnEvent e){
+        PlayerWrapper playerWrapper = PlayerManager.getPlayer(e.getPlayer());
+        playerWrapper.resetStats();
+    }
+
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e){
         if (!isOffCooldown(e)){
             return;
         }
         if (e.getItem() != null){
             try{
-                Item item = ItemManager.convertItem(e.getItem());
+                Item item = new CustomItemStack(e.getItem()).getItem();
                 if (item.hasAbility()){
-                    PlayerWrapper player = new PlayerWrapper(e.getPlayer());
+                    PlayerWrapper player = PlayerManager.getPlayer(e.getPlayer());
                     if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK){
                         item.useAbility(player, new RightClickAbilityTrigger(e));
                     }
@@ -118,10 +126,10 @@ public class PlayerListener implements Listener {
         }
         if (e.getPlayer().getEquipment() != null){
             try{
-                Item item = ItemManager.convertItem(e.getPlayer().getEquipment().getItem(e.getHand()));
+                Item item = new CustomItemStack(e.getPlayer().getEquipment().getItem(e.getHand())).getItem();
 
                 if (item.hasAbility()) {
-                    PlayerWrapper player = new PlayerWrapper(e.getPlayer());
+                    PlayerWrapper player = PlayerManager.getPlayer(e.getPlayer());
                     item.useAbility(player, new RightClickAbilityTrigger(e));
                     e.setCancelled(true);
                 }
@@ -129,6 +137,22 @@ public class PlayerListener implements Listener {
                 e.getPlayer().sendMessage("That item has an invalid id, please report this!");
                 PeakCraft.getPlugin().getLogger().warning("Player " + e.getPlayer().getName() + " interacted with an invalid item!");
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent e){
+        PlayerWrapper player = PlayerManager.getPlayer(e.getEntity().getPlayer());
+        if (player.isDead()){
+            e.setDeathMessage("");
+        } else {
+            String message;
+            switch (e.getEntity().getPlayer().getLastDamageCause().getCause()){
+                case FALL -> message = "<player> fell from a high place";
+                case PROJECTILE -> message = "<player> was shot by <killer>";
+                case BLOCK_EXPLOSION -> message = "<player> blew up";
+            }
+            player.setDead(true);
         }
     }
 

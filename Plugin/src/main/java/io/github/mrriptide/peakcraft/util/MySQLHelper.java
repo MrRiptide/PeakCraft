@@ -38,28 +38,69 @@ public abstract class MySQLHelper {
     private static void confirmConfigured(DataSource dataSource) throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
             createTableIfNotExist(conn, "new_items", """
-id varchar(255) primary key,
-display_name varchar(255),
-description varchar(255),
-rarity int,
-material_id varchar(255),
-type varchar(255)""");
+id varchar(255) NOT NULL,
+display_name varchar(255) NOT NULL,
+description varchar(255) NOT NULL,
+rarity int NOT NULL,
+material_id varchar(255) NOT NULL,
+type varchar(255) NOT NULL,
+PRIMARY KEY (id)""");
 
             createTableIfNotExist(conn, "items", """
-id varchar(255) primary key,
-display_name varchar(255),
-description varchar(255),
-rarity int,
-material_id varchar(255),
-type varchar(255)""");
+id varchar(255) NOT NULL,
+display_name varchar(255) NOT NULL,
+description varchar(255) NOT NULL,
+rarity int NOT NULL,
+material_id varchar(255) NOT NULL,
+type varchar(255) NOT NULL,
+PRIMARY KEY (id)""");
 
             createTableIfNotExist(conn, "item_oredicts", """
-item_id varchar(255) primary key,
-oredict_id varchar(255)""");
+item_id varchar(255) NOT NULL,
+oredict_id varchar(255) NOT NULL,
+FOREIGN KEY (item_id) REFERENCES items(id)""");
 
             createTableIfNotExist(conn, "item_abilities", """
-item_id varchar(255) primary key,
-ability_id varchar(255)""");
+item_id varchar(255) NOT NULL,
+ability_id varchar(255) NOT NULL,
+FOREIGN KEY (item_id) REFERENCES items(id)""");
+
+            createTableIfNotExist(conn, "item_attributes", """
+item_id varchar(255) NOT NULL,
+attribute_id varchar(255) NOT NULL,
+value double NOT NULL,
+FOREIGN KEY (item_id) REFERENCES items(id)""");
+
+            createTableIfNotExist(conn, "armor_sets", """
+item_id varchar(255) NOT NULL,
+set_id varchar(255) NOT NULL,
+FOREIGN KEY (item_id) REFERENCES items(id)""");
+
+            createTableIfNotExist(conn, "entity_data", """
+`type` varchar(16) NOT NULL,
+`id` varchar(255) NOT NULL,
+`max_health` double NOT NULL,
+`defense` double NOT NULL,
+`display_name` varchar(255) NOT NULL,
+`entity_model` varchar(25) NOT NULL,
+`entity_type` varchar(25) NOT NULL,
+PRIMARY KEY (`id`)""");
+            createTableIfNotExist(conn, "combat_entity_data", """
+entity_id varchar(225) NOT NULL,
+strength double NOT NULL,
+knockback double NOT NULL,
+FOREIGN KEY (entity_id) REFERENCES entity_data(id)
+""");
+            createTableIfNotExist(conn, "entity_conversion_choices", """
+entity_type varchar(255) NOT NULL,
+entity_id varchar(255),
+weight varchar(255) NOT NULL
+""");
+            createTableIfNotExist(conn, "player_coins", """
+uuid varchar(255) NOT NULL,
+coins long,
+PRIMARY KEY (uuid)
+""");
         }
     }
 
@@ -72,10 +113,8 @@ ability_id varchar(255)""");
     }
 
     public static void createTableIfNotExist(Connection connection, String tableName, String columns) throws SQLException {
-        if (!MySQLHelper.tableExists(connection, tableName)){
-            try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE " + tableName + " (" + columns + ")")) {
-                statement.execute();
-            }
+        try (PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columns + ")")) {
+            statement.execute();
         }
     }
 

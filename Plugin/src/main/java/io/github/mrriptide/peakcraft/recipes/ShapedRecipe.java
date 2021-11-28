@@ -40,7 +40,7 @@ public class ShapedRecipe extends Recipe {
     }
 
     public ShapedRecipe(RecipeItem[][] ingredients, RecipeItem result){
-        this.setResult(result);
+        /*this.setResult(result);
         this.setGroup("");
 
         ArrayList<Integer> valid_cols = new ArrayList<>();
@@ -99,7 +99,7 @@ public class ShapedRecipe extends Recipe {
         ingredientMap = new HashMap<>();
         for (RecipeItem ingredient : reversedIngredientMap.keySet()){
             ingredientMap.put(reversedIngredientMap.get(ingredient), ingredient);
-        }
+        }*/
     }
 
     public HashMap<Character, RecipeItem> getIngredients(){

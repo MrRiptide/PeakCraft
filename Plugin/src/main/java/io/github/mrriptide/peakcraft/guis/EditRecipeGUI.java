@@ -54,7 +54,7 @@ public class EditRecipeGUI implements InventoryGui{
             for (int i = 0; i < 3; i++){
                 for (int j = 0; j < 3; j++){
                     if (ingredientMap.get(shape[i].charAt(j)) != null){
-                        gui.setItem(9*(i+1) + j + 1, ingredientMap.get(shape[i].charAt(j)).getItemStack());
+                        //gui.setItem(9*(i+1) + j + 1, ingredientMap.get(shape[i].charAt(j)).getItemStack());
                     }
                     else {
                         gui.setItem(9*(i+1) + j + 1, new ItemStack(Material.AIR));

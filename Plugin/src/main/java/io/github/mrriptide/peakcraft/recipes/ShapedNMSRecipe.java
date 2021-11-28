@@ -71,7 +71,7 @@ public class ShapedNMSRecipe extends NMSCraftingRecipe {
 
     @Override
     public ItemStack assemble(CraftingContainer craftingContainer) {
-        return CraftItemStack.asNMSCopy(getResult().getItemStack());
+        return null;//CraftItemStack.asNMSCopy(getResult().getItemStack());
     }
 
     @Override
@@ -318,7 +318,7 @@ public class ShapedNMSRecipe extends NMSCraftingRecipe {
 
             while(iterator.hasNext()) {
                 RecipeItem recipeitemstack = (RecipeItem)iterator.next();
-                recipeitemstack.toNetwork(packetdataserializer);
+                //recipeitemstack.toNetwork(packetdataserializer);
             }
 
             packetdataserializer.writeItem(shapedrecipes.getResultItem());

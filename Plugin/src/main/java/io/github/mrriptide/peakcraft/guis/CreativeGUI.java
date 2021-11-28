@@ -6,6 +6,7 @@ import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.WeaponItem;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -60,7 +61,7 @@ public class CreativeGUI implements InventoryGui{
         ItemStack[][] array = new ItemStack[itemList.size() / 7 + 1][7];
 
         for (int i = 0; i < itemList.size(); i++){
-            array[i/7][i % 7] = itemList.get(i).getItemStack();
+            array[i/7][i % 7] = new CustomItemStack(itemList.get(i));
         }
 
         return array;
@@ -92,7 +93,7 @@ public class CreativeGUI implements InventoryGui{
             int col = slot % 9;
             if (row > 0 && row < 5 && col > 0 && col < 8){
                 try{
-                    ItemStack item = ItemManager.convertItem(e.getClickedInventory().getItem(slot)).getItemStack();
+                    ItemStack item = new CustomItemStack(e.getClickedInventory().getItem(slot));
                     if (e.isShiftClick()){
                         item.setAmount(item.getMaxStackSize());
                     }

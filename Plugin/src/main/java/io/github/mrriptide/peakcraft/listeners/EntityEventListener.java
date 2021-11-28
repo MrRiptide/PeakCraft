@@ -1,22 +1,25 @@
 package io.github.mrriptide.peakcraft.listeners;
 
+import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.EntityManager;
-import io.github.mrriptide.peakcraft.entity.WrapperEntity;
+import io.github.mrriptide.peakcraft.entity.HoloDisplayEntity;
+import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
+import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ItemManager;
-import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.CustomColors;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
-import io.github.mrriptide.peakcraft.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -31,11 +34,8 @@ public class EntityEventListener implements Listener {
         if (entity instanceof Player){
             Player player = (Player) entity;
 
-            ItemStack originalItem = e.getItem().getItemStack();
-
             try{
-                ItemStack newItem = ItemManager.convertItem(originalItem).getItemStack();
-                e.getItem().setItemStack(newItem);
+                e.getItem().setItemStack(new CustomItemStack(e.getItem().getItemStack()));
             } catch (ItemException error){
                 player.sendMessage(CustomColors.ERROR + "That item had an invalid id tag, please report this!");
                 PeakCraft.getPlugin().getLogger().warning("Player " + player.getName() + " picked up an item with an invalid id!");
@@ -44,20 +44,20 @@ public class EntityEventListener implements Listener {
     }
 
     @EventHandler
-    public void onRespawn(PlayerRespawnEvent e){
-        PlayerWrapper playerWrapper = new PlayerWrapper(e.getPlayer());
-        playerWrapper.resetStats();
-    }
-
-    @EventHandler
     public void onRegainHealth(EntityRegainHealthEvent e){
         if (e.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED){
             e.setCancelled(true);
-        } else if (e.getEntity() instanceof Player){
-            PlayerWrapper wrapper = new PlayerWrapper((Player)e.getEntity());
-            wrapper.regenHealth(e.getAmount());
-        } else if (((CraftCreature)e.getEntity()).getHandle() instanceof LivingEntity){
-            LivingEntity entity = (LivingEntity) ((CraftCreature)e.getEntity()).getHandle();
+        } else if (e.getEntity() instanceof Player && !(e.getEntity().hasMetadata("NPC"))){
+            PlayerWrapper playerWrapper = PlayerManager.getPlayer((Player) e.getEntity());
+            playerWrapper.regenHealth(e.getAmount());
+        } else if (EntityManager.isCustomMob(e.getEntity())){
+            LivingEntityWrapper entity = null;
+            try {
+                entity = new LivingEntityWrapper((LivingEntity) e.getEntity());
+            } catch (EntityException ex) {
+                ex.printStackTrace();
+                return;
+            }
             entity.regenHealth(e.getAmount());
         } else {
             return;
@@ -67,12 +67,17 @@ public class EntityEventListener implements Listener {
 
     @EventHandler
     public void onEntitySpawn(CreatureSpawnEvent e){
-        //checks if its already a custom mob, ignore if it is
-        if (EntityManager.isCustomMob(e.getEntity())){
+        if (PeakCraft.generatingEntityDatabase)
+            return;
+        // checks if it is an NPC, if so ignore because it should already be a custom one
+        if (e.getEntity().hasMetadata("NPC")){
+            return;
+        }
+        if (((CraftEntity)e.getEntity()).getHandle() instanceof ArmorStand){
             return;
         }
 
-        List<CreatureSpawnEvent.SpawnReason> ignoredReasons = Arrays.asList(
+        List<CreatureSpawnEvent.SpawnReason> staticSpawnReasons = Arrays.asList(
                 CreatureSpawnEvent.SpawnReason.COMMAND,
                 CreatureSpawnEvent.SpawnReason.CUSTOM,
                 CreatureSpawnEvent.SpawnReason.EGG,
@@ -80,19 +85,10 @@ public class EntityEventListener implements Listener {
                 CreatureSpawnEvent.SpawnReason.SHOULDER_ENTITY
                 );
 
-        if (ignoredReasons.contains(e.getSpawnReason())){
-            return;
-        }
-
         try {
-            LivingEntity newEntity = EntityManager.getEntity(e.getEntity(), e.getLocation(), true);
-
-            if (newEntity instanceof WrapperEntity){
-                newEntity.applyNBT();
-            } else {
-                e.setCancelled(true);
-                newEntity.spawn(e.getLocation(), e.getSpawnReason());
-            }
+            // if it isn't a custom npc, pass it off to the spawn converter
+            e.setCancelled(EntityManager.convertSpawn(e.getEntity(), e.getLocation(),
+                    !staticSpawnReasons.contains(e.getSpawnReason()), e.getSpawnReason()));
         } catch (EntityException ex) {
             ex.printStackTrace();
         }

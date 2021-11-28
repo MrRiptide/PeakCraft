@@ -5,7 +5,6 @@ import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ItemManager;
-import io.github.mrriptide.peakcraft.items.ItemStack;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import org.bukkit.Bukkit;
@@ -26,7 +25,20 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class VaultGUI implements InventoryGui{
-    PlayerWrapper player;
+    public VaultGUI(Player commandSender) {
+    }
+
+    @Override
+    public boolean onGUIClick(Player player, int slot, InventoryClickEvent e) {
+        return false;
+    }
+
+    @NotNull
+    @Override
+    public Inventory getInventory() {
+        return null;
+    }
+    /*PlayerWrapper player;
     List<HashMap<Integer, ItemStack>> vaults;
     private int currentVault;
 
@@ -204,5 +216,5 @@ public class VaultGUI implements InventoryGui{
                 inventory.setItem(item.getKey(), item.getValue().toBukkit());
             }
         }
-    }
+    }*/
 }
