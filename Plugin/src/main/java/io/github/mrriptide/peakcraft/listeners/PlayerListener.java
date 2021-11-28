@@ -141,7 +141,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e){
-        RecipeChoice.ExactChoice
         PlayerWrapper player = PlayerManager.getPlayer(e.getEntity().getPlayer());
         if (player.isDead()){
             e.setDeathMessage("");
@@ -150,7 +149,7 @@ public class PlayerListener implements Listener {
             switch (e.getEntity().getPlayer().getLastDamageCause().getCause()){
                 case FALL -> message = "<player> fell from a high place";
                 case PROJECTILE -> message = "<player> was shot by <killer>";
-                case BLOCK_EXPLOSION -> message = "<player> blew up"
+                case BLOCK_EXPLOSION -> message = "<player> blew up";
             }
             player.setDead(true);
         }

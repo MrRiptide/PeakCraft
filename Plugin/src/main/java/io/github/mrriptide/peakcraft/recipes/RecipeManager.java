@@ -103,12 +103,7 @@ public class RecipeManager {
     public static void registerRecipes(){
         File recipeFolder = new File(PeakCraft.instance.getDataFolder() + File.separator + "recipes");
 
-        FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".json");
-            }
-        };
+        FilenameFilter filter = (dir, name) -> name.endsWith(".json");
 
         String[] recipe_names = recipeFolder.list(filter);
         assert recipe_names != null;

@@ -26,12 +26,6 @@ public class ItemManager {
     private static String itemFilePath = "items.json";
     private static HashMap<String, Item> items = new HashMap<>();
 
-    public static void getItemFromItemStack(ItemStack itemStack){
-        Item item;
-
-        String type = PersistentDataManager.getValueOrDefault(itemStack, PersistentDataType.STRING, "type", "item");
-    }
-
     public static HashMap<String, Item> getItems(){
         return items;
     }
