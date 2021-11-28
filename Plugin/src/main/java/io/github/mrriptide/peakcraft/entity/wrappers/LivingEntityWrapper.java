@@ -9,6 +9,7 @@ import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.Attribute;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.HoloDisplay;
@@ -125,7 +126,7 @@ public class LivingEntityWrapper {
             // IntelliJ will say that itemStack != null is always true, this is wrong.
             if (itemStack != null && itemStack.getType() != Material.AIR){
                 try{
-                    Item item = ItemManager.convertItem(itemStack);
+                    Item item = new CustomItemStack(itemStack).getItem();
                     if (item instanceof EnchantableItem){
                         ((EnchantableItem)item).bakeAttributes();
                         processItem(((EnchantableItem)item));

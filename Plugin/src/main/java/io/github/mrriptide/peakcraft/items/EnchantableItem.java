@@ -2,6 +2,7 @@ package io.github.mrriptide.peakcraft.items;
 
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.Attribute;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import org.bukkit.Material;
@@ -10,6 +11,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,19 +129,19 @@ public class EnchantableItem extends Item {
         return enchantments;
     }
 
-    public void addEnchantment(String enchantment, int level){
+    public void addEnchantment(@NotNull String enchantment, int level){
         this.enchantments.put(enchantment.toLowerCase(), level);
     }
 
-    public boolean removeEnchantment(String enchantment){
+    public boolean removeEnchantment(@NotNull String enchantment){
         return (this.enchantments.remove(enchantment.toLowerCase()) != null);
     }
 
     @Override
-    public ItemStack getItemStack() {
-        ItemStack stack = super.getItemStack();
+    public void updateItemStack(CustomItemStack itemStack) {
+        super.updateItemStack(itemStack);
 
-        ItemMeta meta = stack.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
 
         // Apply enchant glint if it is enchanted
         if (enchantments.size() > 0){
@@ -153,9 +155,7 @@ public class EnchantableItem extends Item {
             PersistentDataManager.setValue(meta, "ENCHANT_" + enchantment.getKey().toUpperCase() + "_LEVEL", enchantment.getValue());
         }
 
-        stack.setItemMeta(meta);
-
-        return stack;
+        itemStack.setItemMeta(meta);
     }
 
     @Override

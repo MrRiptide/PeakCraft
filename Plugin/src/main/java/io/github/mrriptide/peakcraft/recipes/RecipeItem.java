@@ -107,14 +107,14 @@ public class RecipeItem {
         return Objects.hash(id, count);
     }
 
-    @JsonIgnore
+    /*@JsonIgnore
     public ItemStack getItemStack(){
         Item item = new Item(id);
         ItemStack itemStack = item.getItemStack();
         itemStack.setAmount(count);
 
         return itemStack;
-    }
+    }*/
 
     public boolean test(RecipeItem item){
         return item != null && this.getId().equals(item.getId()) && item.getCount() >= this.getCount();
@@ -126,11 +126,11 @@ public class RecipeItem {
     *
     * */
 
-    public void toNetwork(FriendlyByteBuf packetdataserializer) {
+    /*public void toNetwork(FriendlyByteBuf packetdataserializer) {
         try {
             packetdataserializer.writeCollection(Arrays.asList(CraftItemStack.asNMSCopy(ItemManager.getItem(id).getItemStack())), FriendlyByteBuf::writeItem);
         } catch (ItemException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

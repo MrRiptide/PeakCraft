@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.items.abilities;
 
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.RightClickAbilityTrigger;
 
@@ -17,7 +18,11 @@ public class PotatoSwordAbility extends Ability {
     @Override
     public void useAbility(PlayerWrapper player, AbilityTrigger trigger) {
         if (trigger instanceof RightClickAbilityTrigger){
-            player.giveItem("potato");
+            try {
+                player.giveItem("potato");
+            } catch (ItemException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

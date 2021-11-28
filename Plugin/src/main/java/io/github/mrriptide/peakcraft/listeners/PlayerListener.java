@@ -9,6 +9,7 @@ import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.RightClickAbilityTrigger;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.runnables.UpdatePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -66,7 +67,7 @@ public class PlayerListener implements Listener {
         }
         if (e.getItem() != null){
             try{
-                Item item = ItemManager.convertItem(e.getItem());
+                Item item = new CustomItemStack(e.getItem()).getItem();
                 if (item.hasAbility()){
                     PlayerWrapper player = PlayerManager.getPlayer(e.getPlayer());
                     if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK){
@@ -125,7 +126,7 @@ public class PlayerListener implements Listener {
         }
         if (e.getPlayer().getEquipment() != null){
             try{
-                Item item = ItemManager.convertItem(e.getPlayer().getEquipment().getItem(e.getHand()));
+                Item item = new CustomItemStack(e.getPlayer().getEquipment().getItem(e.getHand())).getItem();
 
                 if (item.hasAbility()) {
                     PlayerWrapper player = PlayerManager.getPlayer(e.getPlayer());

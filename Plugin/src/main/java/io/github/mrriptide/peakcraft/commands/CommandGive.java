@@ -3,6 +3,7 @@ package io.github.mrriptide.peakcraft.commands;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -37,7 +38,7 @@ public class CommandGive implements CommandExecutor {
         }
 
         try{
-            item = item_data.getItemStack();
+            item = new CustomItemStack(item_data);
         } catch (NullPointerException e){
             sender.sendMessage("Encountered an internal error upon creating the item, check the server logs for more details");
             throw e;

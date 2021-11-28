@@ -4,6 +4,7 @@ import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.*;
 import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -37,17 +38,17 @@ public class CommandEnchant implements CommandExecutor {
             return false;
         } else{
             try{
-                Item newItem = ItemManager.convertItem(enchantPlayer.getInventory().getItemInMainHand());
-                if (newItem instanceof EnchantableItem){
+                CustomItemStack itemStack = new CustomItemStack(enchantPlayer.getInventory().getItemInMainHand());
+                try {
                     if (enchantLevel == 0){
                         sender.sendMessage("Removed enchantment");
-                        ((EnchantableItem)newItem).removeEnchantment(enchantName);
+                        itemStack.removeEnchantment(enchantName);
                     } else {
-                        ((EnchantableItem)newItem).addEnchantment(enchantName, enchantLevel);
+                        itemStack.addEnchantment(enchantName, enchantLevel);
                     }
-                    enchantPlayer.getInventory().setItemInMainHand(newItem.getItemStack());
+                    enchantPlayer.getInventory().setItemInMainHand(itemStack);
                     return true;
-                } else {
+                } catch (IllegalArgumentException e) {
                     sender.sendMessage("This item cannot be enchanted!");
                     return false;
                 }

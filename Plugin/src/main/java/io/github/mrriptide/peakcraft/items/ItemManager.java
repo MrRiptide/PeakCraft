@@ -171,9 +171,6 @@ SELECT * FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_item
 
         Item item = getItem(id);
 
-        // Move any general attributes to the item from the itemstack
-        item.setAmount(itemSource.getAmount());
-
         if (item instanceof EnchantableItem){
 
             ((EnchantableItem)item).enchantments = new HashMap<>();
@@ -188,48 +185,5 @@ SELECT * FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_item
         }
 
         return item;
-    }
-
-    private static void createItemList() {
-        writeMaterialsToFile(Arrays.asList(Material.values()), itemFilePath);
-    }
-
-    public static void writeMaterialsToFile(List<Material> materials, String fileName){
-        try {
-            if (!PeakCraft.instance.getDataFolder().exists()){
-                PeakCraft.instance.getDataFolder().mkdirs();
-            }
-
-            HashMap<String, HashMap<String, String>> items = new HashMap<>();
-
-            for (Material mat : materials){
-                if (mat.isItem()){
-                    HashMap<String, String> map = new HashMap<>();
-                    map.put("id", mat.name());
-                    map.put("oreDict", "");
-                    map.put("description", "");
-                    map.put("displayName", Formatter.humanize(mat.toString()));
-                    map.put("rarity", "1");
-                    map.put("materialID", mat.name());
-                    map.put("type", "Item");
-
-                    items.put(mat.name(), map);
-                } else {
-                    PeakCraft.getPlugin().getLogger().info(mat.name() + " is not an item");
-                }
-            }
-
-            // save using jackson https://stackabuse.com/reading-and-writing-json-in-java/
-
-            File recipeFile = new File(PeakCraft.instance.getDataFolder() + File.separator + fileName);
-
-            OutputStream outputStream = new FileOutputStream(recipeFile);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(outputStream, items);
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

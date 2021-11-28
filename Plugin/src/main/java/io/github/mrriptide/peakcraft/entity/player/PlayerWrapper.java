@@ -10,6 +10,7 @@ import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonus;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonusManager;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.runnables.UpdatePlayer;
 import io.github.mrriptide.peakcraft.util.Attribute;
 import io.github.mrriptide.peakcraft.util.CustomColors;
@@ -121,7 +122,7 @@ public class PlayerWrapper extends CombatEntityWrapper {
         for (ItemStack itemStack : ((Player)entity).getInventory()){
             if (itemStack != null && !itemStack.getType().equals(Material.AIR)){
                 try{
-                    Item item = ItemManager.convertItem(itemStack);
+                    Item item = new CustomItemStack(itemStack).getItem();
                     if (item.hasAbility()){
                         abilityItems.add(item);
                     }
@@ -199,7 +200,8 @@ public class PlayerWrapper extends CombatEntityWrapper {
         ItemStack[] armorContents = ((Player)entity).getInventory().getArmorContents();
         for (int i = 0; i < 3; i++){
             try{
-                if (!((ArmorItem)ItemManager.convertItem(armorContents[i])).getSet().equals(((ArmorItem)ItemManager.convertItem(armorContents[i+1])).getSet())){
+                if (!((ArmorItem)new CustomItemStack(armorContents[i]).getItem()).getSet().equals(
+                        ((ArmorItem)new CustomItemStack(armorContents[i+1]).getItem()).getSet())){
                     return false;
                 }
             } catch (ItemException e){
@@ -215,10 +217,10 @@ public class PlayerWrapper extends CombatEntityWrapper {
             return null;
         }
         try{
-            String setName = ((ArmorItem)ItemManager.convertItem(armorContents[0])).getSetName();
+            String setName = ((ArmorItem)new CustomItemStack(armorContents[0]).getItem()).getSetName();
             for (int i = 1; i < 4; i++){
                 try{
-                    if (armorContents[i] == null || !setName.equals(((ArmorItem)ItemManager.convertItem(armorContents[i])).getSetName())){
+                    if (armorContents[i] == null || !setName.equals(((ArmorItem)new CustomItemStack(armorContents[i]).getItem()).getSetName())){
                         return null;
                     }
                 } catch (ItemException e){
@@ -255,52 +257,11 @@ public class PlayerWrapper extends CombatEntityWrapper {
 
 
     public void giveItem(Item item){
-        ((Player)entity).getInventory().addItem(item.getItemStack());
+        ((Player)entity).getInventory().addItem(new CustomItemStack(item));
     }
 
-    public void giveItem(String name){
-        giveItem(new Item(name));
-    }
-
-    public void saveInventory() {
-        try (Connection conn = MySQLHelper.getConnection()) {
-            PreparedStatement statement = conn.prepareStatement("DELETE FROM player_inventories WHERE uuid = ?");
-            statement.setString(1, getSource().getUniqueId().toString());
-
-            statement.execute();
-            statement.close();
-
-            ArrayList<Object[]> values = new ArrayList<>();
-
-            for (int i = 0; i < getSource().getInventory().getSize(); i++){
-                if (getSource() != null && getSource().getInventory().getItem(i) != null && getSource().getInventory().getItem(i).getType() != Material.AIR){
-                    try {
-                        io.github.mrriptide.peakcraft.items.ItemStack itemStack = new io.github.mrriptide.peakcraft.items.ItemStack(getSource().getInventory().getItem(i));
-                        Object[] objectSet = new Object[5];
-
-                        // uuid
-                        objectSet[0] = getSource().getUniqueId().toString();
-                        // item index
-                        objectSet[2] = i;
-                        // item id
-                        objectSet[1] = itemStack.getItem().getId();
-                        // item count
-                        objectSet[3] = itemStack.getAmount();
-                        // item nbt
-                        objectSet[4] = "";
-
-                        values.add(objectSet);
-                    } catch (ItemException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            MySQLHelper.bulkInsert(conn, "INSERT INTO player_inventories(uuid, item_id, item_index, item_count, nbt) VALUES", values);
-            Bukkit.broadcastMessage("saved inventory");
-        } catch (SQLException e){
-            PeakCraft.getPlugin().getLogger().warning("Something went wrong while saving player " + getSource().getUniqueId().toString() + "'s inventory to the mysql database");
-            e.printStackTrace();
-        }
+    public void giveItem(String name) throws ItemException {
+        giveItem(ItemManager.getItem(name));
     }
 
     public boolean isDead(){

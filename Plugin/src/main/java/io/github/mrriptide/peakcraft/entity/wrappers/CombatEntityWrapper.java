@@ -5,6 +5,7 @@ import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.Attribute;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
@@ -43,7 +44,7 @@ public class CombatEntityWrapper extends LivingEntityWrapper {
         super.updateAttributes();
         try{
             ItemStack weaponItem = ((LivingEntity)entity).getEquipment().getItemInMainHand();
-            this.weapon = !(weaponItem.getType().equals(Material.AIR)) ? ItemManager.convertItem(weaponItem) : null;
+            this.weapon = !(weaponItem.getType().equals(Material.AIR)) ? new CustomItemStack(weaponItem).getItem() : null;
         } catch (ItemException e) {
             PeakCraft.getPlugin().getLogger().warning("Entity " + entity.getName() + " has an invalid item in their hand!");
             this.weapon = null;

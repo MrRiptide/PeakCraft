@@ -6,6 +6,7 @@ import io.github.mrriptide.peakcraft.items.abilities.Ability;
 import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
+import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatColor;
@@ -84,24 +85,6 @@ public class Item implements Serializable {
         this.amount = item.amount;
     }
 
-    /*public Item(ItemStack itemSource){
-        // Get ID of the item from the ItemStack
-
-        // Default option
-        this.id = PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
-
-        assert this.id != null;
-        Item default_item = ItemManager.getItem(this.id);
-
-        this.oreDict = default_item.oreDict;
-        this.rarity = default_item.rarity;
-        this.displayName = default_item.displayName;
-        this.description = default_item.description;
-        this.type = default_item.type;
-        this.material = default_item.material;
-        this.ability = default_item.ability;
-    }*/
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -115,14 +98,14 @@ public class Item implements Serializable {
         return Objects.hash(id);
     }
 
-    public ItemStack getItemStack(){
-        ItemStack item = new ItemStack(material);
+    public void updateItemStack(CustomItemStack itemStack){
+        itemStack.setType(material);
 
         //PeakCraft.getPlugin().getLogger().info("Item: " + item);
 
-        ItemMeta meta = item.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         if (meta == null){
-            return item;
+            return;
         }
 
         // Set the ID
@@ -136,16 +119,14 @@ public class Item implements Serializable {
         meta.setDisplayName(getRarityColor() + displayName);
 
         // Makes the item unbreakable
-        meta.setUnbreakable(true);
+        //meta.setUnbreakable(true);
 
         // Hide things
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
 
         // put metadata on item
 
-        item.setItemMeta(meta);
-
-        return item;
+        itemStack.setItemMeta(meta);
     }
 
     public ItemStack convertItem(ItemStack item){

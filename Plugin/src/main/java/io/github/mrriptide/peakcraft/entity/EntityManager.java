@@ -56,7 +56,10 @@ SELECT * FROM entity_data;
 
     public static boolean convertSpawn(Entity entity, Location location, boolean dynamicSelect, CreatureSpawnEvent.SpawnReason reason) throws EntityException {
         WeightedRandom<LivingEntityData> entityChoices = new WeightedRandom<>();
-        try {
+
+        // for now, I'm disabling the entity selection process since there are no other options and I have quite a bit of work left to do for optimization of mob spawning
+
+        /*try {
             Connection conn = MySQLHelper.getConnection();
             PreparedStatement statement = conn.prepareStatement("""
 SELECT * FROM entity_conversion_choices WHERE entity_type = ?;
@@ -74,7 +77,7 @@ SELECT * FROM entity_conversion_choices WHERE entity_type = ?;
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
 
         LivingEntityData entityData = entityChoices.getRandom();
 
