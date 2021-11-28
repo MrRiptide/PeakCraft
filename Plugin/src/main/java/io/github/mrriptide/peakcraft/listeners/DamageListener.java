@@ -58,7 +58,9 @@ public class DamageListener implements Listener {
         // check if the damaging entity is a player
         if (EntityManager.isPlayer(event.getDamager())) {
             damagingEntity = PlayerManager.getPlayer((Player) event.getDamager());
-        } else if (EntityManager.isCustomMob(event.getDamager())) {
+        } else {
+            if (!EntityManager.isCustomMob(event.getDamager()))
+                PeakCraft.getPlugin().getLogger().warning("Some unregistered entity tried dealing damage, attempting to wrap it anyways");
             try {
                 damagingEntity = new CombatEntityWrapper((LivingEntity) event.getDamager());
             } catch (EntityException e) {
@@ -66,16 +68,15 @@ public class DamageListener implements Listener {
                 e.printStackTrace();
                 return;
             }
-        } else {
-            PeakCraft.getPlugin().getLogger().warning("Some unregistered entity tried dealing damage");
-            return;
         }
 
         // check if the damaged entity is a player
         LivingEntityWrapper damagedEntity;
         if (EntityManager.isPlayer(event.getEntity())){
             damagedEntity = PlayerManager.getPlayer((Player) event.getEntity());
-        } else if (EntityManager.isCustomMob(event.getEntity())) {
+        } else {
+            if (!EntityManager.isCustomMob(event.getEntity()))
+                PeakCraft.getPlugin().getLogger().warning("Some entity tried damaging an unregistered entity, attempting to wrap it anyways");
             try {
                 damagedEntity = new LivingEntityWrapper((LivingEntity) event.getEntity());
             } catch (EntityException e) {
@@ -83,9 +84,6 @@ public class DamageListener implements Listener {
                 e.printStackTrace();
                 return;
             }
-        } else {
-            PeakCraft.getPlugin().getLogger().warning("Some entity tried damaging an unregistered entity");
-            return;
         }
         //event.setCancelled(true);
         damagingEntity.updateAttributes();

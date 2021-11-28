@@ -43,8 +43,9 @@ public class LivingEntityWrapper {
     public LivingEntityWrapper(LivingEntity entity) throws EntityException {
         this.entity = entity;
         this.entityMode = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.STRING, "mode", "none");
-        this.id = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.STRING, "id", entity.getName());
+        this.id = PersistentDataManager.getValueOrDefault(entity, PersistentDataType.STRING, "id", entity.getType().getName());
         if (this.entityMode.equals("none")){
+            PersistentDataManager.setValue(entity, "mode", "wrapped");
             LivingEntityData entityData = EntityManager.getEntity(this.id);
             this.entityType = entityData.getType();
             this.name = entityData.getName();
@@ -70,7 +71,8 @@ public class LivingEntityWrapper {
             default -> CustomColors.BASIC_ENTITY;
         };
         entity.setCustomName(name_color + name + " " + CustomColors.HEALTH + ((int)health) + " ❤");
-        entity.setCustomNameVisible(true);
+        if (health < maxHealth.getFinal() || entityType.equals("boss") || entityType.equals("npc"))
+            entity.setCustomNameVisible(true);
     }
 
     public void setName(String name){

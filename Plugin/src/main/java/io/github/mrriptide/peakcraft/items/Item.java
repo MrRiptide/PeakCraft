@@ -269,7 +269,7 @@ public class Item implements Serializable {
         item.type = resultSet.getString("type");
 
         PreparedStatement statement = conn.prepareStatement("""
-SELECT oredict_id from item_oreDicts where item_id = ?;
+SELECT oredict_id from item_oredicts where item_id = ?;
 """);
         statement.setString(1, item.id);
 
