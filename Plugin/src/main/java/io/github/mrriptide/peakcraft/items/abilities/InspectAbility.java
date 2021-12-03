@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.items.abilities;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.actions.RightClickAction;
 import io.github.mrriptide.peakcraft.entity.EntityManager;
 import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
@@ -8,7 +9,6 @@ import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.RightClickAbilityTrigger;
 import io.github.mrriptide.peakcraft.util.CustomColors;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.block.Action;
 
@@ -71,5 +71,20 @@ public class InspectAbility extends Ability {
                 player.getSource().sendMessage(((RightClickAbilityTrigger)trigger).getBlock().getBlockData().getAsString());
             }
         }
+    }
+
+    @Override
+    public PriorityLevel getListeningLevel() {
+        return PriorityLevel.MIDDLE;
+    }
+
+    @Override
+    public boolean listensTo(io.github.mrriptide.peakcraft.actions.Action action) {
+        return action instanceof RightClickAction;
+    }
+
+    @Override
+    public void onAction(io.github.mrriptide.peakcraft.actions.Action action) {
+
     }
 }

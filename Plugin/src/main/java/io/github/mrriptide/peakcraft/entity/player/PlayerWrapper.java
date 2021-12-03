@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.entity.player;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.actions.PlayerTickAction;
 import io.github.mrriptide.peakcraft.entity.wrappers.CombatEntityWrapper;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
@@ -22,6 +23,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -61,7 +63,6 @@ public class PlayerWrapper extends CombatEntityWrapper {
         this.critDamage = PersistentDataManager.getAttribute(player, "critDamage", 0.5);
         this.name = player.getName();
         this.isDead = health == 0;
-        updateAttributes();
 
         this.status = new PlayerStatus(player);
 
@@ -100,9 +101,9 @@ public class PlayerWrapper extends CombatEntityWrapper {
         this.maxMana.addAdditive(item.getAttribute("intelligence").getFinal());
     }
 
-    public void processDamage(double amount){
+    public void damage(double amount){
         lastDamageTime = (new Date()).getTime();
-        super.processDamage(amount);
+        super.damage(amount);
     }
 
     public void tryNaturalRegen(){
@@ -150,6 +151,15 @@ public class PlayerWrapper extends CombatEntityWrapper {
         ((Player)entity).setLevel((int)mana);
         ((Player)entity).setExp((float) (mana / maxMana));*/
         sendActionBar();
+    }
+
+    public void updateFromEntity(){
+        try {
+            this.weapon = ItemManager.convertItem(((Player)entity).getEquipment().getItem(EquipmentSlot.HAND));
+        } catch (ItemException e) {
+            PeakCraft.getPlugin().getLogger().warning("Player " + entity.getName() + " has an invalid item in their hand");
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -239,12 +249,12 @@ public class PlayerWrapper extends CombatEntityWrapper {
         }
     }
 
-    public double getCritChance() {
-        return critChance.getFinal();
+    public Attribute getCritChance() {
+        return critChance;
     }
 
-    public double getCritDamage() {
-        return critDamage.getFinal();
+    public Attribute getCritDamage() {
+        return critDamage;
     }
 
     public Player getSource() {

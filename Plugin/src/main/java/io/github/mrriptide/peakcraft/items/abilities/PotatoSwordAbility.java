@@ -1,5 +1,7 @@
 package io.github.mrriptide.peakcraft.items.abilities;
 
+import io.github.mrriptide.peakcraft.actions.Action;
+import io.github.mrriptide.peakcraft.actions.RightClickAction;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
@@ -24,5 +26,20 @@ public class PotatoSwordAbility extends Ability {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public PriorityLevel getListeningLevel() {
+        return PriorityLevel.MIDDLE;
+    }
+
+    @Override
+    public boolean listensTo(Action action) {
+        return action instanceof RightClickAction;
+    }
+
+    @Override
+    public void onAction(Action action) {
+
     }
 }

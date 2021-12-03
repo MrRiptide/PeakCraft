@@ -2,6 +2,7 @@ package io.github.mrriptide.peakcraft.recipes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import net.minecraft.world.Container;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -122,9 +123,17 @@ public class RecipeManager {
             for (int j = 0; j < 3; j++){
                 ItemStack itemStack = raw_ingredients[i * 3 + j];
                 if (itemStack != null) {
-                    ingredients[i][j] = new RecipeItem(itemStack);
+                    try {
+                        ingredients[i][j] = new RecipeItem(itemStack);
+                    } catch (ItemException e) {
+                        e.printStackTrace();
+                    }
                 } else {
-                    ingredients[i][j] = new RecipeItem("AIR");
+                    try {
+                        ingredients[i][j] = new RecipeItem("AIR");
+                    } catch (ItemException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -132,8 +141,18 @@ public class RecipeManager {
         long duration = (endTime-startTime) / 1000000;
         PeakCraft.getPlugin().getLogger().info("It took " + Math.round(duration * 100) / 100.0 + "ms to generate the ingredient array");*/
 
-        ShapedRecipe craftedShapedRecipe = new ShapedRecipe(ingredients, new RecipeItem("air"));
-        ShapelessRecipe craftedShapelessRecipe = new ShapelessRecipe(ingredients, new RecipeItem("air"));
+        ShapedRecipe craftedShapedRecipe = null;
+        try {
+            craftedShapedRecipe = new ShapedRecipe(ingredients, new RecipeItem("air"));
+        } catch (ItemException e) {
+            e.printStackTrace();
+        }
+        ShapelessRecipe craftedShapelessRecipe = null;
+        try {
+            craftedShapelessRecipe = new ShapelessRecipe(ingredients, new RecipeItem("air"));
+        } catch (ItemException e) {
+            e.printStackTrace();
+        }
 
         /*long shapedTime = 0;
         int shapedTested = 0;

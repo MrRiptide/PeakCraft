@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.listeners;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.actions.RightClickAction;
 import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
@@ -33,12 +34,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e){
-        /*Bukkit.getScheduler().runTaskLater(PeakCraft.instance, () -> {
-            Tablist tablist = new Tablist(new PlayerWrapper());
-            Tablist.removePlayers(e.getPlayer());
-
-            Tablist.fillBoard(e.getPlayer());
-        }, 10);*/
 
         PlayerManager.logInPlayer(e.getPlayer());
         BukkitTask task = new UpdatePlayer(e.getPlayer()).runTaskTimer(PeakCraft.instance, 0, UpdatePlayer.ticksPerUpdate);
@@ -50,6 +45,7 @@ public class PlayerListener implements Listener {
             return false;
         } else {
             lastInteractTime.put(e.getPlayer().getUniqueId(), System.nanoTime());
+            PeakCraft.getPlugin().getLogger().info("Skipping event " + e.getEventName());
             return true;
         }
     }
@@ -71,7 +67,8 @@ public class PlayerListener implements Listener {
                 if (item.hasAbility()){
                     PlayerWrapper player = PlayerManager.getPlayer(e.getPlayer());
                     if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK){
-                        item.useAbility(player, new RightClickAbilityTrigger(e));
+                        RightClickAction action = new RightClickAction(player);
+                        action.runAction();
                     }
                     e.setCancelled(true);
                 }
@@ -130,7 +127,8 @@ public class PlayerListener implements Listener {
 
                 if (item.hasAbility()) {
                     PlayerWrapper player = PlayerManager.getPlayer(e.getPlayer());
-                    item.useAbility(player, new RightClickAbilityTrigger(e));
+                    RightClickAction action = new RightClickAction(player);
+                    action.runAction();
                     e.setCancelled(true);
                 }
             } catch (ItemException error){

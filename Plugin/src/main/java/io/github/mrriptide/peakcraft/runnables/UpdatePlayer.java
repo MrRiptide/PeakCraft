@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.runnables;
 
+import io.github.mrriptide.peakcraft.actions.PlayerTickAction;
 import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.items.Item;
@@ -30,7 +31,11 @@ public class UpdatePlayer extends BukkitRunnable {
     public void run() {
         try{
             PlayerWrapper wrapper = PlayerManager.getPlayer(playerUUID);
-            wrapper.updateAttributes();
+
+            wrapper.updateFromEntity();
+            PlayerTickAction action = new PlayerTickAction(wrapper);
+            action.runAction();
+
             /*
             Tab list not being used for now because i dont want to have to deal with it
 
@@ -48,12 +53,6 @@ public class UpdatePlayer extends BukkitRunnable {
 
             if (wrapper.getFullSet() != null){
                 wrapper.getFullSet().applyBonus(wrapper);
-            }
-
-            for (Item abilityItem : wrapper.getAbilityItems()){
-                if (abilityItem.getAbility().getType() == Ability.AbilityType.PASSIVE){
-                    AbilityManager.triggerAbility(abilityItem.getAbility(), wrapper, new TickAbilityTrigger());
-                }
             }
 
             wrapper.getStatus().apply();

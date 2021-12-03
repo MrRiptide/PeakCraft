@@ -13,6 +13,7 @@ import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -73,7 +74,7 @@ public class EntityEventListener implements Listener {
         if (e.getEntity().hasMetadata("NPC")){
             return;
         }
-        if (((CraftEntity)e.getEntity()).getHandle() instanceof ArmorStand){
+        if (((CraftEntity)e.getEntity()).getHandle() instanceof ArmorStand || !(e.getEntity() instanceof LivingEntity)){
             return;
         }
 

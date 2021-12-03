@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.recipes;
 
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -14,12 +15,20 @@ public class ShapelessRecipe extends Recipe{
     }
 
     public ShapelessRecipe(org.bukkit.inventory.ShapelessRecipe recipeSource){
-        this.setResult(new RecipeItem(recipeSource.getResult()));
+        try {
+            this.setResult(new RecipeItem(recipeSource.getResult()));
+        } catch (ItemException e) {
+            e.printStackTrace();
+        }
         this.setGroup(recipeSource.getGroup());
 
         this.ingredients = new ArrayList<>();
         for (ItemStack ingredient : recipeSource.getIngredientList()){
-            this.ingredients.add(new RecipeItem(ingredient));
+            try {
+                this.ingredients.add(new RecipeItem(ingredient));
+            } catch (ItemException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -1,5 +1,7 @@
 package io.github.mrriptide.peakcraft.items.abilities;
 
+import io.github.mrriptide.peakcraft.actions.Action;
+import io.github.mrriptide.peakcraft.actions.PlayerTickAction;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.TickAbilityTrigger;
@@ -26,5 +28,20 @@ public class FlightFeatherAbility extends Ability{
         if (player.getStatus().isFlying()){
             player.reduceMana(1);
         }
+    }
+
+    @Override
+    public PriorityLevel getListeningLevel() {
+        return PriorityLevel.MIDDLE;
+    }
+
+    @Override
+    public boolean listensTo(Action action) {
+        return action instanceof PlayerTickAction;
+    }
+
+    @Override
+    public void onAction(Action action) {
+
     }
 }

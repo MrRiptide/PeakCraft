@@ -14,12 +14,17 @@ import org.bukkit.entity.Player;
 public class CommandEnchant implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Player enchantPlayer = Bukkit.getPlayer(args[0]);
-        if (enchantPlayer == null){
-            return false;
-        }
+        Player enchantPlayer;
 
-        if (args.length != 3){
+        if (args.length == 2 && sender instanceof Player){
+            enchantPlayer = (Player)sender;
+        } else if (args.length == 3){
+            enchantPlayer = Bukkit.getPlayer(args[0]);
+            if (enchantPlayer == null){
+                sender.sendMessage("Could not find the player \"" + args[0] + "\"");
+                return false;
+            }
+        } else {
             sender.sendMessage("Please provide 3 arguments");
             return false;
         }
@@ -44,6 +49,7 @@ public class CommandEnchant implements CommandExecutor {
                         sender.sendMessage("Removed enchantment");
                         itemStack.removeEnchantment(enchantName);
                     } else {
+                        sender.sendMessage("Enchanted item to level " + enchantLevel);
                         itemStack.addEnchantment(enchantName, enchantLevel);
                     }
                     enchantPlayer.getInventory().setItemInMainHand(itemStack);

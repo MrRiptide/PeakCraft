@@ -1,19 +1,14 @@
 package io.github.mrriptide.peakcraft.recipes;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.Item;
-import io.github.mrriptide.peakcraft.PeakCraft;
-import io.github.mrriptide.peakcraft.items.ItemManager;
-import net.minecraft.network.FriendlyByteBuf;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public class RecipeItem {
@@ -27,13 +22,13 @@ public class RecipeItem {
         this.count = 0;
     }
 
-    public RecipeItem(String id, int count){
+    public RecipeItem(String id, int count) throws ItemException {
         this.id = id;
         this.oreDict = (new Item(id)).getOreDict();
         this.count = count;
     }
 
-    public RecipeItem(String id, int count, boolean useOreDict){
+    public RecipeItem(String id, int count, boolean useOreDict) throws ItemException {
         this.id = id;
         if (useOreDict){
             this.oreDict = (new Item(id)).getOreDict();
@@ -43,13 +38,13 @@ public class RecipeItem {
         this.count = count;
     }
 
-    public RecipeItem(String id){
+    public RecipeItem(String id) throws ItemException {
         this.id = id;
         this.oreDict = (new Item(id)).getOreDict();
         this.count = 0;
     }
 
-    public RecipeItem(ItemStack itemStack){
+    public RecipeItem(ItemStack itemStack) throws ItemException {
         // Default option
         this.id = itemStack.getType().name();
 

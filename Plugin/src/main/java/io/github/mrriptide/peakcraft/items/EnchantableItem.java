@@ -1,13 +1,14 @@
 package io.github.mrriptide.peakcraft.items;
 
+import io.github.mrriptide.peakcraft.actions.Action;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
+import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.Attribute;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -20,7 +21,7 @@ import java.util.Objects;
 
 public class EnchantableItem extends Item {
     protected HashMap<String, Attribute> attributes;
-    protected HashMap<String, Integer> enchantments;
+    protected HashMap<String, Enchantment> enchantments;
 
     public EnchantableItem(){
         this.attributes = new HashMap<>();
@@ -38,15 +39,14 @@ public class EnchantableItem extends Item {
         }
     }
 
-    public EnchantableItem(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Attribute> attributes, HashMap<String, Integer> enchantments){
+    public EnchantableItem(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Attribute> attributes, HashMap<String, Enchantment> enchantments){
         super(id, oreDict, displayName, rarity, description, material, type);
 
         this.attributes = attributes;
         this.enchantments = enchantments;
-        bakeAttributes();
     }
 
-    public EnchantableItem(String id){
+    public EnchantableItem(String id) throws ItemException {
         super(id);
         EnchantableItem item = null;
         try {
@@ -57,8 +57,6 @@ public class EnchantableItem extends Item {
 
         this.attributes = item.attributes;
         this.enchantments = new HashMap<>();
-
-        bakeAttributes();
     }
 
     public EnchantableItem(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Attribute> attributes){
@@ -73,8 +71,6 @@ public class EnchantableItem extends Item {
                 attributes,
                 new HashMap<>()
         );
-
-        bakeAttributes();
     }
 
     /*public EnchantableItem(ItemStack itemSource) throws IllegalArgumentException{
@@ -104,6 +100,14 @@ public class EnchantableItem extends Item {
         }
     }*/
 
+    @Override
+    public void registerListeners(Action action){
+        super.registerListeners(action);
+        for (Enchantment enchantment : enchantments.values()){
+            action.registerListener(enchantment);
+        }
+    }
+
     public Attribute getAttribute(String attributeName){
         if (attributes == null){
             attributes = new HashMap<>();
@@ -121,16 +125,12 @@ public class EnchantableItem extends Item {
         attributes.put(attributeName.toLowerCase(), new Attribute(value));
     }
 
-    public void bakeAttributes(){
-        EnchantmentManager.bakeItem(this);
-    }
-
-    public HashMap<String, Integer> getEnchants(){
+    public HashMap<String, Enchantment> getEnchants(){
         return enchantments;
     }
 
     public void addEnchantment(@NotNull String enchantment, int level){
-        this.enchantments.put(enchantment.toLowerCase(), level);
+        this.enchantments.put(enchantment.toLowerCase(), EnchantmentManager.getEnchantment(enchantment, level));
     }
 
     public boolean removeEnchantment(@NotNull String enchantment){
@@ -145,14 +145,14 @@ public class EnchantableItem extends Item {
 
         // Apply enchant glint if it is enchanted
         if (enchantments.size() > 0){
-            meta.addEnchant(Enchantment.DAMAGE_ALL, 1, true);
+            meta.addEnchant(org.bukkit.enchantments.Enchantment.DAMAGE_ALL, 1, true);
         }
 
         // the item id
         PersistentDataManager.setValue(meta, "ITEM_ID", id);
         // the enchantments
-        for (Map.Entry<String, Integer> enchantment : enchantments.entrySet()){
-            PersistentDataManager.setValue(meta, "ENCHANT_" + enchantment.getKey().toUpperCase() + "_LEVEL", enchantment.getValue());
+        for (Enchantment enchantment : enchantments.values()){
+            PersistentDataManager.setValue(meta, "ENCHANT_" + enchantment.getId().toUpperCase() + "_LEVEL", enchantment.getLevel());
         }
 
         itemStack.setItemMeta(meta);

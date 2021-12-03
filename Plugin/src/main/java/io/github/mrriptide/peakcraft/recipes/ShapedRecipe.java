@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.recipes;
 
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import org.bukkit.Material;
@@ -20,7 +21,11 @@ public class ShapedRecipe extends Recipe {
     }
 
     public ShapedRecipe(org.bukkit.inventory.ShapedRecipe recipeSource){
-        this.setResult(new RecipeItem(recipeSource.getResult()));
+        try {
+            this.setResult(new RecipeItem(recipeSource.getResult()));
+        } catch (ItemException e) {
+            e.printStackTrace();
+        }
         this.setGroup(recipeSource.getGroup());
         this.shape = recipeSource.getShape();
         this.setKey(recipeSource.getKey());
@@ -29,7 +34,11 @@ public class ShapedRecipe extends Recipe {
         if (shape != null){
             for (Character key : recipeSource.getIngredientMap().keySet()){
                 if (recipeSource.getIngredientMap().get(key) != null){
-                    ingredientMap.put(key, new RecipeItem(recipeSource.getIngredientMap().get(key)));
+                    try {
+                        ingredientMap.put(key, new RecipeItem(recipeSource.getIngredientMap().get(key)));
+                    } catch (ItemException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     for (int i = 0; i < shape.length; i++){
                         shape[i] = shape[i].replace(key, ' ');

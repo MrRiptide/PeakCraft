@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
@@ -98,8 +99,12 @@ public class ShapedNMSRecipe extends NMSCraftingRecipe {
                     }
                 }
 
-                if (recipeitemstack != null && !recipeitemstack.test(new RecipeItem(CraftItemStack.asBukkitCopy(container.getItem(k + l * container.getWidth()))))) {
-                    return false;
+                try {
+                    if (recipeitemstack != null && !recipeitemstack.test(new RecipeItem(CraftItemStack.asBukkitCopy(container.getItem(k + l * container.getWidth()))))) {
+                        return false;
+                    }
+                } catch (ItemException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -289,11 +294,20 @@ public class ShapedNMSRecipe extends NMSCraftingRecipe {
             int j = astring.length;
             NonNullList<RecipeItem> nonnulllist = NonNullList.create();
             for (Ingredient ingredient : ShapedNMSRecipe.dissolvePattern(astring, map, i, j)){
-                nonnulllist.add(new RecipeItem(CraftItemStack.asBukkitCopy(ingredient.itemStacks[0])));
+                try {
+                    nonnulllist.add(new RecipeItem(CraftItemStack.asBukkitCopy(ingredient.itemStacks[0])));
+                } catch (ItemException e) {
+                    e.printStackTrace();
+                }
             }
 
             ItemStack itemstack = ShapedNMSRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(jsonobject, "result"));
-            return new ShapedNMSRecipe(minecraftkey, s, i, j, nonnulllist, new RecipeItem(CraftItemStack.asBukkitCopy(itemstack)));
+            try {
+                return new ShapedNMSRecipe(minecraftkey, s, i, j, nonnulllist, new RecipeItem(CraftItemStack.asBukkitCopy(itemstack)));
+            } catch (ItemException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         public ShapedNMSRecipe fromNetwork(ResourceLocation minecraftkey, FriendlyByteBuf packetdataserializer) {
@@ -303,11 +317,20 @@ public class ShapedNMSRecipe extends NMSCraftingRecipe {
             NonNullList<RecipeItem> nonnulllist = NonNullList.withSize(i * j, new RecipeItem());
 
             for(int k = 0; k < nonnulllist.size(); ++k) {
-                nonnulllist.set(k, new RecipeItem(CraftItemStack.asBukkitCopy(Ingredient.fromNetwork(packetdataserializer).itemStacks[0])));
+                try {
+                    nonnulllist.set(k, new RecipeItem(CraftItemStack.asBukkitCopy(Ingredient.fromNetwork(packetdataserializer).itemStacks[0])));
+                } catch (ItemException e) {
+                    e.printStackTrace();
+                }
             }
 
             ItemStack itemstack = packetdataserializer.readItem();
-            return new ShapedNMSRecipe(minecraftkey, s, i, j, nonnulllist, new RecipeItem(CraftItemStack.asBukkitCopy(itemstack)));
+            try {
+                return new ShapedNMSRecipe(minecraftkey, s, i, j, nonnulllist, new RecipeItem(CraftItemStack.asBukkitCopy(itemstack)));
+            } catch (ItemException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         public void toNetwork(FriendlyByteBuf packetdataserializer, ShapedNMSRecipe shapedrecipes) {

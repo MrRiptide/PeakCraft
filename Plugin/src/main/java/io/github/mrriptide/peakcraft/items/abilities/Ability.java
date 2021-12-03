@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.items.abilities;
 
+import io.github.mrriptide.peakcraft.actions.ActionListener;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.util.CustomColors;
@@ -7,7 +8,7 @@ import org.apache.commons.lang.WordUtils;
 
 import java.util.ArrayList;
 
-public abstract class Ability {
+public abstract class Ability implements ActionListener {
     private String name;
     private AbilityType type;
     private String displayName;

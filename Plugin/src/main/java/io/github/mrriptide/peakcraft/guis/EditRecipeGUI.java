@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.guis;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.recipes.ShapedRecipe;
 import io.github.mrriptide.peakcraft.recipes.RecipeItem;
 import io.github.mrriptide.peakcraft.recipes.RecipeManager;
@@ -113,14 +114,27 @@ public class EditRecipeGUI implements InventoryGui{
                 for (int j = 0; j < 3; j++){
                     ItemStack itemStack = inventory.getItem(10 + i * 9 + j);
                     if (itemStack != null) {
-                        ingredients[i][j] = new RecipeItem(itemStack);
+                        try {
+                            ingredients[i][j] = new RecipeItem(itemStack);
+                        } catch (ItemException ex) {
+                            ex.printStackTrace();
+                        }
                     } else {
-                        ingredients[i][j] = new RecipeItem("AIR");
+                        try {
+                            ingredients[i][j] = new RecipeItem("AIR");
+                        } catch (ItemException ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
             }
 
-            RecipeItem result = new RecipeItem(Objects.requireNonNull(inventory.getItem(23)));
+            RecipeItem result = null;
+            try {
+                result = new RecipeItem(Objects.requireNonNull(inventory.getItem(23)));
+            } catch (ItemException ex) {
+                ex.printStackTrace();
+            }
             ShapedRecipe recipe = new ShapedRecipe(ingredients, result);
             if (inventory.getItem(23) == null){
                 player.sendMessage("Must have a item defined as the result");

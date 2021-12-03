@@ -1,10 +1,12 @@
 package io.github.mrriptide.peakcraft.items;
 
+import io.github.mrriptide.peakcraft.actions.Action;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.abilities.Ability;
 import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
 import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
+import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.CustomColors;
@@ -15,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -34,7 +37,7 @@ public class Item implements Serializable {
     private String description;
     private Material material;
     protected String type;
-    private Ability ability;
+    private ArrayList<Ability> abilities = new ArrayList<>();
     private int amount;
 
     public Item(){
@@ -49,28 +52,12 @@ public class Item implements Serializable {
         this.description = description;
         this.material = material;
         this.type = (type != null && !type.isEmpty()) ? type : "item";
-        this.ability = null;
+        this.abilities = new ArrayList<>();
         this.amount = 1;
     }
 
-    public Item(String id){
-        Item item = null;
-        try {
-            item = ItemManager.getItem(id);
-        } catch (ItemException e) {
-            e.printStackTrace();
-        }
-
-        assert item != null;
-        this.id = item.id;
-        this.oreDict = item.oreDict;
-        this.displayName = item.displayName;
-        this.rarity = item.rarity;
-        this.description = item.description;
-        this.material = item.material;
-        this.type = item.type;
-        this.ability = item.ability;
-        this.amount = item.amount;
+    public Item(String id) throws ItemException {
+        this(Objects.requireNonNull(ItemManager.getItem(id)));
     }
 
     public Item(Item item){
@@ -81,7 +68,7 @@ public class Item implements Serializable {
         this.description = item.description;
         this.material = item.material;
         this.type = item.type;
-        this.ability = item.ability;
+        this.abilities = item.abilities;
         this.amount = item.amount;
     }
 
@@ -129,7 +116,7 @@ public class Item implements Serializable {
         itemStack.setItemMeta(meta);
     }
 
-    public ItemStack convertItem(ItemStack item){
+    public ItemStack convertItem(@NotNull ItemStack item){
 
         ItemMeta meta = item.getItemMeta();
 
@@ -153,7 +140,6 @@ public class Item implements Serializable {
         ArrayList<String> lore = new ArrayList<>();
 
         if (this instanceof EnchantableItem){
-            ((EnchantableItem)this).bakeAttributes();
             // Attributes of item
 
             HashMap<String, ChatColor> attributeColor = new HashMap<>();
@@ -171,12 +157,9 @@ public class Item implements Serializable {
             // Enchantments of item
 
             if (((EnchantableItem)this).enchantments.size() > 0){
-                for (Map.Entry<String, Integer> enchantment : ((EnchantableItem)this).enchantments.entrySet()){
-                    lore.add(CustomColors.ENCHANTMENT +
-                            ((EnchantmentManager.validateEnchantment(enchantment.getKey()) ?
-                                    EnchantmentManager.getEnchantment(enchantment.getKey()).getDisplayName() :
-                                    "Unknown Enchantment")
-                                    + " " + enchantment.getValue()));
+                for (Enchantment enchantment : ((EnchantableItem)this).enchantments.values()){
+                    lore.add(CustomColors.ENCHANTMENT + enchantment.getDisplayName()
+                                    + " " + enchantment.getLevel());
                 }
 
                 lore.add("");
@@ -192,7 +175,7 @@ public class Item implements Serializable {
             lore.add("");
         }
 
-        if (ability != null){
+        for (Ability ability : abilities) {
             lore.addAll(ability.getLore());
             lore.add("");
         }
@@ -208,18 +191,14 @@ public class Item implements Serializable {
         return lore;
     }
 
-    public boolean hasAbility(){
-        return ability != null;
-    }
-
-    public void useAbility(PlayerWrapper player, AbilityTrigger trigger){
-        if (ability != null){
-            AbilityManager.triggerAbility(ability, player, trigger);
+    public void registerListeners(Action action){
+        for (Ability ability : abilities){
+            action.registerListener(ability);
         }
     }
 
-    public Ability getAbility(){
-        return this.ability;
+    public boolean hasAbility(){
+        return abilities.size() > 0;
     }
 
     protected ChatColor getRarityColor(){
@@ -251,7 +230,7 @@ public class Item implements Serializable {
         clonedItem.description = this.description;
         clonedItem.material = this.material;
         clonedItem.type = this.type;
-        clonedItem.ability = this.ability;
+        clonedItem.abilities = (ArrayList<Ability>) this.abilities.clone();
         return clonedItem;
     }
 
@@ -291,15 +270,11 @@ SELECT ability_id from item_abilities where item_id = ?;
 
         ResultSet abilityResultSet = statement.executeQuery();
 
-        if (abilityResultSet.next()){
+        while (abilityResultSet.next()){
             String ability_id = abilityResultSet.getString("ability_id");
             if (AbilityManager.validateAbility(ability_id)){
-                item.ability = AbilityManager.getAbility(ability_id);
-            } else {
-                item.ability = null;
+                item.abilities.add(AbilityManager.getAbility(ability_id));
             }
-        } else {
-            item.ability = null;
         }
 
         abilityResultSet.close();

@@ -88,10 +88,10 @@ public class PeakCraft extends JavaPlugin {
 
         // Register event listeners
 
-        getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
-        getServer().getPluginManager().registerEvents(new GUIEventListener(), this);
-        getServer().getPluginManager().registerEvents(new DamageListener(), this);
-        getServer().getPluginManager().registerEvents(new ChunkListener(), this);
+        //getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
+        //getServer().getPluginManager().registerEvents(new GUIEventListener(), this);
+        //getServer().getPluginManager().registerEvents(new DamageListener(), this);
+        //getServer().getPluginManager().registerEvents(new ChunkListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
         // Register all commands

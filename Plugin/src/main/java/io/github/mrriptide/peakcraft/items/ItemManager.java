@@ -180,8 +180,6 @@ SELECT * FROM (SELECT * FROM items UNION SELECT * FROM new_items) as merged_item
                     ((EnchantableItem)item).addEnchantment(key.getKey().substring(8, key.getKey().length() - 6), PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.INTEGER, key.getKey(), 0));
                 }
             }
-
-            ((EnchantableItem)item).bakeAttributes();
         }
 
         return item;

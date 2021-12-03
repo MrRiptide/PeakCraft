@@ -33,6 +33,7 @@ public class CustomItemStack extends ItemStack {
     public void addEnchantment(String enchantment, int level){
         if (item instanceof EnchantableItem){
             ((EnchantableItem)item).addEnchantment(enchantment, level);
+            this.item.updateItemStack(this);
         } else {
             throw new IllegalArgumentException("This item is not enchantable");
         }
@@ -40,7 +41,9 @@ public class CustomItemStack extends ItemStack {
 
     public boolean removeEnchantment(String enchantment){
         if (item instanceof EnchantableItem){
-            return ((EnchantableItem)item).removeEnchantment(enchantment);
+            boolean success = ((EnchantableItem)item).removeEnchantment(enchantment);
+            this.item.updateItemStack(this);
+            return success;
         } else {
             throw new IllegalArgumentException("This item is not enchantable");
         }

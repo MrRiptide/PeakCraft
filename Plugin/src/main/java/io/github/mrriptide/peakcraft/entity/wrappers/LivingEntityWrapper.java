@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.entity.wrappers;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.actions.Action;
 import io.github.mrriptide.peakcraft.entity.EntityManager;
 import io.github.mrriptide.peakcraft.entity.data.LivingEntityData;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
@@ -8,7 +9,6 @@ import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
-import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.Attribute;
 import io.github.mrriptide.peakcraft.util.CustomColors;
@@ -18,8 +18,6 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -122,28 +120,23 @@ public class LivingEntityWrapper {
         this.defense.reset();
     }
 
-    public void updateAttributes(){
-        resetAttributes();
+    public void processItem(EnchantableItem item){
+        this.maxHealth.addAdditive(item.getAttribute("health").getFinal());
+        this.defense.addAdditive(item.getAttribute("defense").getFinal());
+    }
+
+    public void registerListeners(Action action){
         for (ItemStack itemStack : ((LivingEntity)entity).getEquipment().getArmorContents()){
             // IntelliJ will say that itemStack != null is always true, this is wrong.
             if (itemStack != null && itemStack.getType() != Material.AIR){
                 try{
                     Item item = new CustomItemStack(itemStack).getItem();
-                    if (item instanceof EnchantableItem){
-                        ((EnchantableItem)item).bakeAttributes();
-                        processItem(((EnchantableItem)item));
-                    }
+                    item.registerListeners(action);
                 } catch (ItemException e){
                     PeakCraft.getPlugin().getLogger().warning("Entity " + entity.getName() + "has an invalid armor item!");
                 }
-
             }
         }
-    }
-
-    public void processItem(EnchantableItem item){
-        this.maxHealth.addAdditive(item.getAttribute("health").getFinal());
-        this.defense.addAdditive(item.getAttribute("defense").getFinal());
     }
 
     public void processAttack(CombatEntityWrapper attacker){
@@ -154,13 +147,12 @@ public class LivingEntityWrapper {
         if (!(weapon instanceof EnchantableItem)){
             damage = 10;
         } else{
-            ((EnchantableItem)weapon).bakeAttributes();
             damage = (((EnchantableItem)weapon).getAttribute("damage").getFinal()!=0) ? ((EnchantableItem)weapon).getAttribute("damage").getFinal() : 10;
         }
         double multiplier = 1.0;
         if (attacker instanceof PlayerWrapper){
-            if ((((PlayerWrapper) attacker).getSource()).getAttackCooldown() == 1.0 && Math.random() <= ((PlayerWrapper)attacker).getCritChance()){
-                multiplier = 1 + ((PlayerWrapper)attacker).getCritDamage();
+            if ((((PlayerWrapper) attacker).getSource()).getAttackCooldown() == 1.0 && Math.random() <= ((PlayerWrapper)attacker).getCritChance().getFinal()){
+                multiplier = 1 + ((PlayerWrapper)attacker).getCritDamage().getFinal();
             } else {
                 multiplier = (((PlayerWrapper) attacker).getSource()).getAttackCooldown();
             }
@@ -183,14 +175,10 @@ public class LivingEntityWrapper {
 
         damageDisplay.showThenDie(damageColor + "" + format.format((int)damagePotential), 40);
 
-        processDamage(damagePotential);
+        damage(damagePotential);
     }
 
-    public void processDamage(double amount, EntityDamageEvent.DamageCause cause){
-        processDamage(amount);
-    }
-
-    public void processDamage(double amount){
+    public void damage(double amount){
         this.health = Math.max(health - amount, 0);
         updateEntity();
 

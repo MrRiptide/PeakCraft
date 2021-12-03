@@ -1,6 +1,8 @@
 package io.github.mrriptide.peakcraft.listeners;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.actions.AttackAction;
+import io.github.mrriptide.peakcraft.actions.DamagedAction;
 import io.github.mrriptide.peakcraft.entity.EntityManager;
 import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
 import io.github.mrriptide.peakcraft.entity.wrappers.CombatEntityWrapper;
@@ -43,8 +45,11 @@ public class DamageListener implements Listener {
             return;
         }
         //event.setCancelled(true);
-        entity.updateAttributes();
-        entity.processDamage(event.getDamage() * 5, event.getCause());
+        // do the action here
+
+        DamagedAction action = new DamagedAction(entity, event.getCause(), event.getDamage() * 5);
+        action.runAction();
+
         event.setDamage(0);
     }
 
@@ -86,9 +91,12 @@ public class DamageListener implements Listener {
             }
         }
         //event.setCancelled(true);
-        damagingEntity.updateAttributes();
-        damagedEntity.updateAttributes();
-        damagedEntity.processAttack(damagingEntity);
+        damagingEntity.resetAttributes();
+        damagedEntity.resetAttributes();
+
+        AttackAction action = new AttackAction(damagedEntity, event.getCause(), damagingEntity);
+        action.runAction();
+
         event.setDamage(0);
     }
 }

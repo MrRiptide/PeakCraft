@@ -1,49 +1,52 @@
 package io.github.mrriptide.peakcraft.items.enchantments;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
-import io.github.mrriptide.peakcraft.items.EnchantableItem;
-import io.github.mrriptide.peakcraft.items.Item;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 public class EnchantmentManager {
-    private static HashMap<String, Enchantment> enchantments;
+    private static HashMap<String, Class<? extends Enchantment>> enchantments;
 
     public static void registerEnchantments(){
         enchantments = new HashMap<>();
-        registerEnchantment(new EnchantmentHealthBoost());
-        registerEnchantment(new EnchantmentSharpness());
+        registerEnchantment(EnchantmentHealthBoost.class);
+        registerEnchantment(EnchantmentSharpness.class);
     }
 
-    private static void registerEnchantment(Enchantment enchantment){
-        if (enchantments.containsKey(enchantment.getId().toLowerCase())){
-            PeakCraft.getPlugin().getLogger().info("Failed to register " + enchantment.getId().toLowerCase() + " enchantment as it is already registered");
+    private static void registerEnchantment(Class<? extends Enchantment> enchantment){
+        Enchantment instance = getEnchantment(enchantment, -1);
+
+        if (enchantments.containsKey(instance.getId().toLowerCase())){
+            PeakCraft.getPlugin().getLogger().info("Failed to register " + instance.getId().toLowerCase() + " enchantment as it is already registered");
             return;
         }
 
-        enchantments.put(enchantment.getId().toLowerCase(), enchantment);
-        PeakCraft.getPlugin().getLogger().info("Successfully registered the " + enchantment.getId().toLowerCase() + " enchantment");
+        enchantments.put(instance.getId().toLowerCase(), enchantment);
+        PeakCraft.getPlugin().getLogger().info("Successfully registered the " + instance.getId().toLowerCase() + " enchantment");
     }
 
     public static boolean validateEnchantment(String name){
         return enchantments.containsKey(name);
     }
 
-    public static Enchantment getEnchantment(String name){
-        return enchantments.get(name);
+    public static Enchantment getEnchantment(String name, int level){
+        Class<? extends Enchantment> enchantmentClass = enchantments.get(name);
+        return getEnchantment(enchantmentClass, level);
     }
 
-    public static void bakeItem(EnchantableItem item){
-        for (Map.Entry<String, Integer> enchantment : item.getEnchants().entrySet()){
-            if (enchantments.containsKey(enchantment.getKey())){
-                enchantments.get(enchantment.getKey()).bakeItemAttributes(item, enchantment.getValue());
-            }
+    public static Enchantment getEnchantment(Class<? extends Enchantment> enchantmentClass, int level){
+        try {
+            Constructor<? extends Enchantment> constructor =  enchantmentClass.getDeclaredConstructor(int.class);
+            return constructor.newInstance(level);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
-    public static HashMap<String, Enchantment> getEnchantments(){
+    public static HashMap<String, Class<? extends Enchantment>> getEnchantments(){
         return enchantments;
     }
 }

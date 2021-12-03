@@ -1,27 +1,25 @@
 package io.github.mrriptide.peakcraft.items.enchantments;
 
+import io.github.mrriptide.peakcraft.actions.ActionListener;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import org.apache.commons.lang.WordUtils;
 
-public abstract class Enchantment {
-    protected String id;
-    protected String displayName;
+public abstract class Enchantment implements ActionListener {
+    protected final String id;
+    protected final String displayName;
+    protected final int level;
 
-    public Enchantment(String id, String displayName){
+    public Enchantment(String id, String displayName, int level){
         this.id = id;
         this.displayName = displayName;
+        this.level = level;
     }
 
-    public Enchantment(String id){
-        this.id = id;
-        this.displayName = WordUtils.capitalizeFully(id);
+    public Enchantment(int level){
+        this("", "", level);
     }
 
     public abstract boolean validateEnchant(EnchantableItem item);
-
-    public void setId(String id){
-        this.id = id.toLowerCase();
-    }
 
     public String getId(){
         return this.id;
@@ -31,5 +29,7 @@ public abstract class Enchantment {
         return displayName;
     }
 
-    public abstract void bakeItemAttributes(EnchantableItem item, int level);
+    public int getLevel() {
+        return level;
+    }
 }

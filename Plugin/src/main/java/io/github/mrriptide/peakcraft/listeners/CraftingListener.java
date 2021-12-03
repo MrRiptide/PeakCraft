@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.listeners;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
+import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.recipes.*;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
@@ -89,7 +90,12 @@ public class CraftingListener implements Listener {
                 if (ingredients[i] == null){
                     continue;
                 }
-                RecipeItem craftItem = new RecipeItem(ingredients[i]);
+                RecipeItem craftItem = null;
+                try {
+                    craftItem = new RecipeItem(ingredients[i]);
+                } catch (ItemException ex) {
+                    ex.printStackTrace();
+                }
                 for (RecipeItem recipeItem : recipeItems){
                     if (craftItem.getCount() >= recipeItem.getCount() && craftItem.getCount() >= recipeItem.getCount() && (craftItem.getId().equals(recipeItem.getId())
                             || (!recipeItem.getOreDict().equals("") && recipeItem.getOreDict().equals(craftItem.getOreDict())))){
