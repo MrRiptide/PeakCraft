@@ -4,15 +4,11 @@ import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.actions.RightClickAction;
 import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
-import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.Item;
-import io.github.mrriptide.peakcraft.items.ItemManager;
-import io.github.mrriptide.peakcraft.items.abilities.triggers.RightClickAbilityTrigger;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.runnables.UpdatePlayer;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -21,7 +17,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
@@ -42,10 +37,11 @@ public class PlayerListener implements Listener {
     private boolean isOffCooldown(PlayerEvent e) {
         if (System.nanoTime() - lastInteractTime.getOrDefault(e.getPlayer().getUniqueId(), (long) 0) < 50000000){
             ((e instanceof PlayerInteractEntityEvent) ? (PlayerInteractEntityEvent)e : (PlayerInteractEvent)e).setCancelled(true);
+            PeakCraft.getPlugin().getLogger().info("Skipping event " + e.getEventName());
             return false;
         } else {
             lastInteractTime.put(e.getPlayer().getUniqueId(), System.nanoTime());
-            PeakCraft.getPlugin().getLogger().info("Skipping event " + e.getEventName());
+            PeakCraft.getPlugin().getLogger().info("Not skipping event " + e.getEventName());
             return true;
         }
     }
@@ -58,9 +54,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e){
-        if (!isOffCooldown(e)){
-            return;
-        }
         if (e.getItem() != null){
             try{
                 Item item = new CustomItemStack(e.getItem()).getItem();

@@ -2,17 +2,13 @@ package io.github.mrriptide.peakcraft.items;
 
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonus;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonusManager;
-import io.github.mrriptide.peakcraft.util.MySQLHelper;
 
-import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class ArmorItem extends EnchantableItem {
     private String set;

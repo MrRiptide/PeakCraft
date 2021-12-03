@@ -2,18 +2,15 @@ package io.github.mrriptide.peakcraft.listeners;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.entity.EntityManager;
-import io.github.mrriptide.peakcraft.entity.HoloDisplayEntity;
 import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
-import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
+import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
-import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
-import org.bukkit.entity.Boat;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,8 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;

@@ -10,10 +10,10 @@ import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import io.github.mrriptide.peakcraft.util.WeightedRandom;
 import net.citizensnpcs.api.CitizensAPI;
-import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -23,7 +23,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public abstract class EntityManager {

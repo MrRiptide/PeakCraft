@@ -1,13 +1,10 @@
 package io.github.mrriptide.peakcraft.items;
 
 import io.github.mrriptide.peakcraft.actions.Action;
-import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.abilities.Ability;
 import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
-import io.github.mrriptide.peakcraft.items.abilities.triggers.AbilityTrigger;
 import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
-import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
@@ -26,7 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class Item implements Serializable {

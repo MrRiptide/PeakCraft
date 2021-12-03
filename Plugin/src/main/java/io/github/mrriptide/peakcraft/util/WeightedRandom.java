@@ -1,7 +1,6 @@
 package io.github.mrriptide.peakcraft.util;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class WeightedRandom<T extends Object> {

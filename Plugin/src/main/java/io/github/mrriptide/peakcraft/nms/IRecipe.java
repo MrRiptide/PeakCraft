@@ -1,6 +1,5 @@
 package io.github.mrriptide.peakcraft.nms;
 
-import io.github.mrriptide.peakcraft.recipes.RecipeItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;

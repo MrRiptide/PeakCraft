@@ -1,12 +1,9 @@
 package io.github.mrriptide.peakcraft.recipes;
 
-import io.github.mrriptide.peakcraft.PeakCraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
-import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 
 public abstract class NMSRecipe<C extends Container> implements Recipe<C> {
     private RecipeItem result;

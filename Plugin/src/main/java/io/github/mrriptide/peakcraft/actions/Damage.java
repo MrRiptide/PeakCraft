@@ -1,6 +1,5 @@
 package io.github.mrriptide.peakcraft.actions;
 
-import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
 import io.github.mrriptide.peakcraft.util.Attribute;
 import org.bukkit.event.entity.EntityDamageEvent;
 

@@ -2,9 +2,7 @@ package io.github.mrriptide.peakcraft.util;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;

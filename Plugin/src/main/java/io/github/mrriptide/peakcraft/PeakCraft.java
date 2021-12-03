@@ -11,19 +11,10 @@ import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonusManager;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.SpaceSuitFullSetBonus;
 import io.github.mrriptide.peakcraft.listeners.*;
-import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
-import io.github.mrriptide.peakcraft.recipes.RecipeManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Keyed;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 
 public class PeakCraft extends JavaPlugin {
@@ -88,10 +79,10 @@ public class PeakCraft extends JavaPlugin {
 
         // Register event listeners
 
-        //getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
-        //getServer().getPluginManager().registerEvents(new GUIEventListener(), this);
-        //getServer().getPluginManager().registerEvents(new DamageListener(), this);
-        //getServer().getPluginManager().registerEvents(new ChunkListener(), this);
+        getServer().getPluginManager().registerEvents(new EntityEventListener(), this);
+        getServer().getPluginManager().registerEvents(new GUIEventListener(), this);
+        getServer().getPluginManager().registerEvents(new DamageListener(), this);
+        getServer().getPluginManager().registerEvents(new ChunkListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
         // Register all commands

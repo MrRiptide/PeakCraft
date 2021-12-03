@@ -3,16 +3,12 @@ package io.github.mrriptide.peakcraft.recipes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
-import net.minecraft.world.Container;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_17_R1.util.CraftNamespacedKey;
 import org.bukkit.inventory.ItemStack;
 
-import javax.xml.stream.events.Namespace;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RecipeManager {

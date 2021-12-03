@@ -2,7 +2,6 @@ package io.github.mrriptide.peakcraft.items.enchantments;
 
 import io.github.mrriptide.peakcraft.actions.ActionListener;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
-import org.apache.commons.lang.WordUtils;
 
 public abstract class Enchantment implements ActionListener {
     protected final String id;

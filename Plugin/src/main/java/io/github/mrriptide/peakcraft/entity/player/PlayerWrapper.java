@@ -1,7 +1,6 @@
 package io.github.mrriptide.peakcraft.entity.player;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
-import io.github.mrriptide.peakcraft.actions.PlayerTickAction;
 import io.github.mrriptide.peakcraft.entity.wrappers.CombatEntityWrapper;
 import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
@@ -19,7 +18,6 @@ import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -156,6 +154,7 @@ public class PlayerWrapper extends CombatEntityWrapper {
     public void updateFromEntity(){
         try {
             this.weapon = ItemManager.convertItem(((Player)entity).getEquipment().getItem(EquipmentSlot.HAND));
+            this.offHand = ItemManager.convertItem(((Player)entity).getEquipment().getItem(EquipmentSlot.OFF_HAND));
         } catch (ItemException e) {
             PeakCraft.getPlugin().getLogger().warning("Player " + entity.getName() + " has an invalid item in their hand");
             e.printStackTrace();

@@ -1,6 +1,5 @@
 package io.github.mrriptide.peakcraft.entity;
 
-//import net.minecraft.server.v1_17_R1.*;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -8,7 +7,6 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 
 public class HoloDisplayEntity extends LivingEntity {

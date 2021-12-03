@@ -5,17 +5,10 @@
 
 package io.github.mrriptide.peakcraft.recipes;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
-import io.github.mrriptide.peakcraft.PeakCraft;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntList;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 
-import javax.annotation.Nullable;
-import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public final class RecipeItemChoice implements Predicate<ItemStack> {
     //public static final RecipeItemChoice a = new RecipeItemChoice(Stream.empty());

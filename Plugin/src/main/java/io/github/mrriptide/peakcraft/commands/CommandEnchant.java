@@ -1,8 +1,6 @@
 package io.github.mrriptide.peakcraft.commands;
 
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
-import io.github.mrriptide.peakcraft.items.*;
-import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import org.bukkit.Bukkit;

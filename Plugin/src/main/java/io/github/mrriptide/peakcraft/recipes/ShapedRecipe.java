@@ -2,11 +2,8 @@ package io.github.mrriptide.peakcraft.recipes;
 
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_17_R1.util.CraftNamespacedKey;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 

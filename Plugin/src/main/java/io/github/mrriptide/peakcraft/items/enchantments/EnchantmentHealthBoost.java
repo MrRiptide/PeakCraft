@@ -1,8 +1,6 @@
 package io.github.mrriptide.peakcraft.items.enchantments;
 
 import io.github.mrriptide.peakcraft.actions.Action;
-import io.github.mrriptide.peakcraft.actions.DamagedAction;
-import io.github.mrriptide.peakcraft.actions.PlayerTickAction;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;

@@ -1,28 +1,9 @@
 package io.github.mrriptide.peakcraft.guis;
 
-import io.github.mrriptide.peakcraft.PeakCraft;
-import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
-import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
-import io.github.mrriptide.peakcraft.exceptions.ItemException;
-import io.github.mrriptide.peakcraft.items.ItemManager;
-import io.github.mrriptide.peakcraft.util.CustomColors;
-import io.github.mrriptide.peakcraft.util.MySQLHelper;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
 
 public class VaultGUI implements InventoryGui{
     public VaultGUI(Player commandSender) {

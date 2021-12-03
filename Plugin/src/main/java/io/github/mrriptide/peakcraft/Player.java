@@ -1,6 +1,5 @@
 package io.github.mrriptide.peakcraft;
 
-import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import org.bukkit.persistence.PersistentDataType;
 

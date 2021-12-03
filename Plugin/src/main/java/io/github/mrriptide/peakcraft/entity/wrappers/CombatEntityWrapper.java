@@ -6,20 +6,18 @@ import io.github.mrriptide.peakcraft.exceptions.EntityException;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
-import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.Attribute;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
-import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 
 public class CombatEntityWrapper extends LivingEntityWrapper {
     protected Attribute strength;
     protected Item weapon;
+    protected Item offHand;
 
     protected CombatEntityWrapper(){
         super();
@@ -30,6 +28,7 @@ public class CombatEntityWrapper extends LivingEntityWrapper {
         this.strength = PersistentDataManager.getAttribute(entity, "strength", 0.0);
         try {
             this.weapon = ItemManager.convertItem(entity.getEquipment().getItem(EquipmentSlot.HAND));
+            this.offHand = ItemManager.convertItem(entity.getEquipment().getItem(EquipmentSlot.OFF_HAND));
         } catch (ItemException e) {
             PeakCraft.getPlugin().getLogger().warning("Entity " + entity.getName() + " has an invalid item in their hand");
             e.printStackTrace();
@@ -46,6 +45,9 @@ public class CombatEntityWrapper extends LivingEntityWrapper {
         super.registerListeners(action);
         if (weapon != null){
             weapon.registerListeners(action);
+        }
+        if (offHand != null){
+            offHand.registerListeners(action);
         }
     }
 

@@ -1,19 +1,8 @@
 package io.github.mrriptide.peakcraft.listeners;
 
-import io.github.mrriptide.peakcraft.PeakCraft;
-import io.github.mrriptide.peakcraft.entity.EntityManager;
-import io.github.mrriptide.peakcraft.exceptions.EntityException;
-import io.github.mrriptide.peakcraft.util.CustomColors;
-import io.github.mrriptide.peakcraft.util.PersistentDataManager;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftCreature;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 public class ChunkListener implements Listener {
     @EventHandler
