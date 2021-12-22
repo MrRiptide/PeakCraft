@@ -89,7 +89,7 @@ public class PeakCraft extends JavaPlugin {
         this.getCommand("give").setExecutor(new CommandGive());
         this.getCommand("reloaditems").setExecutor(new CommandReloadItems());
         this.getCommand("enchant").setExecutor(new CommandEnchant());
-        this.getCommand("summon").setExecutor(new CommandSummon());
+        //this.getCommand("summon").setExecutor(new CommandSummon());
         this.getCommand("heal").setExecutor(new CommandHeal());
         this.getCommand("kill").setExecutor(new CommandKill());
         this.getCommand("test").setExecutor(new CommandTest());
@@ -99,6 +99,7 @@ public class PeakCraft extends JavaPlugin {
         this.getCommand("balance").setExecutor(new CommandBalance());
         this.getCommand("entitydatabase").setExecutor(new CommandEntityDatabase());
         this.getCommand("reloadentities").setExecutor(new CommandReloadEntities());
+        this.getCommand("clearattributes").setExecutor(new CommandClearAttributes());
         // Register recipe commands
         CommandRecipe commandRecipe = new CommandRecipe();
         this.getCommand("recipe").setExecutor(commandRecipe);

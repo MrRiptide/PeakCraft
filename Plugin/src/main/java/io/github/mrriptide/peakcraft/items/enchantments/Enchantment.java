@@ -1,34 +1,46 @@
 package io.github.mrriptide.peakcraft.items.enchantments;
 
+import io.github.mrriptide.peakcraft.actions.Action;
 import io.github.mrriptide.peakcraft.actions.ActionListener;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
 
-public abstract class Enchantment implements ActionListener {
-    protected final String id;
-    protected final String displayName;
-    protected final int level;
+public class Enchantment implements ActionListener {
+    protected EnchantmentData enchantmentData;
+    protected int level;
 
-    public Enchantment(String id, String displayName, int level){
-        this.id = id;
-        this.displayName = displayName;
+    public Enchantment(EnchantmentData enchantmentData, int level){
+        this.enchantmentData = enchantmentData;
         this.level = level;
     }
 
-    public Enchantment(int level){
-        this("", "", level);
+    public String getDisplayName(){
+        return enchantmentData.getDisplayName();
     }
-
-    public abstract boolean validateEnchant(EnchantableItem item);
 
     public String getId(){
-        return this.id;
-    }
-
-    public String getDisplayName(){
-        return displayName;
+        return enchantmentData.getId();
     }
 
     public int getLevel() {
         return level;
+    }
+
+    public int getCost() {
+        return enchantmentData.getCost(level);
+    }
+
+    @Override
+    public PriorityLevel getListeningLevel(){
+        return enchantmentData.getListeningLevel();
+    }
+
+    @Override
+    public boolean listensTo(Action action) {
+        return enchantmentData != null && enchantmentData.listensTo(action);
+    }
+
+    @Override
+    public void onAction(Action action) {
+        enchantmentData.onAction(action, level);
     }
 }

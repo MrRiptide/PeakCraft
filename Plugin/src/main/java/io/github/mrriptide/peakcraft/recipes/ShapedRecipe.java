@@ -2,7 +2,7 @@ package io.github.mrriptide.peakcraft.recipes;
 
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import net.minecraft.core.NonNullList;
-import org.bukkit.craftbukkit.v1_17_R1.util.CraftNamespacedKey;
+import org.bukkit.craftbukkit.v1_18_R1.util.CraftNamespacedKey;
 
 import java.util.Arrays;
 import java.util.HashMap;

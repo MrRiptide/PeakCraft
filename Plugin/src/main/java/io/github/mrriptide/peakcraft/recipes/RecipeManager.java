@@ -5,7 +5,7 @@ import io.github.mrriptide.peakcraft.PeakCraft;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.*;

@@ -6,7 +6,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 public class HoloDisplay {
@@ -24,7 +24,7 @@ public class HoloDisplay {
         entityArmorStand.setCustomName(new TextComponent(displayText));
         entityArmorStand.setCustomNameVisible(true);
 
-        ((CraftWorld) location.getWorld()).getHandle().addEntity(entityArmorStand, CreatureSpawnEvent.SpawnReason.CUSTOM);
+        ((CraftWorld) location.getWorld()).getHandle().addFreshEntity(entityArmorStand, CreatureSpawnEvent.SpawnReason.CUSTOM);
         Bukkit.getScheduler().runTaskLater(PeakCraft.instance,
                 () -> entityArmorStand.remove(Entity.RemovalReason.KILLED), ticks);
     }

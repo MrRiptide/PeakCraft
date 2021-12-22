@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.checkerframework.checker.units.qual.A;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -176,7 +177,21 @@ public class PlayerWrapper extends CombatEntityWrapper {
     }
 
     public void sendActionBar(){
-        ((Player)this.entity).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(CustomColors.HEALTH + "" + (int)this.health + "/" + (int)this.maxHealth.getFinal() + "❤            " + CustomColors.MANA + (int)mana +  "/" + (int)maxMana.getFinal() + "MP"));
+        ArrayList<String> actionBarInfo = new ArrayList<>();
+
+        actionBarInfo.add("" + CustomColors.HEALTH + "" + (int)this.health + "/" + (int)this.maxHealth.getFinal() + "❤");
+        //actionBarInfo.add("" + CustomColors.MANA + (int)mana +  "/" + (int)maxMana.getFinal() + "MP");
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < actionBarInfo.size(); i++){
+            builder.append(actionBarInfo.get(i));
+            if (i < actionBarInfo.size() - 1){
+                builder.append("            ");
+            }
+        }
+
+        ((Player)this.entity).spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(builder.toString()));
     }
 
     public void regenMana(){
@@ -285,20 +300,25 @@ public class PlayerWrapper extends CombatEntityWrapper {
 
         private boolean flightAllowed;
         private boolean flying;
+        private Attribute speed;
 
         public PlayerStatus(Player player){
             flightAllowed = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
             flying = player.isFlying();
+            speed = PersistentDataManager.getAttribute(player, "speed", 200);
         }
 
         public void init(){
             flightAllowed = ((Player)entity).getGameMode() == GameMode.CREATIVE || ((Player)entity).getGameMode() == GameMode.SPECTATOR;
             flying = ((Player)entity).isFlying();
+            speed.reset();
         }
 
         public void apply(){
             ((Player)entity).setAllowFlight(flightAllowed);
             ((Player)entity).setFlying(flightAllowed && flying);
+            PersistentDataManager.setAttribute(entity, "speed", speed);
+            ((Player)entity).setWalkSpeed((float) Math.min(1f, speed.getFinal()/1000));
         }
 
         public void setFlightAllowed(boolean flightAllowed){
@@ -314,6 +334,10 @@ public class PlayerWrapper extends CombatEntityWrapper {
 
         public boolean isFlying() {
             return flying;
+        }
+
+        public Attribute getSpeed() {
+            return speed;
         }
     }
 }

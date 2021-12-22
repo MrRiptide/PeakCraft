@@ -23,7 +23,7 @@ public class ArmorItem extends EnchantableItem {
         return loadFromResultSet(conn, resultSet, new ArmorItem());
     }
     public static Item loadFromResultSet(Connection conn, ResultSet resultSet, Item item) throws SQLException {
-        ArmorItem newItem = (ArmorItem) Item.loadFromResultSet(conn, resultSet, item);
+        ArmorItem newItem = (ArmorItem) EnchantableItem.loadFromResultSet(conn, resultSet, item);
 
         PreparedStatement statement = conn.prepareStatement("""
 SELECT * FROM item_attributes WHERE item_id = ?;

@@ -2,29 +2,32 @@ package io.github.mrriptide.peakcraft.items.enchantments;
 
 import io.github.mrriptide.peakcraft.PeakCraft;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 public class EnchantmentManager {
-    private static HashMap<String, Class<? extends Enchantment>> enchantments;
+    private static HashMap<String, EnchantmentData> enchantments;
 
     public static void registerEnchantments(){
         enchantments = new HashMap<>();
-        registerEnchantment(EnchantmentHealthBoost.class);
-        registerEnchantment(EnchantmentSharpness.class);
+        registerEnchantment(new EnchantmentHealthBoost());
+        registerEnchantment(new EnchantmentSharpness());
+        registerEnchantment(new EnchantmentBaneOfArthropods());
+        registerEnchantment(new EnchantmentBlastProtection());
+        registerEnchantment(new EnchantmentDepthStrider());
+        registerEnchantment(new EnchantmentEnvironmentalProtection());
+        registerEnchantment(new EnchantmentFireAspect());
+        registerEnchantment(new EnchantmentFireProtection());
+        registerEnchantment(new EnchantmentFrostWalker());
+        registerEnchantment(new EnchantmentProjectileProtection());
+        registerEnchantment(new EnchantmentProtection());
+        registerEnchantment(new EnchantmentSmite());
+        registerEnchantment(new EnchantmentSoulSpeed());
+        registerEnchantment(new EnchantmentThorns());
     }
 
-    private static void registerEnchantment(Class<? extends Enchantment> enchantment){
-        Enchantment instance = getEnchantment(enchantment, -1);
-
-        if (enchantments.containsKey(instance.getId().toLowerCase())){
-            PeakCraft.getPlugin().getLogger().info("Failed to register " + instance.getId().toLowerCase() + " enchantment as it is already registered");
-            return;
-        }
-
-        enchantments.put(instance.getId().toLowerCase(), enchantment);
-        PeakCraft.getPlugin().getLogger().info("Successfully registered the " + instance.getId().toLowerCase() + " enchantment");
+    private static void registerEnchantment(EnchantmentData enchantment){
+        enchantments.put(enchantment.getId(), enchantment);
+        PeakCraft.getPlugin().getLogger().info("Successfully registered the " + enchantment.getId().toLowerCase() + " enchantment");
     }
 
     public static boolean validateEnchantment(String name){
@@ -32,21 +35,14 @@ public class EnchantmentManager {
     }
 
     public static Enchantment getEnchantment(String name, int level){
-        Class<? extends Enchantment> enchantmentClass = enchantments.get(name);
-        return getEnchantment(enchantmentClass, level);
+        return getEnchantment(enchantments.get(name), level);
     }
 
-    public static Enchantment getEnchantment(Class<? extends Enchantment> enchantmentClass, int level){
-        try {
-            Constructor<? extends Enchantment> constructor =  enchantmentClass.getDeclaredConstructor(int.class);
-            return constructor.newInstance(level);
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public static Enchantment getEnchantment(EnchantmentData enchantmentData, int level){
+        return new Enchantment(enchantmentData, level);
     }
 
-    public static HashMap<String, Class<? extends Enchantment>> getEnchantments(){
+    public static HashMap<String, EnchantmentData> getEnchantments(){
         return enchantments;
     }
 }

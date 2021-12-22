@@ -6,7 +6,6 @@
 package io.github.mrriptide.peakcraft.recipes;
 
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntList;
 
 import java.util.function.Predicate;
 
@@ -15,7 +14,7 @@ public final class RecipeItemChoice implements Predicate<ItemStack> {
     //private final RecipeItemChoice.Provider[] b;
     private final RecipeItem recipeItem;
     public ItemStack[] choices;
-    private IntList d;
+    //private IntList d;
     public boolean exact;
 
     /*public RecipeItemChoice(Stream<? extends RecipeItemChoice.Provider> stream) {

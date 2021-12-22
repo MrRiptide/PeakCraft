@@ -10,7 +10,7 @@ import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.CustomColors;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

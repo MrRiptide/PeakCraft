@@ -7,6 +7,7 @@ import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
 import io.github.mrriptide.peakcraft.items.WeaponItem;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -113,16 +114,7 @@ public class CreativeGUI implements InventoryGui{
     public Inventory getInventory() {
         Inventory inventory = Bukkit.createInventory(this, 54, "Creative Menu");
 
-        // Create background item
-        ItemStack background_item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        ItemMeta background_item_meta = background_item.getItemMeta();
-        assert background_item_meta != null;
-        background_item_meta.setDisplayName(" ");
-        background_item.setItemMeta(background_item_meta);
-
-        for (int i = 0; i < inventory.getSize(); i++){
-            inventory.setItem(i, background_item);
-        }
+        this.fillInventory(inventory);
 
         // add item tab
         ItemStack itemTabItem = new ItemStack(Material.DIRT);

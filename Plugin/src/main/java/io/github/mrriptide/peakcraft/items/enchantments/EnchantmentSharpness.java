@@ -6,9 +6,14 @@ import io.github.mrriptide.peakcraft.actions.Damage;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.WeaponItem;
 
-public class EnchantmentSharpness extends Enchantment {
-    public EnchantmentSharpness(int level){
-        super("sharpness", "Sharpness", level);
+public class EnchantmentSharpness extends EnchantmentData {
+    public EnchantmentSharpness(){
+        super("sharpness", "Sharpness", 5);
+    }
+
+    @Override
+    public int getCost(int level) {
+        return 3 * level;
     }
 
     @Override
@@ -17,17 +22,12 @@ public class EnchantmentSharpness extends Enchantment {
     }
 
     @Override
-    public PriorityLevel getListeningLevel() {
-        return null;
-    }
-
-    @Override
     public boolean listensTo(Action action) {
         return action instanceof AttackAction;
     }
 
     @Override
-    public void onAction(Action action) {
-        ((AttackAction)action).getDamage().getDamage(Damage.DamageType.MELEE).addMulti(Math.pow(1.05, level));
+    public void onAction(Action action, int level) {
+        ((AttackAction)action).getDamage().getDamage(Damage.DamageType.MELEE).addMulti(Math.pow(1.05, level) - 1);
     }
 }

@@ -2,7 +2,9 @@ package io.github.mrriptide.peakcraft.actions;
 
 public interface ActionListener {
 
-    PriorityLevel getListeningLevel();
+    default PriorityLevel getListeningLevel() {
+        return PriorityLevel.MIDDLE;
+    }
 
     boolean listensTo(Action action);
 

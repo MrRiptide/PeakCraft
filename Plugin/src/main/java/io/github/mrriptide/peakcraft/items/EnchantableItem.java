@@ -1,25 +1,36 @@
 package io.github.mrriptide.peakcraft.items;
 
-import io.github.mrriptide.peakcraft.actions.Action;
+import io.github.mrriptide.peakcraft.actions.*;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.enchantments.Enchantment;
+import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentData;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.util.Attribute;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 
-public class EnchantableItem extends Item {
+public class EnchantableItem extends Item implements ActionListener {
     protected HashMap<String, Attribute> attributes;
     protected HashMap<String, Enchantment> enchantments;
+    protected int maxEnchantmentPoints;
+    protected int enchantmentPoints;
 
     public EnchantableItem(){
         this.attributes = new HashMap<>();
         this.enchantments = new HashMap<>();
+        this.maxEnchantmentPoints = 0;
+        this.enchantmentPoints = 0;
     }
 
     public EnchantableItem(Item item){
@@ -27,9 +38,13 @@ public class EnchantableItem extends Item {
         if (item instanceof EnchantableItem){
             this.attributes = ((EnchantableItem) item).attributes;
             this.enchantments = ((EnchantableItem) item).enchantments;
+            this.maxEnchantmentPoints = ((EnchantableItem) item).maxEnchantmentPoints;
+            this.enchantmentPoints = ((EnchantableItem) item).enchantmentPoints;
         } else {
             this.attributes = new HashMap<>();
             this.enchantments = new HashMap<>();
+            this.maxEnchantmentPoints = 0;
+            this.enchantmentPoints = 0;
         }
     }
 
@@ -51,6 +66,8 @@ public class EnchantableItem extends Item {
 
         this.attributes = item.attributes;
         this.enchantments = new HashMap<>();
+        this.maxEnchantmentPoints = item.maxEnchantmentPoints;
+        this.enchantmentPoints = 0;
     }
 
     public EnchantableItem(String id, String oreDict, String displayName, int rarity, String description, Material material, String type, HashMap<String, Attribute> attributes){
@@ -67,49 +84,27 @@ public class EnchantableItem extends Item {
         );
     }
 
-    /*public EnchantableItem(ItemStack itemSource) throws IllegalArgumentException{
-        super(itemSource);
-        // Get ID of the item from the ItemStack
-
-        // Default option
-        this.id = PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.STRING, "ITEM_ID", itemSource.getType().name());
-
-        assert this.id != null;
-        Item tmp = ItemManager.getItem(this.id);
-        if (tmp instanceof EnchantableItem){
-            EnchantableItem default_item = (EnchantableItem) tmp;
-
-            this.attributes = default_item.attributes;
-            this.enchantments = new HashMap<>();
-            // register enchants
-            for (NamespacedKey key : Objects.requireNonNull(itemSource.getItemMeta()).getPersistentDataContainer().getKeys()){
-                if (key.getKey().startsWith("enchant_")){
-                    addEnchantment(key.getKey().substring(8, key.getKey().length() - 6), PersistentDataManager.getValueOrDefault(itemSource, PersistentDataType.INTEGER, key.getKey(), 0));
-                }
-            }
-
-            bakeAttributes();
-        } else{
-            throw new IllegalArgumentException("The item provided is not enchantable");
-        }
-    }*/
-
-    @Override
-    public void registerListeners(Action action){
-        super.registerListeners(action);
-        for (Enchantment enchantment : enchantments.values()){
-            action.registerListener(enchantment);
-        }
-    }
-
-    public Attribute getAttribute(String attributeName){
+    public Attribute getAttributeOrDefault(String attributeName, double defaultValue){
         if (attributes == null){
             attributes = new HashMap<>();
         }
         if (!attributes.containsKey(attributeName)){
-            attributes.put(attributeName, new Attribute(0));
+            attributes.put(attributeName, new Attribute(defaultValue));
         }
         return attributes.getOrDefault(attributeName.toLowerCase(), null);
+    }
+
+    public Attribute getAttribute(String attributeName){
+        return getAttributeOrDefault(attributeName, 0);
+    }
+
+    public boolean canAddEnchant(EnchantmentData enchantmentData, int level){
+        return maxEnchantmentPoints >= (enchantmentPoints + enchantmentData.getCost(level)
+                - (enchantments.containsKey(enchantmentData.getId()) ? enchantments.get(enchantmentData.getId()).getCost() : 0));
+    }
+
+    public void setEnchantmentPoints(int enchantmentPoints){
+        this.enchantmentPoints = enchantmentPoints;
     }
 
     public void setAttribute(String attributeName, double value){
@@ -123,12 +118,53 @@ public class EnchantableItem extends Item {
         return enchantments;
     }
 
+    public int getMaxEnchantmentPoints(){
+        return maxEnchantmentPoints;
+    }
+
+    public int getEnchantmentPoints(){
+        return enchantmentPoints;
+    }
+
+    public void calculateEnchantmentPoints(){
+        enchantmentPoints = 0;
+        for (Enchantment enchantment : enchantments.values()){
+            enchantmentPoints += enchantment.getCost();
+        }
+    }
+
     public void addEnchantment(@NotNull String enchantment, int level){
         this.enchantments.put(enchantment.toLowerCase(), EnchantmentManager.getEnchantment(enchantment, level));
+        calculateEnchantmentPoints();
     }
 
     public boolean removeEnchantment(@NotNull String enchantment){
-        return (this.enchantments.remove(enchantment.toLowerCase()) != null);
+        boolean val = (this.enchantments.remove(enchantment.toLowerCase()) != null);
+        calculateEnchantmentPoints();
+        return val;
+    }
+
+    public static Item loadFromResultSet(Connection conn, ResultSet resultSet) throws SQLException {
+        return loadFromResultSet(conn, resultSet, new EnchantableItem());
+    }
+
+    public static Item loadFromResultSet(Connection conn, ResultSet resultSet, Item item) throws SQLException {
+        EnchantableItem newItem = (EnchantableItem) Item.loadFromResultSet(conn, resultSet, item);
+
+        PreparedStatement statement = conn.prepareStatement("""
+SELECT * FROM item_attributes WHERE item_id = ? AND attribute_id = 'max_enchantment_points';
+""");
+        statement.setString(1, newItem.id);
+
+        ResultSet attributeResultSet = statement.executeQuery();
+
+        newItem.maxEnchantmentPoints = attributeResultSet.next() ? attributeResultSet.getInt("value") : 0;
+
+
+        attributeResultSet.close();
+        statement.close();
+
+        return item;
     }
 
     @Override
@@ -140,14 +176,25 @@ public class EnchantableItem extends Item {
         // Apply enchant glint if it is enchanted
         if (enchantments.size() > 0){
             meta.addEnchant(org.bukkit.enchantments.Enchantment.DAMAGE_ALL, 1, true);
+        } else {
+            meta.removeEnchant(org.bukkit.enchantments.Enchantment.DAMAGE_ALL);
         }
 
-        // the item id
-        PersistentDataManager.setValue(meta, "ITEM_ID", id);
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        for (NamespacedKey key : container.getKeys()){
+            if (key.getKey().toLowerCase().startsWith("enchant_")){
+                container.remove(key);
+            }
+        }
+
         // the enchantments
         for (Enchantment enchantment : enchantments.values()){
-            PersistentDataManager.setValue(meta, "ENCHANT_" + enchantment.getId().toUpperCase() + "_LEVEL", enchantment.getLevel());
+            PersistentDataManager.setValue(container, "ENCHANT_" + enchantment.getId().toUpperCase() + "_LEVEL", enchantment.getLevel());
         }
+
+        // the enchant points
+        PersistentDataManager.setValue(meta, "max_enchantment_points", maxEnchantmentPoints);
+        PersistentDataManager.setValue(meta, "enchantment_points", enchantmentPoints);
 
         itemStack.setItemMeta(meta);
     }
@@ -162,6 +209,8 @@ public class EnchantableItem extends Item {
         clonedItem.attributes.putAll(attributes);
         clonedItem.enchantments = new HashMap<>();
         clonedItem.enchantments.putAll(enchantments);
+        clonedItem.maxEnchantmentPoints = this.maxEnchantmentPoints;
+        clonedItem.enchantmentPoints = this.enchantmentPoints;
 
 
         return clonedItem;
@@ -169,5 +218,28 @@ public class EnchantableItem extends Item {
 
     public HashMap<String, Attribute> getAttributes() {
         return attributes;
+    }
+
+    @Override
+    public void registerListeners(Action action){
+        super.registerListeners(action);
+        action.registerListener(this);
+        for (Enchantment enchantment : enchantments.values()){
+            action.registerListener(enchantment);
+        }
+    }
+
+    @Override
+    public boolean listensTo(Action action) {
+        return true;
+    }
+
+    @Override
+    public void onAction(Action action) {
+        if (action instanceof AttackAction) {
+            //((AttackAction)action).getDamage().getDamage(Damage.DamageType.GENERIC).addAdditive(attributes.getOrDefault("damage", new Attribute(0)).getFinal());
+        } else if (action instanceof DamagedAction) {
+            ((DamagedAction)action).getDamage().getProtection(Damage.DamageType.GENERIC).addAdditive(attributes.getOrDefault("defense", new Attribute(0)).getFinal());
+        }
     }
 }

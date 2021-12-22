@@ -1,6 +1,7 @@
 package io.github.mrriptide.peakcraft.items;
 
 import io.github.mrriptide.peakcraft.actions.Action;
+import io.github.mrriptide.peakcraft.actions.ActionListener;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.abilities.Ability;
 import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
@@ -345,5 +346,9 @@ SELECT ability_id from item_abilities where item_id = ?;
 
     public void setAmount(int amount){
         this.amount = amount;
+    }
+
+    public enum ItemType {
+        HeadArmor, ChestArmor, LegArmor, FeetArmor, MeleeWeapon, RangedWeapon, MagicItem, GenericItem
     }
 }

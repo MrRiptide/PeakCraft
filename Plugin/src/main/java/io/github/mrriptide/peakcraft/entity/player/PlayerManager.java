@@ -22,6 +22,16 @@ public abstract class PlayerManager {
         }
     }
 
+    public static void logOutPlayer(Player player){
+        logOutPlayer(player.getUniqueId());
+    }
+
+    public static void logOutPlayer(UUID uuid){
+        if (playerAccounts.remove(uuid) == null){
+             throw new IllegalArgumentException("Player " + uuid.toString() + " is not currently logged in");
+        }
+    }
+
     public static void logInPlayer(Player player) {
         try {
             playerAccounts.put(player.getUniqueId(), new PlayerWrapper(player));

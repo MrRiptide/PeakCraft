@@ -1,6 +1,8 @@
 package io.github.mrriptide.peakcraft.commands;
 
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
+import io.github.mrriptide.peakcraft.guis.CreativeGUI;
+import io.github.mrriptide.peakcraft.guis.EnchantingGUI;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import org.bukkit.Bukkit;
@@ -14,7 +16,10 @@ public class CommandEnchant implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player enchantPlayer;
 
-        if (args.length == 2 && sender instanceof Player){
+        if (args.length == 0 && sender instanceof Player){
+            ((Player)sender).openInventory((new EnchantingGUI()).getInventory());
+            return true;
+        } else if (args.length == 2 && sender instanceof Player){
             enchantPlayer = (Player)sender;
         } else if (args.length == 3){
             enchantPlayer = Bukkit.getPlayer(args[0]);

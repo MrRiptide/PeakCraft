@@ -19,8 +19,9 @@ public class WeaponItem extends EnchantableItem {
     public static Item loadFromResultSet(Connection conn, ResultSet resultSet) throws SQLException {
         return loadFromResultSet(conn, resultSet, new WeaponItem());
     }
+
     public static Item loadFromResultSet(Connection conn, ResultSet resultSet, Item item) throws SQLException {
-        WeaponItem newItem = (WeaponItem) Item.loadFromResultSet(conn, resultSet, item);
+        WeaponItem newItem = (WeaponItem) EnchantableItem.loadFromResultSet(conn, resultSet, item);
 
         PreparedStatement statement = conn.prepareStatement("""
 SELECT * FROM item_attributes WHERE item_id = ? AND attribute_id = 'damage';

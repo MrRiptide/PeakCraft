@@ -4,6 +4,7 @@ import io.github.mrriptide.peakcraft.exceptions.ItemException;
 import io.github.mrriptide.peakcraft.items.EnchantableItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.items.ItemManager;
+import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentData;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +30,13 @@ public class CustomItemStack extends ItemStack {
         this.item.updateItemStack(this);
     }
 
+/*
+* the Enchantment Section, everything here will fail if the item is not enchantable
+*  */
+
+    public boolean canAddEnchant(EnchantmentData enchantmentData, int level){
+        return item instanceof EnchantableItem && ((EnchantableItem) item).canAddEnchant(enchantmentData, level);
+    }
 
     public void addEnchantment(String enchantment, int level){
         if (item instanceof EnchantableItem){

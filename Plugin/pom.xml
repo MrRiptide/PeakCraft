@@ -21,14 +21,14 @@
 
     <groupId>io.github.mrriptide</groupId>
     <artifactId>PeakCraft</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2</version>
 
 
 
     <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
-        <java.version>16</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -44,13 +44,13 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <classifier>remapped-mojang</classifier>
-            <version>1.17.1-R0.1-SNAPSHOT</version>
+            <version>1.18.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.17.1-R0.1-SNAPSHOT</version>
+            <version>1.18.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -112,8 +112,8 @@
                 <version>3.8.1</version>
                 <configuration>
                     <!-- put your configurations here -->
-                    <source>16</source>
-                    <target>16</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -128,9 +128,9 @@
                         </goals>
                         <id>remap-obf</id>
                         <configuration>
-                            <srgIn>org.spigotmc:minecraft-server:1.17.1-R0.1-SNAPSHOT:txt:maps-mojang</srgIn>
+                            <srgIn>org.spigotmc:minecraft-server:1.18-R0.1-SNAPSHOT:txt:maps-mojang</srgIn>
                             <reverse>true</reverse>
-                            <remappedDependencies>org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT:jar:remapped-mojang</remappedDependencies>
+                            <remappedDependencies>org.spigotmc:spigot:1.18-R0.1-SNAPSHOT:jar:remapped-mojang</remappedDependencies>
                             <remappedArtifactAttached>true</remappedArtifactAttached>
                             <remappedClassifierName>remapped-obf</remappedClassifierName>
                         </configuration>
@@ -143,8 +143,8 @@
                         <id>remap-spigot</id>
                         <configuration>
                             <inputFile>${project.build.directory}/${project.artifactId}-${project.version}-remapped-obf.jar</inputFile>
-                            <srgIn>org.spigotmc:minecraft-server:1.17.1-R0.1-SNAPSHOT:csrg:maps-spigot</srgIn>
-                            <remappedDependencies>org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT:jar:remapped-obf</remappedDependencies>
+                            <srgIn>org.spigotmc:minecraft-server:1.18-R0.1-SNAPSHOT:csrg:maps-spigot</srgIn>
+                            <remappedDependencies>org.spigotmc:spigot:1.18-R0.1-SNAPSHOT:jar:remapped-obf</remappedDependencies>
                         </configuration>
                     </execution>
                 </executions>

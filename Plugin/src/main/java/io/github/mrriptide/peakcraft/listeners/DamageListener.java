@@ -22,7 +22,7 @@ public class DamageListener implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event){
-        if (event.getEntity().isInvulnerable()){
+        if (event.getEntity().isInvulnerable() || event.isCancelled()){
             return;
         }
         if (Arrays.asList(EntityDamageEvent.DamageCause.ENTITY_ATTACK, EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK, EntityDamageEvent.DamageCause.CUSTOM).contains(event.getCause()) ){
@@ -55,7 +55,7 @@ public class DamageListener implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.getEntity().isInvulnerable()) {
+        if (event.getEntity().isInvulnerable() || event.isCancelled()) {
             return;
         }
 

@@ -7,7 +7,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 
 public class HoloDisplayEntity extends LivingEntity {
     public HoloDisplayEntity(Location location, String text) {

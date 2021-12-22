@@ -5,13 +5,17 @@ import io.github.mrriptide.peakcraft.actions.RightClickAction;
 import io.github.mrriptide.peakcraft.entity.player.PlayerManager;
 import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.exceptions.ItemException;
+import io.github.mrriptide.peakcraft.guis.EnchantingGUI;
 import io.github.mrriptide.peakcraft.items.ArmorItem;
 import io.github.mrriptide.peakcraft.items.Item;
 import io.github.mrriptide.peakcraft.recipes.CustomItemStack;
 import io.github.mrriptide.peakcraft.runnables.UpdatePlayer;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
@@ -34,6 +38,11 @@ public class PlayerListener implements Listener {
         BukkitTask task = new UpdatePlayer(e.getPlayer()).runTaskTimer(PeakCraft.instance, 0, UpdatePlayer.ticksPerUpdate);
     }
 
+    @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent e){
+        PlayerManager.logOutPlayer(e.getPlayer());
+    }
+
     private boolean isOffCooldown(PlayerEvent e) {
         if (System.nanoTime() - lastInteractTime.getOrDefault(e.getPlayer().getUniqueId(), (long) 0) < 50000000){
             ((e instanceof PlayerInteractEntityEvent) ? (PlayerInteractEntityEvent)e : (PlayerInteractEvent)e).setCancelled(true);
@@ -50,10 +59,16 @@ public class PlayerListener implements Listener {
     public void onRespawn(PlayerRespawnEvent e){
         PlayerWrapper playerWrapper = PlayerManager.getPlayer(e.getPlayer());
         playerWrapper.resetStats();
+        playerWrapper.setDead(false);
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e){
+        if (e.getClickedBlock() != null && e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock().getType() == Material.ENCHANTING_TABLE){
+            (e.getPlayer()).openInventory((new EnchantingGUI()).getInventory());
+            e.setCancelled(true);
+            return;
+        }
         if (e.getItem() != null){
             try{
                 Item item = new CustomItemStack(e.getItem()).getItem();
@@ -111,9 +126,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent e){
-        if (!isOffCooldown(e)){
-            return;
-        }
         if (e.getPlayer().getEquipment() != null){
             try{
                 Item item = new CustomItemStack(e.getPlayer().getEquipment().getItem(e.getHand())).getItem();
@@ -138,10 +150,13 @@ public class PlayerListener implements Listener {
             e.setDeathMessage("");
         } else {
             String message;
-            switch (e.getEntity().getPlayer().getLastDamageCause().getCause()){
-                case FALL -> message = "<player> fell from a high place";
-                case PROJECTILE -> message = "<player> was shot by <killer>";
-                case BLOCK_EXPLOSION -> message = "<player> blew up";
+            EntityDamageEvent lastCause = e.getEntity().getLastDamageCause();
+            if (lastCause != null) {
+                switch (e.getEntity().getLastDamageCause().getCause()){
+                    case FALL -> message = "<player> fell from a high place";
+                    case PROJECTILE -> message = "<player> was shot by <killer>";
+                    case BLOCK_EXPLOSION -> message = "<player> blew up";
+                }
             }
             player.setDead(true);
         }
