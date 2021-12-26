@@ -1,5 +1,6 @@
 package io.github.mrriptide.peakcraft.actions;
 
+import io.github.mrriptide.peakcraft.entity.player.PlayerWrapper;
 import io.github.mrriptide.peakcraft.entity.wrappers.CombatEntityWrapper;
 import io.github.mrriptide.peakcraft.entity.wrappers.LivingEntityWrapper;
 import io.github.mrriptide.peakcraft.util.CustomColors;
@@ -21,6 +22,11 @@ public class DamagedAction extends Action {
         this.cause = cause;
         this.damage = new Damage(amount, cause);
         this.attacker = attacker;
+        if (primaryEntity instanceof PlayerWrapper && ((PlayerWrapper)primaryEntity).getStatus().isBlocking()){
+            firstListeners.clear();
+            middleListeners.clear();
+            lastListeners.clear();
+        }
     }
 
     public DamagedAction(@NotNull LivingEntityWrapper primaryEntity, @NotNull EntityDamageEvent.DamageCause cause, double amount){
@@ -29,6 +35,9 @@ public class DamagedAction extends Action {
 
     @Override
     public void finalizeAction() {
+        if (primaryEntity instanceof PlayerWrapper && ((PlayerWrapper)primaryEntity).getStatus().isBlocking()){
+            return;
+        }
         HoloDisplay damageDisplay = new HoloDisplay(getPrimaryEntity().getEntity().getLocation().add(Math.random()*1-0.5, Math.random()*1-1.5, Math.random()*1 -0.5));
 
         NumberFormat format = NumberFormat.getInstance();

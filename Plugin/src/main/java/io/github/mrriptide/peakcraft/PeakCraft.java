@@ -3,10 +3,7 @@ package io.github.mrriptide.peakcraft;
 import io.github.mrriptide.peakcraft.commands.*;
 import io.github.mrriptide.peakcraft.entity.EntityManager;
 import io.github.mrriptide.peakcraft.items.ItemManager;
-import io.github.mrriptide.peakcraft.items.abilities.AbilityManager;
-import io.github.mrriptide.peakcraft.items.abilities.FlightFeatherAbility;
-import io.github.mrriptide.peakcraft.items.abilities.InspectAbility;
-import io.github.mrriptide.peakcraft.items.abilities.PotatoSwordAbility;
+import io.github.mrriptide.peakcraft.items.abilities.*;
 import io.github.mrriptide.peakcraft.items.enchantments.EnchantmentManager;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.FullSetBonusManager;
 import io.github.mrriptide.peakcraft.items.fullsetbonus.SpaceSuitFullSetBonus;
@@ -66,6 +63,7 @@ public class PeakCraft extends JavaPlugin {
         AbilityManager.registerAbility(new PotatoSwordAbility());
         AbilityManager.registerAbility(new InspectAbility());
         AbilityManager.registerAbility(new FlightFeatherAbility());
+        AbilityManager.registerAbility(new ShieldAbility());
 
         // Load items from items.tsv, must be done as one of the first things (especially before recipes are loaded)
         getLogger().info("Loading items");

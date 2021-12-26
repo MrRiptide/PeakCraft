@@ -78,7 +78,7 @@ public class PlayerListener implements Listener {
                         RightClickAction action = new RightClickAction(player);
                         action.runAction();
                     }
-                    e.setCancelled(true);
+                    e.setCancelled(false);
                 }
 
                 if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK){

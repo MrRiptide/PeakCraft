@@ -18,8 +18,10 @@ import io.github.mrriptide.peakcraft.util.MySQLHelper;
 import io.github.mrriptide.peakcraft.util.PersistentDataManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -263,6 +265,11 @@ public class PlayerWrapper extends CombatEntityWrapper {
         }
     }
 
+    @Override
+    public Entity getEntity() {
+        return Bukkit.getPlayer(this.entity.getUniqueId());
+    }
+
     public Attribute getCritChance() {
         return critChance;
     }
@@ -301,17 +308,20 @@ public class PlayerWrapper extends CombatEntityWrapper {
         private boolean flightAllowed;
         private boolean flying;
         private Attribute speed;
+        private boolean blocking;
 
         public PlayerStatus(Player player){
             flightAllowed = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
             flying = player.isFlying();
             speed = PersistentDataManager.getAttribute(player, "speed", 200);
+            blocking = player.isBlocking();
         }
 
         public void init(){
             flightAllowed = ((Player)entity).getGameMode() == GameMode.CREATIVE || ((Player)entity).getGameMode() == GameMode.SPECTATOR;
             flying = ((Player)entity).isFlying();
             speed.reset();
+            blocking = ((Player)entity).isBlocking();
         }
 
         public void apply(){
@@ -334,6 +344,14 @@ public class PlayerWrapper extends CombatEntityWrapper {
 
         public boolean isFlying() {
             return flying;
+        }
+
+        public void setBlocking(boolean blocking){
+            this.blocking = blocking;
+        }
+
+        public boolean isBlocking() {
+            return blocking;
         }
 
         public Attribute getSpeed() {

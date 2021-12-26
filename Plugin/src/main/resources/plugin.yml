@@ -1,5 +1,5 @@
 name: PeakCraft
-version: 0.2
+version: 0.2.1
 main: io.github.mrriptide.peakcraft.PeakCraft
 api-version: 1.13
 depend: [Citizens]

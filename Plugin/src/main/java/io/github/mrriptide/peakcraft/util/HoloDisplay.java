@@ -15,6 +15,7 @@ public class HoloDisplay {
         this.location = loc;
     }
 
+    /// TODO: Delete all HoloDisplays on plugin disable
     public void showThenDie(String displayText, int ticks){
         ArmorStand entityArmorStand = new ArmorStand(((CraftWorld) location.getWorld()).getHandle(), location.getX(), location.getY(), location.getZ());
 
@@ -26,6 +27,6 @@ public class HoloDisplay {
 
         ((CraftWorld) location.getWorld()).getHandle().addFreshEntity(entityArmorStand, CreatureSpawnEvent.SpawnReason.CUSTOM);
         Bukkit.getScheduler().runTaskLater(PeakCraft.instance,
-                () -> entityArmorStand.remove(Entity.RemovalReason.KILLED), ticks);
+                () -> entityArmorStand.remove(Entity.RemovalReason.DISCARDED), ticks);
     }
 }
